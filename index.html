@@ -73,14 +73,14 @@
             
             <div class="relative py-4">
                 <div class="absolute inset-0 flex items-center"><div class="w-full border-t border-slate-200"></div></div>
-                <div class="relative flex justify-center text-xs uppercase"><span class="bg-white px-2 text-slate-400">Ou</span></div>
+                <div class="relative flex justify-center text-xs uppercase"><span class="bg-white px-2 text-slate-400">Ou use Magic Link</span></div>
             </div>
             
             <input type="email" id="email-input" placeholder="Seu email" class="w-full px-4 py-3 rounded-xl border border-slate-200 mb-4 outline-none focus:ring-2 focus:ring-blue-500">
             <button id="magic-link-btn" onclick="handleMagicLink()" class="w-full bg-blue-600 text-white py-3 rounded-xl font-bold hover:bg-blue-700 transition">
                 Receber Link por Email
             </button>
-            <p class="text-[10px] text-slate-400 mt-4 text-center">Ao entrar, aceita os nossos termos de uso para Moçambique.</p>
+            <p class="text-[10px] text-slate-400 mt-4 text-center text-balance italic">Recomendado para Moçambique: Use o Magic Link se o Google der erro.</p>
         </div>
     </div>
 
@@ -208,18 +208,15 @@
 
     <script>
         // --- CONFIGURAÇÃO SUPABASE REAL ---
-        // As tuas chaves do projeto "mh-boy23's Project"
         const SUPABASE_URL = 'https://vbxqwabfwrafomuiiedh.supabase.co';
         const SUPABASE_ANON_KEY = 'sb_publishable_QCB11qPe_6raIdDVussbpQ_VZ2W_acc';
         
         const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-        // Verificar sessão ao carregar a página
         window.onload = async () => {
             const { data: { session } } = await supabaseClient.auth.getSession();
             updateUI(session?.user);
 
-            // Ouvir mudanças na autenticação
             supabaseClient.auth.onAuthStateChange((_event, session) => {
                 updateUI(session?.user);
             });
@@ -234,8 +231,8 @@
                 profileDiv.classList.remove('hidden');
                 loginBtn.classList.add('hidden');
                 userEmailSpan.innerText = user.email;
-                if (document.getElementById('login-modal')) toggleLogin(true);
-                console.log("Utilizador autenticado no mh-boy23 Project:", user.id);
+                toggleLogin(true);
+                console.log("Logado com sucesso no projeto mh-boy23");
             } else {
                 profileDiv.classList.add('hidden');
                 loginBtn.classList.remove('hidden');
@@ -249,20 +246,31 @@
         }
 
         async function handleGoogleLogin() {
-            const { error } = await supabaseClient.auth.signInWithOAuth({
-                provider: 'google',
-                options: { redirectTo: window.location.origin }
-            });
-            if (error) alert("Erro ao entrar com Google: " + error.message);
+            try {
+                const { error } = await supabaseClient.auth.signInWithOAuth({
+                    provider: 'google',
+                    options: { redirectTo: window.location.origin }
+                });
+                
+                if (error) {
+                    if (error.message.includes("not enabled")) {
+                        alert("O login com Google ainda não foi ativado no painel do Supabase. Por favor, use o 'Magic Link' (Email) abaixo para entrar agora.");
+                    } else {
+                        alert("Erro Google: " + error.message);
+                    }
+                }
+            } catch (err) {
+                console.error("Erro inesperado:", err);
+            }
         }
 
         async function handleMagicLink() {
             const email = document.getElementById('email-input').value;
             const btn = document.getElementById('magic-link-btn');
             
-            if (!email) { alert("Digita o teu email profissional"); return; }
+            if (!email) { alert("Por favor, introduza o seu email."); return; }
             
-            btn.innerText = "A enviar...";
+            btn.innerText = "A processar...";
             btn.disabled = true;
 
             const { error } = await supabaseClient.auth.signInWithOtp({
@@ -271,12 +279,14 @@
             });
 
             if (error) {
-                alert("Erro: " + error.message);
+                alert("Erro ao enviar link: " + error.message);
                 btn.innerText = "Receber Link por Email";
                 btn.disabled = false;
             } else {
-                alert("Sucesso! Verifica a tua caixa de entrada em " + email);
-                toggleLogin();
+                alert("Verifique o seu email! Enviamos um link de acesso para " + email);
+                toggleLogin(true);
+                btn.innerText = "Receber Link por Email";
+                btn.disabled = false;
             }
         }
 
@@ -286,14 +296,12 @@
         }
 
         function handleDownload() {
-            alert("A gerar PDF... Esta funcionalidade será ligada ao processamento de documentos no próximo passo.");
+            alert("Preparando PDF... Esta funcionalidade requer conexão com servidor de documentos.");
         }
 
         function handlePayment(plan) {
-            const phone = prompt("Digita o teu número M-Pesa (84 ou 85):");
-            if (phone) {
-                alert(`Solicitação enviada para o ${phone}. Confirma o pagamento de ${plan === 'unit' ? '50MT' : '250MT'} no teu telemóvel.`);
-            }
+            const phone = prompt("Digite o seu número M-Pesa para pagamento:");
+            if (phone) alert(`Pedido enviado para ${phone}. Confirme a transação no seu telemóvel.`);
         }
 
         function simularGeracao() {
@@ -302,7 +310,7 @@
             const type = document.getElementById('doc-type').value;
 
             if (!name || !desc) {
-                alert("Por favor, preencha o seu nome e descrição.");
+                alert("Preencha todos os campos para gerar o documento.");
                 return;
             }
 
@@ -316,15 +324,15 @@
                 
                 let texto = "";
                 if(type === 'cv') {
-                    texto = `<strong>${name.toUpperCase()}</strong><br>Maputo, Moçambique<hr><br><strong>OBJECTIVO PROFISSIONAL:</strong><br>${desc}<br><br><strong>FORMAÇÃO ACADÉMICA:</strong><br>Nível Médio concluído (Escola Secundária local)...<br><br><strong>COMPETÊNCIAS:</strong><br>Comunicação, Proatividade, Domínio de MS Office.<br><br><strong>REFERÊNCIAS:</strong><br>Disponíveis sob pedido.`;
+                    texto = `<strong>${name.toUpperCase()}</strong><br>Maputo, Moçambique<hr><br><strong>OBJECTIVO:</strong><br>${desc}`;
                 } else if(type === 'carta') {
-                    texto = `A/C Departamento de Recursos Humanos,<br><br>Eu, <strong>${name}</strong>, venho por este meio submeter a minha candidatura para a vaga disponível...<br><br>Pela minha experiência em: "${desc}", acredito ser o candidato ideal.<br><br>Atenciosamente,<br><strong>${name}</strong>`;
+                    texto = `Exmos. Srs.,<br><br>Eu, <strong>${name}</strong>, candidato-me à vaga...`;
                 } else {
-                    texto = `<strong>CONTRATO DE LOCAÇÃO DE IMÓVEL</strong><br><br>Entre o Senhorio e o Locatário <strong>${name}</strong>.<br><br>Cláusula 1ª: O objecto deste contrato é o aluguer do imóvel sito em...<br><br>Regido pelas leis da República de Moçambique.`;
+                    texto = `<strong>CONTRATO DE ALUGUER</strong><br><br>Entre o proprietário e <strong>${name}</strong>...`;
                 }
                 
                 document.getElementById('doc-output').innerHTML = texto;
-            }, 2000);
+            }, 1500);
         }
     </script>
 </body>
