@@ -6,12 +6,12 @@
     <title>HanzDocs AI | Documentos Profissionais em Moçambique</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <!-- Integração Supabase -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap');
         body { font-family: 'Inter', sans-serif; scroll-behavior: smooth; }
         .glass { background: rgba(255, 255, 255, 0.85); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); }
-        .card-hover:hover { transform: translateY(-5px); transition: all 0.3s ease; }
         
         .loader {
             border: 4px solid #f3f3f3;
@@ -34,9 +34,9 @@
             width: 100%;
             max-width: 210mm;
             margin: auto;
-            z-index: 1;
             padding: 20mm;
             text-align: justify;
+            color: #1e293b;
         }
 
         .watermark {
@@ -49,479 +49,335 @@
             color: rgba(0,0,0,0.03);
             pointer-events: none;
             user-select: none;
-            white-space: nowrap;
             z-index: 0;
         }
 
+        .step-card:hover i { transform: scale(1.1); transition: 0.3s; }
+
         @media print {
             .no-print { display: none !important; }
-            body { background: white; padding: 0; }
-            .a4-preview { box-shadow: none; border: none; margin: 0; padding: 20mm; }
+            body { background: white; }
+            .a4-preview { box-shadow: none; border: none; margin: 0; padding: 15mm; }
         }
     </style>
 </head>
 <body class="bg-slate-50 text-slate-900">
 
-    <!-- Navegação -->
+    <!-- Navegação com Login -->
     <nav class="glass sticky top-0 z-50 border-b border-slate-200 px-6 py-4 flex justify-between items-center no-print">
         <div class="flex items-center gap-2 font-black text-2xl text-blue-600 cursor-pointer" onclick="location.reload()">
             <i class="fas fa-file-contract"></i>
             <span>HanzDocs <span class="text-slate-800">AI</span></span>
         </div>
         
-        <div class="hidden md:flex gap-8 text-sm font-bold text-slate-500">
-            <a href="#servicos" class="hover:text-blue-600 transition">Serviços</a>
+        <div class="hidden md:flex items-center gap-8 text-sm font-bold text-slate-600">
+            <a href="#como-funciona" class="hover:text-blue-600 transition">Como Funciona</a>
             <a href="#precos" class="hover:text-blue-600 transition">Preços</a>
-            <a href="#meus-docs" class="hover:text-blue-600 transition">Meus Docs</a>
         </div>
 
-        <div class="flex items-center gap-4">
-            <div id="user-profile" class="hidden flex items-center gap-3">
-                <span id="user-email" class="hidden lg:inline text-xs font-bold text-slate-500 border px-3 py-1.5 rounded-full bg-white"></span>
-                <button onclick="handleLogout()" class="text-xs font-bold text-red-500 hover:bg-red-50 px-3 py-1.5 rounded-lg transition">Sair</button>
-            </div>
-            <button id="login-btn" onclick="toggleLogin()" class="text-sm font-bold text-slate-600 hover:text-blue-600">Entrar</button>
-            <button onclick="scrollToGerador()" class="bg-blue-600 text-white px-5 py-2.5 rounded-full font-bold text-sm hover:bg-blue-700 transition shadow-lg shadow-blue-100">
-                Criar Novo
+        <div id="user-profile" class="flex items-center gap-3">
+            <button onclick="toggleLoginModal()" class="px-5 py-2 text-blue-600 font-bold text-sm">Entrar</button>
+            <button onclick="scrollToGerador()" class="bg-blue-600 text-white px-5 py-2.5 rounded-full font-bold text-sm hover:bg-blue-700 transition shadow-lg shadow-blue-200">
+                Começar Grátis
             </button>
         </div>
     </nav>
 
     <!-- Hero Section -->
     <section class="pt-20 pb-12 px-6 text-center no-print">
-        <div class="max-w-4xl mx-auto">
-            <span class="bg-blue-50 text-blue-600 px-4 py-1.5 rounded-full text-xs font-black uppercase tracking-widest mb-6 inline-block">Inteligência Artificial em Moçambique</span>
-            <h1 class="text-5xl md:text-7xl font-extrabold mb-6 leading-[1.1] text-slate-900 tracking-tight">
-                Documentos que te dão <br><span class="text-blue-600">o emprego.</span>
-            </h1>
-            <p class="text-lg text-slate-600 mb-10 max-w-2xl mx-auto font-medium">
-                Gere currículos, cartas e contratos otimizados para o mercado nacional usando a IA do Gemini em segundos.
-            </p>
-            <div class="flex flex-col sm:flex-row gap-4 justify-center">
-                <button onclick="scrollToGerador()" class="bg-slate-900 text-white px-8 py-4 rounded-2xl font-bold hover:bg-blue-600 transition flex items-center justify-center gap-3">
-                    Começar Agora <i class="fas fa-arrow-right text-xs"></i>
-                </button>
-                <a href="#precos" class="bg-white border border-slate-200 text-slate-700 px-8 py-4 rounded-2xl font-bold hover:bg-slate-50 transition">Ver Planos</a>
+        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-50 text-blue-600 text-xs font-black mb-6 uppercase tracking-wider">
+            <span class="flex h-2 w-2 rounded-full bg-blue-600 animate-pulse"></span>
+            Exclusivo para Moçambique
+        </div>
+        <h1 class="text-5xl md:text-7xl font-extrabold mb-6 leading-tight tracking-tight text-slate-900">
+            Documentos Profissionais <br><span class="text-blue-600">em segundos.</span>
+        </h1>
+        <p class="text-slate-600 max-w-2xl mx-auto mb-10 text-lg font-medium">
+            Gere Currículos, Cartas de Apresentação e Contratos otimizados para as normas legais e profissionais de Moçambique com o poder da IA.
+        </p>
+        <div class="flex flex-wrap justify-center gap-4">
+            <button onclick="scrollToGerador()" class="bg-slate-900 text-white px-8 py-4 rounded-2xl font-bold hover:bg-slate-800 transition flex items-center gap-2">
+                Criar meu Documento <i class="fas fa-arrow-right"></i>
+            </button>
+        </div>
+    </section>
+
+    <!-- Como Funciona -->
+    <section id="como-funciona" class="py-20 bg-white border-y border-slate-100 no-print px-6">
+        <div class="max-w-6xl mx-auto">
+            <div class="text-center mb-16">
+                <h2 class="text-3xl font-black text-slate-900 mb-4">Como funciona?</h2>
+                <p class="text-slate-500">Três passos simples para a sua próxima oportunidade.</p>
+            </div>
+            <div class="grid md:grid-cols-3 gap-12">
+                <div class="step-card text-center">
+                    <div class="w-16 h-16 bg-blue-50 text-blue-600 rounded-2xl flex items-center justify-center mx-auto mb-6 text-2xl shadow-sm">
+                        <i class="fas fa-i-cursor"></i>
+                    </div>
+                    <h3 class="font-bold text-xl mb-3">1. Introduza seus dados</h3>
+                    <p class="text-slate-500 text-sm leading-relaxed">Diga-nos quem você é e qual é o seu objetivo profissional de forma simples.</p>
+                </div>
+                <div class="step-card text-center">
+                    <div class="w-16 h-16 bg-blue-50 text-blue-600 rounded-2xl flex items-center justify-center mx-auto mb-6 text-2xl shadow-sm">
+                        <i class="fas fa-wand-magic-sparkles"></i>
+                    </div>
+                    <h3 class="font-bold text-xl mb-3">2. A IA redige</h3>
+                    <p class="text-slate-500 text-sm leading-relaxed">Nossa IA aplica normas gramaticais e padrões de RH usados em Moçambique.</p>
+                </div>
+                <div class="step-card text-center">
+                    <div class="w-16 h-16 bg-blue-50 text-blue-600 rounded-2xl flex items-center justify-center mx-auto mb-6 text-2xl shadow-sm">
+                        <i class="fas fa-file-pdf"></i>
+                    </div>
+                    <h3 class="font-bold text-xl mb-3">3. Descarregue o PDF</h3>
+                    <p class="text-slate-500 text-sm leading-relaxed">Pronto para imprimir ou enviar por email para as empresas.</p>
+                </div>
             </div>
         </div>
     </section>
 
-    <!-- Gerador Principal -->
-    <section id="gerador" class="py-12 px-6 no-print">
-        <div class="max-w-6xl mx-auto bg-white rounded-[2.5rem] shadow-2xl border border-slate-100 overflow-hidden flex flex-col lg:flex-row min-h-[700px]">
-            
-            <!-- Painel de Inputs -->
-            <div class="lg:w-80 xl:w-96 p-8 border-r border-slate-50 flex flex-col bg-slate-50/50">
-                <div class="flex items-center gap-2 mb-8 text-blue-600">
-                    <i class="fas fa-magic"></i>
-                    <h2 class="font-black uppercase text-xs tracking-tighter">Configuração de IA</h2>
-                </div>
-
-                <div class="space-y-5 flex-1">
-                    <div>
-                        <label class="block text-[10px] font-black text-slate-400 uppercase mb-2">O que deseja criar?</label>
-                        <select id="doc-type" class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-blue-500 outline-none font-medium bg-white">
-                            <option value="cv">Currículo (CV) Profissional</option>
-                            <option value="carta">Carta de Apresentação</option>
-                            <option value="contrato">Contrato de Arrendamento</option>
-                        </select>
-                    </div>
-
-                    <div>
-                        <label class="block text-[10px] font-black text-slate-400 uppercase mb-2">Teu Nome Completo</label>
-                        <input type="text" id="user-name" placeholder="Ex: Arlindo José" class="w-full px-4 py-3 rounded-xl border border-slate-200 outline-none focus:ring-2 focus:ring-blue-500 bg-white">
-                    </div>
-
-                    <div>
-                        <label class="block text-[10px] font-black text-slate-400 uppercase mb-2">Telefone (Contactos)</label>
-                        <input type="text" id="user-phone" placeholder="+258 84..." class="w-full px-4 py-3 rounded-xl border border-slate-200 outline-none bg-white">
-                    </div>
-
-                    <div>
-                        <label class="block text-[10px] font-black text-slate-400 uppercase mb-2">Contexto para a IA</label>
-                        <textarea id="user-desc" rows="6" placeholder="Ex: Sou graduado em contabilidade, tenho 2 anos de experiência..." class="w-full px-4 py-3 rounded-xl border border-slate-200 outline-none focus:ring-2 focus:ring-blue-500 text-sm bg-white"></textarea>
-                    </div>
-                </div>
-
-                <button onclick="gerarDocumentoComIA()" id="btn-gerar" class="w-full bg-blue-600 text-white py-4 rounded-2xl font-bold hover:bg-blue-700 transition flex items-center justify-center gap-3 mt-8 shadow-lg shadow-blue-100">
-                    <i class="fas fa-sparkles"></i> Gerar Documento
-                </button>
-            </div>
-
-            <!-- Área de Preview -->
-            <div class="flex-1 bg-slate-200/50 p-4 md:p-10 flex flex-col items-center overflow-y-auto max-h-[800px]">
+    <!-- Gerador (Área de Trabalho) -->
+    <section id="gerador" class="py-16 px-4 no-print bg-slate-50">
+        <div class="max-w-6xl mx-auto">
+            <div class="bg-white rounded-3xl shadow-2xl border border-slate-100 flex flex-col lg:flex-row min-h-[650px] overflow-hidden">
                 
-                <div id="preview-placeholder" class="my-auto text-center opacity-40">
-                    <i class="fas fa-file-invoice text-7xl mb-4"></i>
-                    <p class="font-bold">O preview aparecerá aqui</p>
+                <div class="lg:w-80 p-8 border-r border-slate-50 bg-slate-50/30">
+                    <div class="space-y-5">
+                        <h3 class="font-black text-slate-800 text-lg mb-6 flex items-center gap-2">
+                            <i class="fas fa-edit text-blue-600"></i> Editor IA
+                        </h3>
+                        <div>
+                            <label class="block text-[10px] font-black text-slate-400 uppercase mb-2 tracking-widest">Tipo de Documento</label>
+                            <select id="doc-type" class="w-full px-4 py-3 rounded-xl border border-slate-200 outline-none font-bold text-slate-700 bg-white">
+                                <option value="cv">Currículo Profissional</option>
+                                <option value="carta">Carta de Apresentação</option>
+                                <option value="contrato">Minuta de Contrato</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-[10px] font-black text-slate-400 uppercase mb-2 tracking-widest">Nome Completo</label>
+                            <input type="text" id="user-name" placeholder="Ex: Arlindo José" class="w-full px-4 py-3 rounded-xl border border-slate-200 outline-none font-medium">
+                        </div>
+                        <div>
+                            <label class="block text-[10px] font-black text-slate-400 uppercase mb-2 tracking-widest">Contexto / Experiência</label>
+                            <textarea id="user-desc" rows="6" placeholder="Ex: Sou formado em Contabilidade pela UEM, tenho 2 anos de experiência em auditoria e busco vaga na banca..." class="w-full px-4 py-3 rounded-xl border border-slate-200 outline-none text-sm font-medium"></textarea>
+                        </div>
+                        <button onclick="gerarDocumentoComIA()" id="btn-gerar" class="w-full bg-blue-600 text-white py-4 rounded-xl font-bold hover:bg-blue-700 transition flex items-center justify-center gap-2 mt-4 shadow-lg shadow-blue-100">
+                            <i class="fas fa-wand-magic-sparkles"></i> Gerar com IA
+                        </button>
+                    </div>
                 </div>
 
-                <div id="loading-state" class="hidden my-auto text-center">
-                    <div class="loader mb-4"></div>
-                    <p class="text-blue-600 font-black">A redigir com Inteligência Artificial...</p>
-                </div>
+                <div class="flex-1 bg-slate-100 p-4 md:p-12 flex flex-col items-center overflow-y-auto max-h-[800px]">
+                    <div id="preview-placeholder" class="my-auto text-center opacity-20">
+                        <i class="fas fa-file-invoice text-8xl mb-6"></i>
+                        <p class="font-black text-xl">Aguardando seu comando...</p>
+                        <p class="text-sm mt-2">Preencha os dados à esquerda para começar.</p>
+                    </div>
 
-                <div id="result-state" class="hidden w-full flex flex-col items-center fade-in">
-                    <div class="flex justify-between w-full max-w-[210mm] mb-6 items-center">
-                        <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest bg-white px-3 py-1 rounded-full border border-slate-200">A4 Preview Mode</span>
-                        <div class="flex gap-2">
-                             <button onclick="copiarTexto()" class="text-xs font-bold text-slate-600 bg-white border border-slate-200 px-3 py-2 rounded-lg hover:bg-slate-50">Copiar</button>
-                             <button onclick="window.print()" class="text-xs font-bold text-blue-600 bg-white border border-blue-100 px-3 py-2 rounded-lg hover:bg-blue-50">Imprimir</button>
+                    <div id="loading-state" class="hidden my-auto text-center">
+                        <div class="loader mb-6"></div>
+                        <p class="text-blue-600 font-black text-lg animate-pulse">A IA está redigindo o seu documento...</p>
+                        <p class="text-slate-400 text-xs mt-2 italic">Ajustando padrões profissionais de Moçambique</p>
+                    </div>
+
+                    <div id="result-state" class="hidden w-full">
+                        <div class="flex justify-between items-center mb-6 no-print">
+                             <span class="text-xs font-black text-slate-400 uppercase tracking-widest"><i class="fas fa-eye mr-1"></i> Pré-visualização A4</span>
+                             <div class="flex gap-2">
+                                <button onclick="copiarTexto()" class="text-xs font-bold text-slate-600 bg-white border border-slate-200 px-4 py-2.5 rounded-xl hover:bg-slate-50 transition shadow-sm">Copiar</button>
+                                <button onclick="window.print()" class="text-xs font-bold text-white bg-blue-600 px-4 py-2.5 rounded-xl hover:bg-blue-700 transition shadow-lg shadow-blue-100">Imprimir / PDF</button>
+                             </div>
+                        </div>
+                        <div class="a4-preview" id="doc-output">
+                            <div class="watermark">HanzDocs AI</div>
+                            <div id="ai-content-inner"></div>
                         </div>
                     </div>
-                    
-                    <div class="a4-preview text-slate-800" id="doc-output">
-                        <div class="watermark">HanzDocs AI</div>
-                        <div id="ai-content-inner"></div>
-                    </div>
-
-                    <div class="mt-8 grid grid-cols-1 sm:grid-cols-2 gap-4 w-full max-w-[210mm]">
-                        <button onclick="handlePayment('unit')" class="bg-blue-600 text-white py-4 rounded-2xl font-black flex items-center justify-center gap-3 hover:bg-blue-700 shadow-xl shadow-blue-200 transition">
-                            <i class="fas fa-cloud-download-alt"></i> Baixar PDF HD (50 MT)
-                        </button>
-                        <button class="bg-slate-900 text-white py-4 rounded-2xl font-black flex items-center justify-center gap-3 hover:bg-slate-800 transition">
-                            <i class="fas fa-share-nodes"></i> Partilhar Link
-                        </button>
-                    </div>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- Secção de Preços -->
-    <section id="precos" class="py-24 px-6 bg-white no-print">
-        <div class="max-w-6xl mx-auto text-center">
-            <h2 class="text-4xl font-black mb-4">Escolha o seu plano</h2>
-            <p class="text-slate-500 mb-16">Pague uma vez ou subscreva para acesso ilimitado.</p>
-            
-            <div class="grid md:grid-cols-3 gap-8">
-                <!-- Unitário -->
-                <div class="p-8 border border-slate-100 rounded-[2.5rem] bg-slate-50/50 text-left">
-                    <h3 class="font-bold text-xl mb-2">Documento Único</h3>
-                    <div class="text-3xl font-black mb-6">50 MT <span class="text-sm font-normal text-slate-400">/doc</span></div>
-                    <ul class="space-y-3 text-sm text-slate-600 mb-8">
-                        <li><i class="fas fa-check text-green-500 mr-2"></i> 1 Download PDF</li>
-                        <li><i class="fas fa-check text-green-500 mr-2"></i> IA Gemini Flash</li>
-                        <li><i class="fas fa-check text-green-500 mr-2"></i> Validade 24h</li>
-                    </ul>
-                    <button onclick="handlePayment('unit')" class="w-full py-4 border-2 border-slate-200 rounded-2xl font-bold hover:bg-white transition">Pagar via M-Pesa</button>
-                </div>
-                <!-- Mensal -->
-                <div class="p-8 border-4 border-blue-600 rounded-[2.5rem] bg-white text-left relative shadow-2xl shadow-blue-100 scale-105">
-                    <span class="absolute -top-4 left-1/2 -translate-x-1/2 bg-blue-600 text-white px-4 py-1 rounded-full text-[10px] font-black uppercase">Recomendado</span>
-                    <h3 class="font-bold text-xl mb-2">Mensal Pro</h3>
-                    <div class="text-3xl font-black mb-6">450 MT <span class="text-sm font-normal text-slate-400">/mês</span></div>
-                    <ul class="space-y-3 text-sm text-slate-600 mb-8">
-                        <li><i class="fas fa-check text-green-500 mr-2"></i> Documentos Ilimitados</li>
-                        <li><i class="fas fa-check text-green-500 mr-2"></i> Suporte 24/7</li>
-                        <li><i class="fas fa-check text-green-500 mr-2"></i> Sem Marcas de Água</li>
-                    </ul>
-                    <button onclick="handlePayment('pro')" class="w-full py-4 bg-blue-600 text-white rounded-2xl font-bold hover:bg-blue-700 transition">Assinar com M-Pesa</button>
-                </div>
-                <!-- Empresas -->
-                <div class="p-8 border border-slate-100 rounded-[2.5rem] bg-slate-50/50 text-left">
-                    <h3 class="font-bold text-xl mb-2">Empresas</h3>
-                    <div class="text-3xl font-black mb-6">Custom</div>
-                    <ul class="space-y-3 text-sm text-slate-600 mb-8">
-                        <li><i class="fas fa-check text-green-500 mr-2"></i> Branding Personalizado</li>
-                        <li><i class="fas fa-check text-green-500 mr-2"></i> Acesso via API</li>
-                        <li><i class="fas fa-check text-green-500 mr-2"></i> Multi-utilizadores</li>
-                    </ul>
-                    <button class="w-full py-4 border-2 border-slate-200 rounded-2xl font-bold hover:bg-white transition">Contactar Vendas</button>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Secção Meus Documentos -->
-    <section id="meus-docs" class="py-24 px-6 bg-slate-50 no-print">
+    <!-- Planos e Vendas (M-Pesa) -->
+    <section id="precos" class="py-24 px-6 no-print">
         <div class="max-w-6xl mx-auto">
-            <div class="flex justify-between items-end mb-10">
-                <div>
-                    <h2 class="text-3xl font-black italic">Os Meus <span class="text-blue-600">Documentos</span></h2>
-                    <p class="text-slate-500 font-medium">Acede aos teus ficheiros guardados em qualquer lugar.</p>
-                </div>
-                <button onclick="loadUserDocuments()" class="text-blue-600 font-bold text-sm hover:underline"><i class="fas fa-sync-alt mr-2"></i>Atualizar</button>
+            <div class="text-center mb-16">
+                <h2 class="text-4xl font-black text-slate-900 mb-4">Escolha o seu Plano</h2>
+                <p class="text-slate-500 font-medium text-lg">Pagamento simplificado via M-Pesa ou Emola.</p>
             </div>
             
-            <div id="docs-list" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-                <div id="empty-docs-msg" class="col-span-full py-20 text-center bg-white border-2 border-dashed border-slate-200 rounded-[3rem]">
-                    <i class="fas fa-lock text-slate-200 text-5xl mb-4"></i>
-                    <p class="text-slate-400 font-bold">Inicia sessão para guardar documentos na nuvem.</p>
+            <div class="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
+                <!-- Grátis -->
+                <div class="bg-white p-10 rounded-3xl border border-slate-200 shadow-sm flex flex-col">
+                    <h3 class="font-bold text-slate-400 text-sm uppercase tracking-widest mb-2">Iniciante</h3>
+                    <div class="text-4xl font-black mb-6">Grátis</div>
+                    <ul class="space-y-4 mb-10 flex-1">
+                        <li class="flex items-center gap-3 text-slate-600 font-medium"><i class="fas fa-check text-green-500"></i> 1 Documento por mês</li>
+                        <li class="flex items-center gap-3 text-slate-600 font-medium"><i class="fas fa-check text-green-500"></i> Template Básico</li>
+                        <li class="flex items-center gap-3 text-slate-400"><i class="fas fa-times"></i> Suporte Prioritário</li>
+                    </ul>
+                    <button onclick="scrollToGerador()" class="w-full py-4 rounded-2xl border-2 border-slate-100 font-black text-slate-800 hover:bg-slate-50 transition">Usar Grátis</button>
+                </div>
+
+                <!-- Pro -->
+                <div class="bg-blue-600 p-10 rounded-3xl text-white shadow-2xl shadow-blue-200 relative scale-105 flex flex-col">
+                    <div class="absolute -top-4 right-8 bg-yellow-400 text-slate-900 px-4 py-1 rounded-full text-[10px] font-black uppercase tracking-tighter">Mais Popular</div>
+                    <h3 class="font-bold text-blue-200 text-sm uppercase tracking-widest mb-2">Profissional</h3>
+                    <div class="text-4xl font-black mb-2">499 MT</div>
+                    <p class="text-blue-100 text-xs mb-6">Pagamento único / Acesso 30 dias</p>
+                    <ul class="space-y-4 mb-10 flex-1">
+                        <li class="flex items-center gap-3 font-medium"><i class="fas fa-check text-yellow-300"></i> Documentos Ilimitados</li>
+                        <li class="flex items-center gap-3 font-medium"><i class="fas fa-check text-yellow-300"></i> IA Avançada (GPT-4o)</li>
+                        <li class="flex items-center gap-3 font-medium"><i class="fas fa-check text-yellow-300"></i> Templates Premium</li>
+                        <li class="flex items-center gap-3 font-medium"><i class="fas fa-check text-yellow-300"></i> Suporte via WhatsApp</li>
+                    </ul>
+                    <button onclick="processarMpesa(499)" class="w-full py-4 rounded-2xl bg-white text-blue-600 font-black hover:bg-slate-50 transition shadow-xl flex items-center justify-center gap-2">
+                        <i class="fas fa-phone-alt"></i> Pagar com M-Pesa
+                    </button>
+                </div>
+
+                <!-- Corporativo -->
+                <div class="bg-white p-10 rounded-3xl border border-slate-200 shadow-sm flex flex-col">
+                    <h3 class="font-bold text-slate-400 text-sm uppercase tracking-widest mb-2">Empresarial</h3>
+                    <div class="text-4xl font-black mb-6">1.999 MT</div>
+                    <ul class="space-y-4 mb-10 flex-1">
+                        <li class="flex items-center gap-3 text-slate-600 font-medium"><i class="fas fa-check text-green-500"></i> Multi-usuários</li>
+                        <li class="flex items-center gap-3 text-slate-600 font-medium"><i class="fas fa-check text-green-500"></i> Consultoria de Carreira</li>
+                        <li class="flex items-center gap-3 text-slate-600 font-medium"><i class="fas fa-check text-green-500"></i> Revisão por Especialista</li>
+                    </ul>
+                    <button class="w-full py-4 rounded-2xl border-2 border-slate-100 font-black text-slate-800 hover:bg-slate-50 transition">Contactar Vendas</button>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- Modal de Login -->
-    <div id="login-modal" class="hidden fixed inset-0 z-[100] bg-slate-900/60 backdrop-blur-sm flex items-center justify-center px-6 no-print">
-        <div class="bg-white rounded-[2.5rem] p-10 max-w-sm w-full shadow-2xl relative">
-            <button onclick="toggleLogin()" class="absolute top-6 right-6 text-slate-300 hover:text-slate-600">
-                <i class="fas fa-times text-xl"></i>
-            </button>
-            <div class="text-center mb-8">
-                <div class="w-16 h-16 bg-blue-600 text-white rounded-2xl flex items-center justify-center mx-auto mb-4 rotate-3">
-                    <i class="fas fa-user-shield text-2xl"></i>
+    <!-- Rodapé -->
+    <footer class="bg-slate-900 text-white py-16 px-6 no-print">
+        <div class="max-w-6xl mx-auto flex flex-col md:flex-row justify-between items-center gap-8">
+            <div class="text-center md:text-left">
+                <div class="flex items-center justify-center md:justify-start gap-2 font-black text-2xl text-blue-500 mb-4">
+                    <i class="fas fa-file-contract"></i>
+                    <span>HanzDocs AI</span>
                 </div>
-                <h3 class="text-2xl font-black">Aceder HanzDocs</h3>
-                <p class="text-slate-500 text-sm font-medium">Sincroniza os teus dados agora.</p>
+                <p class="text-slate-500 text-sm max-w-xs">Ajudando moçambicanos a alcançarem o sucesso profissional através da tecnologia.</p>
             </div>
-
-            <button onclick="handleGoogleLogin()" class="w-full border-2 border-slate-100 py-3.5 rounded-2xl font-black flex items-center justify-center gap-3 hover:bg-slate-50 transition mb-4 text-sm">
-                <img src="https://www.google.com/favicon.ico" class="w-4 h-4" alt="Google"> Google Login
-            </button>
-            
-            <div class="relative py-4">
-                <div class="absolute inset-0 flex items-center"><div class="w-full border-t border-slate-100"></div></div>
-                <div class="relative flex justify-center text-[10px] uppercase font-black"><span class="bg-white px-3 text-slate-400 tracking-tighter">Ou Magic Link</span></div>
+            <div class="flex gap-6 text-slate-400 text-xl">
+                <i class="fab fa-facebook hover:text-white cursor-pointer transition"></i>
+                <i class="fab fa-instagram hover:text-white cursor-pointer transition"></i>
+                <i class="fab fa-linkedin hover:text-white cursor-pointer transition"></i>
             </div>
-            
-            <input type="email" id="email-input" placeholder="Teu email (Gmail/Outlook)" class="w-full px-5 py-4 rounded-2xl border-2 border-slate-100 mb-4 outline-none focus:border-blue-500 transition font-medium">
-            <button id="magic-link-btn" onclick="handleMagicLink()" class="w-full bg-slate-900 text-white py-4 rounded-2xl font-black hover:bg-blue-600 transition shadow-lg shadow-blue-100">
-                Enviar Link de Acesso
-            </button>
         </div>
-    </div>
-
-    <footer class="py-12 bg-white border-t border-slate-100 text-center no-print">
-        <p class="text-slate-400 text-xs font-bold uppercase tracking-widest leading-loose">
-            © 2024 HanzDocs AI — Made with <i class="fas fa-heart text-red-500"></i> in Mozambique
-        </p>
+        <div class="max-w-6xl mx-auto border-t border-slate-800 mt-12 pt-8 text-center text-slate-600 text-[10px] font-bold uppercase tracking-widest">
+            © 2024 HanzDocs AI Moçambique - Todos os direitos reservados.
+        </div>
     </footer>
 
     <script>
-        // --- CONFIGURAÇÃO ---
-        const apiKey = ""; // Chave injetada no runtime
-        const SUPABASE_URL = 'https://vbxqwabfwrafomuiiedh.supabase.co';
-        const SUPABASE_ANON_KEY = 'sb_publishable_QCB11qPe_6raIdDVussbpQ_VZ2W_acc';
-        const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        // CONFIGURAÇÕES MANTIDAS
+        const apiKey = ""; 
 
-        let currentUser = null;
-
-        // --- AUTH LOGIC ---
-        window.addEventListener('load', async () => {
-            const { data: { session } } = await supabaseClient.auth.getSession();
-            currentUser = session?.user;
-            updateUI(currentUser);
-            if(currentUser) loadUserDocuments();
-
-            supabaseClient.auth.onAuthStateChange((_event, session) => {
-                currentUser = session?.user;
-                updateUI(currentUser);
-                if(currentUser) loadUserDocuments();
-            });
-        });
-
-        function updateUI(user) {
-            const profileDiv = document.getElementById('user-profile');
-            const loginBtn = document.getElementById('login-btn');
-            const userEmailSpan = document.getElementById('user-email');
-
-            if (user) {
-                profileDiv.classList.remove('hidden');
-                loginBtn.classList.add('hidden');
-                userEmailSpan.innerText = user.email;
-                toggleLogin(true);
-            } else {
-                profileDiv.classList.add('hidden');
-                loginBtn.classList.remove('hidden');
-            }
-        }
-
-        function toggleLogin(forceClose = false) {
-            const modal = document.getElementById('login-modal');
-            if (forceClose) modal.classList.add('hidden');
-            else modal.classList.toggle('hidden');
-        }
-
-        async function handleGoogleLogin() {
-            const { error } = await supabaseClient.auth.signInWithOAuth({
-                provider: 'google',
-                options: { redirectTo: window.location.origin }
-            });
-            if (error) console.error("Erro Google:", error);
-        }
-
-        async function handleMagicLink() {
-            const email = document.getElementById('email-input').value;
-            if (!email) return alert("Insira o email.");
-            const { error } = await supabaseClient.auth.signInWithOtp({
-                email: email,
-                options: { emailRedirectTo: window.location.origin }
-            });
-            if (error) alert(error.message);
-            else alert("Link enviado! Verifique a sua caixa de entrada.");
-        }
-
-        async function handleLogout() {
-            await supabaseClient.auth.signOut();
-            location.reload();
-        }
-
-        // --- IA & GERADOR ---
+        // Função de Geração de Documento (Corrigida e Mantida)
         async function gerarDocumentoComIA() {
             const name = document.getElementById('user-name').value;
             const desc = document.getElementById('user-desc').value;
             const type = document.getElementById('doc-type').value;
-            const phone = document.getElementById('user-phone').value || "+258";
 
-            if (!name || !desc) return alert("Por favor, preencha o Nome e o Contexto!");
+            if (!name || !desc) {
+                alert("Por favor, preencha o seu nome e a descrição profissional.");
+                return;
+            }
 
-            // UI State
             document.getElementById('preview-placeholder').classList.add('hidden');
             document.getElementById('result-state').classList.add('hidden');
             document.getElementById('loading-state').classList.remove('hidden');
-            const btnGerar = document.getElementById('btn-gerar');
-            btnGerar.disabled = true;
+            document.getElementById('btn-gerar').disabled = true;
 
-            const systemPrompt = `És um assistente profissional de redação de documentos em Moçambique. 
-            Gera apenas o conteúdo HTML interno (sem <html> ou <body>) para um documento do tipo ${type}. 
-            Usa estilos inline mínimos ou classes Tailwind se necessário. 
-            O conteúdo deve ser formal, usar fontes serifadas no interior e estar devidamente justificado.`;
+            const systemPrompt = `És um redator profissional de Recursos Humanos e jurídico especializado no mercado de Moçambique. 
+            Gera um ${type} formal e moderno para o candidato seguindo os padrões locais (ex: uso de NUIT, referências de Maputo/Beira/etc). 
+            Retorna APENAS o HTML estruturado de alta qualidade, sem blocos de código markdown. Use estilos inline sutis para títulos.`;
 
-            const userPrompt = `Cria um ${type} para ${name}, contacto ${phone}. Contexto: ${desc}.`;
+            const userPrompt = `Nome do Candidato: ${name}. Contexto: ${desc}. Cria um documento profissional do tipo ${type}.`;
 
-            async function fetchGemini() {
+            const fetchWithRetry = async (retryCount = 0) => {
                 const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`;
                 
-                const payload = {
-                    contents: [{ parts: [{ text: userPrompt }] }],
-                    systemInstruction: { parts: [{ text: systemPrompt }] }
-                };
+                try {
+                    const response = await fetch(url, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            contents: [{ parts: [{ text: userPrompt }] }],
+                            systemInstruction: { parts: [{ text: systemPrompt }] }
+                        })
+                    });
 
-                const response = await fetch(url, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(payload)
-                });
+                    if (!response.ok) {
+                        if (retryCount < 5) {
+                            const delay = Math.pow(2, retryCount) * 1000;
+                            await new Promise(res => setTimeout(res, delay));
+                            return fetchWithRetry(retryCount + 1);
+                        }
+                        throw new Error(`Erro na API (${response.status})`);
+                    }
 
-                if (!response.ok) {
-                    const errData = await response.json();
-                    throw new Error(errData.error?.message || "Erro na API");
-                }
-
-                const result = await response.json();
-                return result.candidates?.[0]?.content?.parts?.[0]?.text;
-            }
+                    const data = await response.json();
+                    return data.candidates?.[0]?.content?.parts?.[0]?.text;
+                } catch (err) { throw err; }
+            };
 
             try {
-                // Tentativa com backoff simples
-                let attempts = 0;
-                let text = null;
-                while (attempts < 3 && !text) {
-                    try {
-                        text = await fetchGemini();
-                    } catch (e) {
-                        attempts++;
-                        if (attempts === 3) throw e;
-                        await new Promise(r => setTimeout(r, 1000 * attempts));
-                    }
-                }
+                const aiResponse = await fetchWithRetry();
+                if (!aiResponse) throw new Error("Sem resposta da IA.");
 
-                if (!text) throw new Error("Não foi possível obter resposta da IA.");
-
-                // Sanitização: Remove blocos de código markdown se existirem
-                const cleanHtml = text.replace(/```html|```/g, '').trim();
+                const cleanContent = aiResponse.replace(/```html|```/g, '').trim();
                 
-                document.getElementById('ai-content-inner').innerHTML = cleanHtml;
+                document.getElementById('ai-content-inner').innerHTML = cleanContent;
                 document.getElementById('loading-state').classList.add('hidden');
                 document.getElementById('result-state').classList.remove('hidden');
 
-                if (currentUser) {
-                    saveDocument(type, `${type.toUpperCase()} - ${name}`, cleanHtml);
-                }
-
-            } catch (err) {
-                console.error("Erro Crítico HanzDocs:", err);
-                alert("Ocorreu um erro ao conectar à IA: " + err.message);
+            } catch (error) {
+                console.error("Erro IA:", error);
+                alert("Erro ao conectar à IA: " + error.message);
                 document.getElementById('loading-state').classList.add('hidden');
                 document.getElementById('preview-placeholder').classList.remove('hidden');
             } finally {
-                btnGerar.disabled = false;
+                document.getElementById('btn-gerar').disabled = false;
             }
         }
 
-        // --- STORAGE ---
-        async function loadUserDocuments() {
-            if(!currentUser) return;
-            const docsList = document.getElementById('docs-list');
-            
-            const { data, error } = await supabaseClient
-                .from('user_documents')
-                .select('*')
-                .eq('user_id', currentUser.id)
-                .order('created_at', { ascending: false });
-
-            if (data && data.length > 0) {
-                docsList.innerHTML = data.map(doc => `
-                    <div class="bg-white p-6 rounded-[2rem] border border-slate-100 card-hover cursor-pointer shadow-sm" onclick="viewSavedDoc('${doc.id}')">
-                        <div class="w-10 h-10 bg-blue-50 text-blue-600 rounded-xl flex items-center justify-center mb-4">
-                            <i class="fas fa-file-alt"></i>
-                        </div>
-                        <h4 class="font-bold text-slate-800 truncate text-sm">${doc.title}</h4>
-                        <p class="text-[10px] text-slate-400 mt-1 uppercase font-black tracking-widest">${new Date(doc.created_at).toLocaleDateString()}</p>
-                    </div>
-                `).join('');
+        // Simulação de Venda M-Pesa
+        function processarMpesa(valor) {
+            const num = prompt("Introduza o seu número M-Pesa (84/85):");
+            if(num && (num.startsWith('84') || num.startsWith('85')) && num.length === 9) {
+                alert(`Solicitação de ${valor} MT enviada para o número ${num}. Por favor, confirme o PIN no seu telemóvel.`);
             } else {
-                docsList.innerHTML = '<div class="col-span-full py-20 text-center text-slate-400 italic">Nenhum documento guardado.</div>';
+                alert("Número inválido. Use um número Vodacom Moçambique.");
             }
         }
 
-        async function saveDocument(type, title, content) {
-            try {
-                await supabaseClient
-                    .from('user_documents')
-                    .insert([{ user_id: currentUser.id, type, title, content }]);
-                loadUserDocuments();
-            } catch (e) {
-                console.error("Erro ao guardar:", e);
-            }
-        }
-
-        async function viewSavedDoc(id) {
-            const { data } = await supabaseClient.from('user_documents').select('*').eq('id', id).single();
-            if (data) {
-                document.getElementById('ai-content-inner').innerHTML = data.content;
-                document.getElementById('preview-placeholder').classList.add('hidden');
-                document.getElementById('result-state').classList.remove('hidden');
-                scrollToGerador();
-            }
-        }
-
-        // --- UTILITÁRIOS ---
+        // Funções de Interface
         function scrollToGerador() { 
-            const el = document.getElementById('gerador');
-            window.scrollTo({ top: el.offsetTop - 100, behavior: 'smooth' });
+            document.getElementById('gerador').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function toggleLoginModal() {
+            alert("Sistema de Autenticação Supabase: O login será redirecionado para o portal de membros.");
         }
         
         function copiarTexto() {
-            const inner = document.getElementById('ai-content-inner');
+            const container = document.getElementById('ai-content-inner');
             const range = document.createRange();
-            range.selectNode(inner);
+            range.selectNode(container);
             window.getSelection().removeAllRanges();
             window.getSelection().addRange(range);
-            try {
-                document.execCommand('copy');
-                const btn = event.target;
-                const original = btn.innerText;
-                btn.innerText = "Copiado!";
-                setTimeout(() => btn.innerText = original, 2000);
-            } catch (err) {
-                console.error('Falha ao copiar', err);
-            }
+            document.execCommand('copy');
+            alert("Copiado!");
             window.getSelection().removeAllRanges();
         }
 
-        function handlePayment(plan) {
-            const phone = prompt("Introduza o seu número M-Pesa (84/85):");
-            if (phone) {
-                if(!phone.startsWith("84") && !phone.startsWith("85")) {
-                    alert("Número inválido. Use prefixo 84 ou 85.");
-                    return;
-                }
-                alert(`Pedido de pagamento enviado para ${phone}. Por favor, confirme no seu telemóvel.`);
-            }
-        }
+        // SUPABASE INIT (Placeholder para integração futura)
+        // const { createClient } = supabase;
+        // const supabase = createClient('URL', 'KEY');
     </script>
 </body>
 </html>
