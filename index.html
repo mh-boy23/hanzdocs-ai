@@ -10,6 +10,7 @@
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap');
         body { font-family: 'Inter', sans-serif; }
         .glass { background: rgba(255, 255, 255, 0.8); backdrop-filter: blur(10px); }
+        .card-hover:hover { transform: translateY(-5px); transition: all 0.3s ease; }
     </style>
 </head>
 <body class="bg-slate-50 text-slate-900">
@@ -20,15 +21,19 @@
             <i class="fas fa-file-alt"></i>
             <span>HanzDocs AI</span>
         </div>
+        <div class="hidden md:flex gap-6 text-sm font-semibold text-slate-600">
+            <a href="#servicos" class="hover:text-blue-600 transition">Serviços</a>
+            <a href="#faq" class="hover:text-blue-600 transition">FAQ</a>
+        </div>
         <div>
             <button onclick="document.getElementById('form-espera').scrollIntoView({behavior:'smooth'})" class="bg-blue-600 text-white px-6 py-2 rounded-full font-semibold hover:bg-blue-700 transition shadow-lg shadow-blue-200">
-                Aviso de Lançamento
+                Acesso Prioritário
             </button>
         </div>
     </nav>
 
     <!-- Hero Section -->
-    <section class="pt-20 pb-32 px-6 text-center">
+    <section class="pt-20 pb-20 px-6 text-center">
         <div class="max-w-4xl mx-auto">
             <span class="inline-block bg-blue-100 text-blue-700 px-4 py-1 rounded-full text-sm font-bold mb-6">
                 Brevemente em Moçambique 🇲🇿
@@ -43,23 +48,76 @@
             <!-- Formulário de Espera -->
             <div id="form-espera" class="max-w-md mx-auto bg-white p-8 rounded-3xl shadow-2xl border border-slate-100">
                 <h3 class="text-lg font-bold mb-4">Seja o primeiro a saber do lançamento:</h3>
-                <div class="space-y-4">
-                    <input type="text" placeholder="Seu Nome" class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-blue-500 outline-none transition">
-                    <input type="email" placeholder="Seu Email ou Telefone" class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-blue-500 outline-none transition">
-                    <button class="w-full bg-blue-600 text-white py-4 rounded-xl font-bold hover:bg-blue-700 transition shadow-xl shadow-blue-100">
-                        Quero Acesso Prioritário
-                    </button>
+                <form onsubmit="event.preventDefault(); alert('Obrigado! Entraremos em contacto brevemente.');">
+                    <div class="space-y-4">
+                        <input type="text" required placeholder="Seu Nome" class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-blue-500 outline-none transition">
+                        <input type="email" required placeholder="Seu Email ou WhatsApp" class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-blue-500 outline-none transition">
+                        <button type="submit" class="w-full bg-blue-600 text-white py-4 rounded-xl font-bold hover:bg-blue-700 transition shadow-xl shadow-blue-100">
+                            Quero Acesso Prioritário
+                        </button>
+                    </div>
+                </form>
+                <p class="text-xs text-slate-400 mt-4 text-center">Prometemos não enviar spam. Apenas o link de acesso.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Secção de Serviços -->
+    <section id="servicos" class="py-20 bg-white px-6">
+        <div class="max-w-6xl mx-auto">
+            <h2 class="text-3xl font-bold text-center mb-12">O que poderá criar com o HanzDocs?</h2>
+            <div class="grid md:grid-cols-3 gap-8">
+                <div class="p-8 rounded-2xl border border-slate-100 bg-slate-50 card-hover text-center">
+                    <div class="w-12 h-12 bg-blue-600 text-white rounded-lg flex items-center justify-center mx-auto mb-4">
+                        <i class="fas fa-user-tie text-xl"></i>
+                    </div>
+                    <h3 class="font-bold text-xl mb-2">Currículos (CV)</h3>
+                    <p class="text-slate-500 text-sm">Templates modernos aprovados por recrutadores em Moçambique.</p>
                 </div>
-                <p class="text-xs text-slate-400 mt-4">Prometemos não enviar spam. Apenas o link de acesso.</p>
+                <div class="p-8 rounded-2xl border border-slate-100 bg-slate-50 card-hover text-center">
+                    <div class="w-12 h-12 bg-blue-600 text-white rounded-lg flex items-center justify-center mx-auto mb-4">
+                        <i class="fas fa-envelope-open-text text-xl"></i>
+                    </div>
+                    <h3 class="font-bold text-xl mb-2">Cartas Formais</h3>
+                    <p class="text-slate-500 text-sm">Cartas de motivação, pedido de estágio ou recomendação.</p>
+                </div>
+                <div class="p-8 rounded-2xl border border-slate-100 bg-slate-50 card-hover text-center">
+                    <div class="w-12 h-12 bg-blue-600 text-white rounded-lg flex items-center justify-center mx-auto mb-4">
+                        <i class="fas fa-file-signature text-xl"></i>
+                    </div>
+                    <h3 class="font-bold text-xl mb-2">Contratos</h3>
+                    <p class="text-slate-500 text-sm">Modelos de compra e venda ou aluguer conforme a lei local.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- FAQ Section -->
+    <section id="faq" class="py-20 px-6">
+        <div class="max-w-3xl mx-auto">
+            <h2 class="text-3xl font-bold text-center mb-12">Dúvidas Frequentes</h2>
+            <div class="space-y-6">
+                <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-100">
+                    <h4 class="font-bold text-blue-600">Como funciona o pagamento?</h4>
+                    <p class="text-slate-600 text-sm mt-2">Poderá pagar por cada documento individual ou assinar um plano mensal via M-Pesa de forma rápida.</p>
+                </div>
+                <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-100">
+                    <h4 class="font-bold text-blue-600">Os documentos são válidos legalmente?</h4>
+                    <p class="text-slate-600 text-sm mt-2">Sim, os nossos templates de contratos seguem as bases da Lei Laboral e do Código Civil de Moçambique.</p>
+                </div>
             </div>
         </div>
     </section>
 
     <!-- Rodapé -->
     <footer class="py-12 border-t border-slate-200 text-center text-slate-500 text-sm">
-        <p>© 2024 HanzDocs AI - Criado para profissionais moçambicanos.</p>
+        <div class="mb-4 flex justify-center gap-4 text-xl">
+            <a href="#" class="hover:text-blue-600"><i class="fab fa-facebook"></i></a>
+            <a href="#" class="hover:text-blue-600"><i class="fab fa-instagram"></i></a>
+            <a href="#" class="hover:text-blue-600"><i class="fab fa-linkedin"></i></a>
+        </div>
+        <p>© 2024 HanzDocs AI - Criado para elevar o profissionalismo em Moçambique.</p>
     </footer>
 
 </body>
-
 </html>
