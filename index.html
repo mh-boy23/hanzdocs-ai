@@ -24,6 +24,14 @@
             display: inline-block;
         }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+        /* Estilo para simular papel A4 no preview */
+        .a4-preview {
+            background: white;
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+            line-height: 1.5;
+            font-family: 'Times New Roman', serif;
+        }
     </style>
 </head>
 <body class="bg-slate-50 text-slate-900">
@@ -101,55 +109,73 @@
 
     <!-- Gerador Interativo -->
     <section id="gerador" class="py-12 px-6">
-        <div class="max-w-5xl mx-auto bg-white rounded-[2.5rem] shadow-2xl border border-slate-100 overflow-hidden flex flex-col md:flex-row">
+        <div class="max-w-6xl mx-auto bg-white rounded-[2.5rem] shadow-2xl border border-slate-100 overflow-hidden flex flex-col lg:flex-row">
             <!-- Formulário -->
-            <div class="md:w-1/2 p-10 border-r border-slate-50">
-                <h2 class="text-2xl font-bold mb-6">Criação Instantânea</h2>
+            <div class="lg:w-1/3 p-8 border-r border-slate-50">
+                <h2 class="text-2xl font-bold mb-6">Configurar Documento</h2>
                 <div id="form-content" class="space-y-4">
                     <div>
-                        <label class="block text-sm font-bold text-slate-700 mb-2">O que deseja criar?</label>
+                        <label class="block text-sm font-bold text-slate-700 mb-2">Tipo de Documento</label>
                         <select id="doc-type" class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-blue-500 outline-none">
                             <option value="cv">Currículo Profissional</option>
                             <option value="carta">Carta de Motivação</option>
-                            <option value="contrato">Contrato de Aluguer</option>
+                            <option value="contrato">Contrato de Aluguer Simples</option>
                         </select>
                     </div>
                     <div>
-                        <label class="block text-sm font-bold text-slate-700 mb-2">Seu Nome Completo</label>
+                        <label class="block text-sm font-bold text-slate-700 mb-2">Nome Completo</label>
                         <input type="text" id="user-name" placeholder="Ex: Arlindo José" class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-blue-500 outline-none">
                     </div>
                     <div>
-                        <label class="block text-sm font-bold text-slate-700 mb-2">Breve descrição (Área ou objetivo)</label>
-                        <textarea id="user-desc" rows="3" placeholder="Ex: Sou graduado em contabilidade e procuro estágio..." class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-blue-500 outline-none"></textarea>
+                        <label class="block text-sm font-bold text-slate-700 mb-2">Telefone / Contacto</label>
+                        <input type="text" id="user-phone" placeholder="Ex: +258 84 000 0000" class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-blue-500 outline-none">
                     </div>
-                    <button onclick="simularGeracao()" class="w-full bg-blue-600 text-white py-4 rounded-xl font-bold hover:bg-blue-700 transition flex items-center justify-center gap-3">
-                        <i class="fas fa-magic"></i> Gerar com IA
+                    <div>
+                        <label class="block text-sm font-bold text-slate-700 mb-2">Resumo de Experiência / Contexto</label>
+                        <textarea id="user-desc" rows="4" placeholder="Descreva brevemente o seu objetivo ou os detalhes para o contrato..." class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-blue-500 outline-none"></textarea>
+                    </div>
+                    <button onclick="gerarDocumentoComIA()" class="w-full bg-blue-600 text-white py-4 rounded-xl font-bold hover:bg-blue-700 transition flex items-center justify-center gap-3">
+                        <i class="fas fa-magic"></i> Gerar Documento
                     </button>
                 </div>
             </div>
 
-            <!-- Resultado / Preview -->
-            <div class="md:w-1/2 bg-slate-50 p-10 flex flex-col items-center justify-center min-h-[400px]">
-                <div id="preview-placeholder" class="text-center px-6">
+            <!-- Resultado / Preview Estilizado -->
+            <div class="lg:w-2/3 bg-slate-100 p-4 md:p-8 flex flex-col items-center">
+                
+                <div id="preview-placeholder" class="text-center py-20">
                     <div class="w-20 h-20 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4 text-blue-600">
-                        <i class="fas fa-robot text-3xl"></i>
+                        <i class="fas fa-file-signature text-3xl"></i>
                     </div>
-                    <p class="text-slate-500 font-medium">Preencha os dados e a nossa IA redigirá o documento ideal para si.</p>
+                    <p class="text-slate-500 font-medium">Os seus dados aparecerão aqui num formato pronto para imprimir.</p>
                 </div>
 
-                <div id="loading-state" class="hidden text-center">
+                <div id="loading-state" class="hidden text-center py-20">
                     <div class="loader mb-4"></div>
-                    <p class="text-blue-600 font-bold">A redigir documento...</p>
-                    <p class="text-xs text-slate-400">Seguindo normas moçambicanas</p>
+                    <p class="text-blue-600 font-bold">A redigir com Inteligência Artificial...</p>
                 </div>
 
-                <div id="result-state" class="hidden w-full h-full flex flex-col">
-                    <div class="bg-white border border-slate-200 p-6 rounded-xl shadow-sm text-[10px] font-serif text-slate-700 flex-1 overflow-auto mb-4" id="doc-output">
-                        <!-- Texto gerado -->
+                <div id="result-state" class="hidden w-full flex flex-col items-center">
+                    <div class="flex justify-between w-full max-w-[210mm] mb-4">
+                        <span class="text-xs font-bold text-slate-400 uppercase tracking-widest">Digital Preview (A4)</span>
+                        <div class="flex gap-2">
+                            <button onclick="copiarTexto()" class="text-xs bg-white border border-slate-200 px-3 py-1 rounded-lg hover:bg-slate-50 transition">Copiar Texto</button>
+                        </div>
                     </div>
-                    <button id="download-btn" onclick="handleDownload()" class="w-full bg-slate-900 text-white py-3 rounded-xl font-bold flex items-center justify-center gap-2">
-                        <i class="fas fa-download"></i> Baixar em PDF
-                    </button>
+                    
+                    <!-- Simulação de Folha A4 -->
+                    <div class="a4-preview w-full max-w-[210mm] min-h-[297mm] p-[20mm] text-slate-800 text-sm overflow-hidden" id="doc-output">
+                        <!-- Conteúdo Gerado -->
+                    </div>
+
+                    <div class="mt-8 grid grid-cols-1 md:grid-cols-2 gap-4 w-full max-w-[210mm]">
+                        <button onclick="handlePayment('unit')" class="bg-blue-600 text-white py-4 rounded-xl font-bold flex items-center justify-center gap-2 hover:bg-blue-700 shadow-xl shadow-blue-200">
+                            <i class="fas fa-file-pdf"></i> Remover Marca de Água (50 MT)
+                        </button>
+                        <button onclick="window.print()" class="bg-slate-900 text-white py-4 rounded-xl font-bold flex items-center justify-center gap-2 hover:bg-slate-800">
+                            <i class="fas fa-print"></i> Imprimir Rascunho
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -157,18 +183,15 @@
 
     <!-- Planos de Preço -->
     <section id="precos" class="py-24 px-6 bg-slate-900 text-white">
-        <div class="max-w-6xl mx-auto">
-            <div class="text-center mb-16">
-                <h2 class="text-4xl font-bold mb-4">Acesso Simples e Justo</h2>
-                <p class="text-slate-400">Pague apenas pelo que precisar ou assine para acesso ilimitado.</p>
-            </div>
-            <div class="grid md:grid-cols-3 gap-8">
+        <div class="max-w-6xl mx-auto text-center">
+            <h2 class="text-4xl font-bold mb-16">Planos Adaptados para Moçambique</h2>
+            <div class="grid md:grid-cols-3 gap-8 text-left">
                 <!-- Unitário -->
                 <div class="bg-slate-800 p-8 rounded-3xl border border-slate-700 card-hover">
                     <h3 class="text-xl font-bold mb-2 text-blue-400">Documento Único</h3>
                     <div class="text-4xl font-bold mb-6">50 MT <span class="text-sm font-normal text-slate-400">/doc</span></div>
                     <ul class="space-y-3 mb-8 text-sm text-slate-300">
-                        <li><i class="fas fa-check text-green-500 mr-2"></i> 1 PDF Profissional</li>
+                        <li><i class="fas fa-check text-green-500 mr-2"></i> PDF Sem Marca de Água</li>
                         <li><i class="fas fa-check text-green-500 mr-2"></i> Revisão de IA básica</li>
                         <li><i class="fas fa-check text-green-500 mr-2"></i> Pagamento M-Pesa</li>
                     </ul>
@@ -186,16 +209,16 @@
                     </ul>
                     <button onclick="handlePayment('pro')" class="w-full bg-white text-blue-600 py-3 rounded-xl font-bold hover:bg-slate-100 transition shadow-xl">Assinar com M-Pesa</button>
                 </div>
-                <!-- Business -->
-                <div class="bg-slate-800 p-8 rounded-3xl border border-slate-700 card-hover">
-                    <h3 class="text-xl font-bold mb-2 text-blue-400">Empresarial</h3>
-                    <div class="text-4xl font-bold mb-6">Sob Consulta</div>
+                <!-- Grátis -->
+                <div class="bg-slate-800 p-8 rounded-3xl border border-slate-700 card-hover opacity-75">
+                    <h3 class="text-xl font-bold mb-2 text-slate-400">Free Tier</h3>
+                    <div class="text-4xl font-bold mb-6">0 MT <span class="text-sm font-normal text-slate-400">/sempre</span></div>
                     <ul class="space-y-3 mb-8 text-sm text-slate-300">
-                        <li><i class="fas fa-check text-green-500 mr-2"></i> API para Empresas</li>
-                        <li><i class="fas fa-check text-green-500 mr-2"></i> Gestão de RH</li>
-                        <li><i class="fas fa-check text-green-500 mr-2"></i> Contratos Customizados</li>
+                        <li><i class="fas fa-check text-slate-500 mr-2"></i> Geração de Texto</li>
+                        <li><i class="fas fa-times text-red-500 mr-2"></i> Marca de Água no PDF</li>
+                        <li><i class="fas fa-check text-slate-500 mr-2"></i> Rascunhos Ilimitados</li>
                     </ul>
-                    <button class="w-full py-3 rounded-xl border border-slate-600 font-bold hover:bg-slate-700 transition">Contactar Equipa</button>
+                    <button disabled class="w-full py-3 rounded-xl border border-slate-600 font-bold text-slate-500 cursor-not-allowed">Já Ativo</button>
                 </div>
             </div>
         </div>
@@ -207,10 +230,9 @@
     </footer>
 
     <script>
-        // --- CONFIGURAÇÃO SUPABASE REAL ---
+        // --- CONFIGURAÇÃO SUPABASE ---
         const SUPABASE_URL = 'https://vbxqwabfwrafomuiiedh.supabase.co';
         const SUPABASE_ANON_KEY = 'sb_publishable_QCB11qPe_6raIdDVussbpQ_VZ2W_acc';
-        
         const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
         window.onload = async () => {
@@ -232,7 +254,6 @@
                 loginBtn.classList.add('hidden');
                 userEmailSpan.innerText = user.email;
                 toggleLogin(true);
-                console.log("Logado com sucesso no projeto mh-boy23");
             } else {
                 profileDiv.classList.add('hidden');
                 loginBtn.classList.remove('hidden');
@@ -246,49 +267,24 @@
         }
 
         async function handleGoogleLogin() {
-            try {
-                const { error } = await supabaseClient.auth.signInWithOAuth({
-                    provider: 'google',
-                    options: { redirectTo: window.location.origin }
-                });
-                
-                if (error) {
-                    // Trata especificamente o erro de provedor não habilitado
-                    if (error.message.includes("provider is not enabled") || error.message.includes("Unsupported provider")) {
-                        alert("O login com Google não está ativo para este projeto no Supabase.\n\nPor favor, utilize o 'Magic Link' (Email) para aceder à sua conta de forma segura.");
-                    } else {
-                        alert("Erro Google: " + error.message);
-                    }
-                }
-            } catch (err) {
-                console.error("Erro inesperado:", err);
-            }
+            const { error } = await supabaseClient.auth.signInWithOAuth({
+                provider: 'google',
+                options: { redirectTo: window.location.origin }
+            });
+            if (error) alert("Use o Magic Link. O Google ainda requer configuração de Client ID.");
         }
 
         async function handleMagicLink() {
             const email = document.getElementById('email-input').value;
-            const btn = document.getElementById('magic-link-btn');
+            if (!email) { alert("Introduza o seu email."); return; }
             
-            if (!email) { alert("Por favor, introduza o seu email."); return; }
-            
-            btn.innerText = "A processar...";
-            btn.disabled = true;
-
             const { error } = await supabaseClient.auth.signInWithOtp({
                 email: email,
                 options: { emailRedirectTo: window.location.origin }
             });
 
-            if (error) {
-                alert("Erro ao enviar link: " + error.message);
-                btn.innerText = "Receber Link por Email";
-                btn.disabled = false;
-            } else {
-                alert("Verifique o seu email! Enviamos um link de acesso para " + email);
-                toggleLogin(true);
-                btn.innerText = "Receber Link por Email";
-                btn.disabled = false;
-            }
+            if (error) alert("Erro: " + error.message);
+            else alert("Link enviado! Verifique o seu email.");
         }
 
         async function handleLogout() {
@@ -296,25 +292,30 @@
             location.reload();
         }
 
-        function handleDownload() {
-            alert("Preparando PDF... Esta funcionalidade requer conexão com servidor de documentos.");
-        }
-
         function handlePayment(plan) {
             const phone = prompt("Digite o seu número M-Pesa para pagamento:");
-            if (phone) alert(`Pedido enviado para ${phone}. Confirme a transação no seu telemóvel.`);
+            if (phone) alert(`Solicitação enviada para ${phone}. Confirme no seu telemóvel.`);
         }
 
-        function simularGeracao() {
+        function copiarTexto() {
+            const text = document.getElementById('doc-output').innerText;
+            navigator.clipboard.writeText(text);
+            alert("Texto copiado para a área de transferência!");
+        }
+
+        // LÓGICA DE GERAÇÃO "IA" (Simulada para esta fase)
+        function gerarDocumentoComIA() {
             const name = document.getElementById('user-name').value;
             const desc = document.getElementById('user-desc').value;
             const type = document.getElementById('doc-type').value;
+            const phone = document.getElementById('user-phone').value || "+258 8X XXX XXXX";
 
             if (!name || !desc) {
-                alert("Preencha todos os campos para gerar o documento.");
+                alert("Por favor, preencha o seu nome e a descrição do documento.");
                 return;
             }
 
+            // UI Feedback
             document.getElementById('preview-placeholder').classList.add('hidden');
             document.getElementById('result-state').classList.add('hidden');
             document.getElementById('loading-state').classList.remove('hidden');
@@ -323,17 +324,90 @@
                 document.getElementById('loading-state').classList.add('hidden');
                 document.getElementById('result-state').classList.remove('hidden');
                 
-                let texto = "";
+                const output = document.getElementById('doc-output');
+                let htmlContent = "";
+
                 if(type === 'cv') {
-                    texto = `<strong>${name.toUpperCase()}</strong><br>Maputo, Moçambique<hr><br><strong>OBJECTIVO:</strong><br>${desc}`;
+                    htmlContent = `
+                        <div style="text-align: center; margin-bottom: 30px;">
+                            <h1 style="font-size: 24pt; font-weight: bold; margin-bottom: 5px;">${name.toUpperCase()}</h1>
+                            <p>${phone} | Moçambique | Email: [Seu Email]</p>
+                        </div>
+                        <div style="margin-bottom: 20px;">
+                            <h2 style="border-bottom: 1.5pt solid black; font-size: 14pt; font-weight: bold;">PERFIL PROFISSIONAL</h2>
+                            <p style="margin-top: 10px; text-align: justify;">${desc}</p>
+                        </div>
+                        <div style="margin-bottom: 20px;">
+                            <h2 style="border-bottom: 1.5pt solid black; font-size: 14pt; font-weight: bold;">FORMAÇÃO ACADÉMICA</h2>
+                            <p style="margin-top: 5px;"><strong>Licenciatura / Bacharelato</strong> - [Nome da Instituição]</p>
+                            <p style="font-size: 10pt; color: #555;">Conclusão: [Ano]</p>
+                        </div>
+                        <div style="margin-bottom: 20px;">
+                            <h2 style="border-bottom: 1.5pt solid black; font-size: 14pt; font-weight: bold;">COMPETÊNCIAS</h2>
+                            <ul style="margin-top: 5px; margin-left: 20px; list-style-type: disc;">
+                                <li>Capacidade Analítica e Resolução de Problemas</li>
+                                <li>Domínio de Ferramentas Digitais</li>
+                                <li>Excelente Comunicação Escrita e Verbal</li>
+                            </ul>
+                        </div>
+                    `;
                 } else if(type === 'carta') {
-                    texto = `Exmos. Srs.,<br><br>Eu, <strong>${name}</strong>, candidato-me à vaga...`;
+                    const dataAtual = new Date().toLocaleDateString('pt-PT');
+                    htmlContent = `
+                        <div style="text-align: right; margin-bottom: 40px;">
+                            <p>Moçambique, ${dataAtual}</p>
+                        </div>
+                        <div style="margin-bottom: 40px;">
+                            <p>À Direcção de Recursos Humanos</p>
+                            <p><strong>[Nome da Empresa]</strong></p>
+                            <p>Maputo / Beira / Nampula</p>
+                        </div>
+                        <div style="margin-bottom: 20px;">
+                            <p><strong>Assunto: Candidatura à vaga de [Nome da Vaga]</strong></p>
+                        </div>
+                        <p style="text-align: justify; margin-bottom: 15px;">Exmos. Senhores,</p>
+                        <p style="text-align: justify; margin-bottom: 15px;">
+                            Eu, <strong>${name}</strong>, venho por este meio manifestar o meu profundo interesse em integrar a vossa equipa. 
+                            Com base no meu perfil: ${desc}, acredito possuir as competências necessárias para agregar valor imediato à vossa organização.
+                        </p>
+                        <p style="text-align: justify; margin-bottom: 15px;">
+                            Estou disponível para uma entrevista onde poderei detalhar como a minha experiência pode contribuir para o crescimento dos vossos projectos.
+                        </p>
+                        <div style="margin-top: 50px; text-align: center;">
+                            <p>Atentamente,</p>
+                            <div style="margin: 20px auto; border-top: 1pt solid black; width: 250px;"></div>
+                            <p><strong>${name}</strong></p>
+                            <p>${phone}</p>
+                        </div>
+                    `;
                 } else {
-                    texto = `<strong>CONTRATO DE ALUGUER</strong><br><br>Entre o proprietário e <strong>${name}</strong>...`;
+                    htmlContent = `
+                        <div style="text-align: center; margin-bottom: 30px;">
+                            <h1 style="font-size: 18pt; font-weight: bold;">CONTRATO DE ARRENDAMENTO PARA HABITAÇÃO</h1>
+                        </div>
+                        <p style="text-align: justify; margin-bottom: 15px;">
+                            <strong>PRIMEIRO OUTORGANTE:</strong> [Nome do Senhorio], portador do BI nº [Número], residente em Moçambique.
+                        </p>
+                        <p style="text-align: justify; margin-bottom: 15px;">
+                            <strong>SEGUNDO OUTORGANTE:</strong> <strong>${name}</strong>, portador do BI nº [Número], doravante designado como Arrendatário.
+                        </p>
+                        <p style="text-align: justify; margin-bottom: 15px;">
+                            As partes acordam as seguintes cláusulas:
+                        </p>
+                        <div style="margin-left: 10px;">
+                            <p><strong>CLÁUSULA 1ª:</strong> O objeto deste contrato é o imóvel localizado em: ${desc}.</p>
+                            <p><strong>CLÁUSULA 2ª:</strong> O valor mensal do aluguer é de [Valor] MT, a serem pagos até ao dia 5 de cada mês.</p>
+                            <p><strong>CLÁUSULA 3ª:</strong> O presente contrato tem a validade de 12 meses, renováveis.</p>
+                        </div>
+                        <div style="margin-top: 60px; display: flex; justify-content: space-around;">
+                            <div style="text-align: center; border-top: 1pt solid black; width: 200px; padding-top: 5px;">O Senhorio</div>
+                            <div style="text-align: center; border-top: 1pt solid black; width: 200px; padding-top: 5px;">O Arrendatário</div>
+                        </div>
+                    `;
                 }
                 
-                document.getElementById('doc-output').innerHTML = texto;
-            }, 1500);
+                output.innerHTML = htmlContent;
+            }, 2000);
         }
     </script>
 </body>
