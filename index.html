@@ -34,6 +34,7 @@
             width: 100%;
             max-width: 210mm;
             margin: auto;
+            overflow: hidden;
         }
 
         .watermark {
@@ -50,10 +51,17 @@
             z-index: 0;
         }
 
+        /* Animação suave para as abas do novo construtor */
+        .tab-content { display: none; }
+        .tab-content.active { display: block; animation: fadeIn 0.3s ease; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+
         @media print {
             .no-print { display: none !important; }
             body { background: white; padding: 0; }
             .a4-preview { box-shadow: none; border: none; margin: 0; padding: 20mm; }
+            /* Garante que o fundo das cores no template seja impresso */
+            * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
         }
     </style>
 </head>
@@ -70,6 +78,8 @@
             <a href="#servicos" class="hover:text-blue-600 transition">Serviços</a>
             <a href="#precos" class="hover:text-blue-600 transition">Preços</a>
             <a href="#meus-docs" class="hover:text-blue-600 transition">Meus Docs</a>
+            <!-- NOVO LINK ADICIONADO AQUI -->
+            <a href="#cv-builder" class="hover:text-blue-600 transition text-blue-600 flex items-center gap-1"><i class="fas fa-magic"></i> Templates Zety</a>
         </div>
 
         <div class="flex items-center gap-4">
@@ -87,31 +97,33 @@
     <!-- Hero Section -->
     <section class="pt-20 pb-12 px-6 text-center no-print">
         <div class="max-w-4xl mx-auto">
-            <span class="bg-blue-50 text-blue-600 px-4 py-1.5 rounded-full text-xs font-black uppercase tracking-widest mb-6 inline-block">Inteligência Artificial em Moçambique</span>
+            <span class="bg-blue-50 text-blue-600 px-4 py-1.5 rounded-full text-xs font-black uppercase tracking-widest mb-6 inline-block">Inteligência Artificial & Templates</span>
             <h1 class="text-5xl md:text-7xl font-extrabold mb-6 leading-[1.1] text-slate-900 tracking-tight">
                 Documentos que te dão <br><span class="text-blue-600">o emprego.</span>
             </h1>
             <p class="text-lg text-slate-600 mb-10 max-w-2xl mx-auto font-medium">
-                Gere currículos, cartas e contratos otimizados para o mercado nacional usando a IA do Gemini em segundos.
+                Gere currículos com IA do Gemini em segundos ou use os nossos novos templates interativos ao estilo Zety.
             </p>
             <div class="flex flex-col sm:flex-row gap-4 justify-center">
                 <button onclick="scrollToGerador()" class="bg-slate-900 text-white px-8 py-4 rounded-2xl font-bold hover:bg-blue-600 transition flex items-center justify-center gap-3">
-                    Começar Agora <i class="fas fa-arrow-right text-xs"></i>
+                    Gerador IA <i class="fas fa-robot text-xs"></i>
                 </button>
-                <a href="#precos" class="bg-white border border-slate-200 text-slate-700 px-8 py-4 rounded-2xl font-bold hover:bg-slate-50 transition">Ver Planos</a>
+                <a href="#cv-builder" class="bg-white border border-slate-200 text-slate-700 px-8 py-4 rounded-2xl font-bold hover:bg-slate-50 transition flex items-center justify-center gap-3">
+                    Usar Templates <i class="fas fa-paint-brush text-xs text-blue-500"></i>
+                </a>
             </div>
         </div>
     </section>
 
-    <!-- Gerador Principal -->
+    <!-- Gerador Principal (IA Original - Intacto) -->
     <section id="gerador" class="py-12 px-6 no-print">
         <div class="max-w-6xl mx-auto bg-white rounded-[2.5rem] shadow-2xl border border-slate-100 overflow-hidden flex flex-col lg:flex-row min-h-[700px]">
             
             <!-- Painel de Inputs -->
             <div class="lg:w-80 xl:w-96 p-8 border-r border-slate-50 flex flex-col bg-slate-50/50">
                 <div class="flex items-center gap-2 mb-8 text-blue-600">
-                    <i class="fas fa-magic"></i>
-                    <h2 class="font-black uppercase text-xs tracking-tighter">Configuração de IA</h2>
+                    <i class="fas fa-robot"></i>
+                    <h2 class="font-black uppercase text-xs tracking-tighter">Modo IA Livre</h2>
                 </div>
 
                 <div class="space-y-5 flex-1">
@@ -141,7 +153,7 @@
                 </div>
 
                 <button onclick="gerarDocumentoComIA()" id="btn-gerar" class="w-full bg-blue-600 text-white py-4 rounded-2xl font-bold hover:bg-blue-700 transition flex items-center justify-center gap-3 mt-8 shadow-lg shadow-blue-100">
-                    <i class="fas fa-sparkles"></i> Gerar Documento
+                    <i class="fas fa-sparkles"></i> Gerar com IA
                 </button>
             </div>
 
@@ -150,7 +162,7 @@
                 
                 <div id="preview-placeholder" class="my-auto text-center opacity-40">
                     <i class="fas fa-file-invoice text-7xl mb-4"></i>
-                    <p class="font-bold">O preview aparecerá aqui</p>
+                    <p class="font-bold">O preview da IA aparecerá aqui</p>
                 </div>
 
                 <div id="loading-state" class="hidden my-auto text-center">
@@ -160,18 +172,20 @@
 
                 <div id="result-state" class="hidden w-full flex flex-col items-center">
                     <div class="flex justify-between w-full max-w-[210mm] mb-6 items-center">
-                        <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest bg-white px-3 py-1 rounded-full border border-slate-200">A4 Preview Mode</span>
+                        <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest bg-white px-3 py-1 rounded-full border border-slate-200">A4 Preview Mode (IA)</span>
                         <div class="flex gap-2">
                              <button onclick="copiarTexto()" class="text-xs font-bold text-slate-600 bg-white border border-slate-200 px-3 py-2 rounded-lg hover:bg-slate-50">Copiar</button>
-                             <button onclick="window.print()" class="text-xs font-bold text-blue-600 bg-white border border-blue-100 px-3 py-2 rounded-lg hover:bg-blue-50">Imprimir</button>
+                             <button onclick="printSection('ia-preview-area')" class="text-xs font-bold text-blue-600 bg-white border border-blue-100 px-3 py-2 rounded-lg hover:bg-blue-50">Imprimir</button>
                         </div>
                     </div>
                     
-                    <div class="a4-preview p-[20mm] text-slate-800" id="doc-output">
-                        <div class="watermark">HanzDocs AI</div>
+                    <div id="ia-preview-area" class="w-full flex justify-center">
+                        <div class="a4-preview p-[20mm] text-slate-800" id="doc-output">
+                            <div class="watermark">HanzDocs AI</div>
+                        </div>
                     </div>
 
-                    <div class="mt-8 grid grid-cols-1 sm:grid-cols-2 gap-4 w-full max-w-[210mm]">
+                    <div class="mt-8 grid grid-cols-1 sm:grid-cols-2 gap-4 w-full max-w-[210mm] no-print">
                         <button onclick="handlePayment('unit')" class="bg-blue-600 text-white py-4 rounded-2xl font-black flex items-center justify-center gap-3 hover:bg-blue-700 shadow-xl shadow-blue-200 transition">
                             <i class="fas fa-cloud-download-alt"></i> Baixar PDF HD (50 MT)
                         </button>
@@ -184,7 +198,188 @@
         </div>
     </section>
 
-    <!-- Secção de Preços -->
+    <!-- === NOVA SECÇÃO: CONSTRUTOR DE TEMPLATES ESTILO ZETY === -->
+    <section id="cv-builder" class="py-12 px-6 bg-slate-100/50 no-print border-t border-slate-200">
+        <div class="max-w-6xl mx-auto mb-10 text-center">
+            <span class="bg-indigo-100 text-indigo-700 px-4 py-1.5 rounded-full text-xs font-black uppercase tracking-widest mb-4 inline-block"><i class="fas fa-star text-yellow-500 mr-1"></i> Nova Funcionalidade</span>
+            <h2 class="text-4xl font-black text-slate-900">Construtor de CV em Tempo Real</h2>
+            <p class="text-slate-500 mt-2">Preencha os dados e veja o seu currículo a ser montado magicamente ao lado.</p>
+        </div>
+
+        <div class="max-w-[1400px] mx-auto flex flex-col xl:flex-row gap-8">
+            
+            <!-- Formulário do Template (Lado Esquerdo) -->
+            <div class="xl:w-[500px] bg-white rounded-[2rem] shadow-xl border border-slate-200 overflow-hidden flex flex-col max-h-[900px]">
+                
+                <!-- Escolha do Design -->
+                <div class="p-6 bg-slate-50 border-b border-slate-200">
+                    <label class="block text-[10px] font-black text-slate-400 uppercase mb-3">1. Escolha o Design</label>
+                    <div class="grid grid-cols-2 gap-3">
+                        <button onclick="changeTemplate('moderno')" class="py-3 border-2 border-indigo-600 bg-indigo-50 text-indigo-700 rounded-xl font-bold text-sm transition" id="btn-tpl-moderno">
+                            Moderno (Cor)
+                        </button>
+                        <button onclick="changeTemplate('classico')" class="py-3 border-2 border-slate-200 bg-white text-slate-600 rounded-xl font-bold text-sm transition hover:border-slate-300" id="btn-tpl-classico">
+                            Clássico (P&B)
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Abas do Formulário -->
+                <div class="flex border-b border-slate-200 bg-white overflow-x-auto custom-scrollbar">
+                    <button onclick="switchTab('tab-dados')" class="px-6 py-4 font-bold text-sm text-indigo-600 border-b-2 border-indigo-600 whitespace-nowrap tab-btn" data-target="tab-dados">Dados Pessoais</button>
+                    <button onclick="switchTab('tab-exp')" class="px-6 py-4 font-bold text-sm text-slate-500 hover:text-slate-800 whitespace-nowrap tab-btn" data-target="tab-exp">Experiência</button>
+                    <button onclick="switchTab('tab-edu')" class="px-6 py-4 font-bold text-sm text-slate-500 hover:text-slate-800 whitespace-nowrap tab-btn" data-target="tab-edu">Educação</button>
+                    <button onclick="switchTab('tab-skills')" class="px-6 py-4 font-bold text-sm text-slate-500 hover:text-slate-800 whitespace-nowrap tab-btn" data-target="tab-skills">Habilidades</button>
+                </div>
+
+                <!-- Conteúdo das Abas (Inputs) -->
+                <div class="p-6 overflow-y-auto flex-1 bg-white" oninput="updateTemplatePreview()">
+                    
+                    <!-- Aba: Dados Pessoais -->
+                    <div id="tab-dados" class="tab-content active space-y-4">
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-xs font-bold text-slate-600 mb-1">Nome Completo</label>
+                                <input type="text" id="tpl-nome" value="João Silva" class="w-full px-3 py-2 rounded-lg border border-slate-200 bg-slate-50 focus:bg-white focus:ring-2 focus:ring-indigo-500 outline-none">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-slate-600 mb-1">Cargo / Profissão</label>
+                                <input type="text" id="tpl-cargo" value="Gestor de Projetos" class="w-full px-3 py-2 rounded-lg border border-slate-200 bg-slate-50 focus:bg-white focus:ring-2 focus:ring-indigo-500 outline-none">
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-xs font-bold text-slate-600 mb-1">Email</label>
+                                <input type="email" id="tpl-email" value="joao.silva@email.com" class="w-full px-3 py-2 rounded-lg border border-slate-200 bg-slate-50 focus:bg-white focus:ring-2 focus:ring-indigo-500 outline-none">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-slate-600 mb-1">Telefone</label>
+                                <input type="text" id="tpl-telefone" value="+258 84 123 4567" class="w-full px-3 py-2 rounded-lg border border-slate-200 bg-slate-50 focus:bg-white focus:ring-2 focus:ring-indigo-500 outline-none">
+                            </div>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-slate-600 mb-1">Morada / Província</label>
+                            <input type="text" id="tpl-morada" value="Maputo, Moçambique" class="w-full px-3 py-2 rounded-lg border border-slate-200 bg-slate-50 focus:bg-white focus:ring-2 focus:ring-indigo-500 outline-none">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-slate-600 mb-1">Resumo Profissional</label>
+                            <textarea id="tpl-resumo" rows="4" class="w-full px-3 py-2 rounded-lg border border-slate-200 bg-slate-50 focus:bg-white focus:ring-2 focus:ring-indigo-500 outline-none">Profissional dedicado com mais de 5 anos de experiência na gestão de equipas e otimização de processos. Foco em resultados e melhoria contínua operacional.</textarea>
+                        </div>
+                    </div>
+
+                    <!-- Aba: Experiência -->
+                    <div id="tab-exp" class="tab-content space-y-6">
+                        <div class="p-4 border border-slate-200 rounded-xl bg-slate-50 relative">
+                            <span class="absolute -top-2.5 left-4 bg-slate-50 px-2 text-[10px] font-black uppercase text-slate-400">Emprego Mais Recente</span>
+                            <div class="grid grid-cols-2 gap-4 mb-3">
+                                <div>
+                                    <label class="block text-xs font-bold text-slate-600 mb-1">Cargo</label>
+                                    <input type="text" id="tpl-exp1-cargo" value="Gestor Sénior" class="w-full px-3 py-2 rounded-lg border border-slate-300 outline-none">
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-bold text-slate-600 mb-1">Empresa</label>
+                                    <input type="text" id="tpl-exp1-empresa" value="Tech Moz Lda" class="w-full px-3 py-2 rounded-lg border border-slate-300 outline-none">
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <label class="block text-xs font-bold text-slate-600 mb-1">Período (Ex: 2020 - Presente)</label>
+                                <input type="text" id="tpl-exp1-periodo" value="Jan 2020 - Presente" class="w-full px-3 py-2 rounded-lg border border-slate-300 outline-none">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-slate-600 mb-1">Descrição das Tarefas</label>
+                                <textarea id="tpl-exp1-desc" rows="3" class="w-full px-3 py-2 rounded-lg border border-slate-300 outline-none">Liderança de equipas multidisciplinares; Aumento de 20% na eficiência operacional; Implementação de novas metodologias ágeis.</textarea>
+                            </div>
+                        </div>
+
+                        <div class="p-4 border border-slate-200 rounded-xl bg-slate-50 relative">
+                            <span class="absolute -top-2.5 left-4 bg-slate-50 px-2 text-[10px] font-black uppercase text-slate-400">Emprego Anterior</span>
+                            <div class="grid grid-cols-2 gap-4 mb-3">
+                                <div>
+                                    <label class="block text-xs font-bold text-slate-600 mb-1">Cargo</label>
+                                    <input type="text" id="tpl-exp2-cargo" value="Assistente Administrativo" class="w-full px-3 py-2 rounded-lg border border-slate-300 outline-none">
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-bold text-slate-600 mb-1">Empresa</label>
+                                    <input type="text" id="tpl-exp2-empresa" value="Grupo Alfa" class="w-full px-3 py-2 rounded-lg border border-slate-300 outline-none">
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <label class="block text-xs font-bold text-slate-600 mb-1">Período</label>
+                                <input type="text" id="tpl-exp2-periodo" value="Mar 2017 - Dez 2019" class="w-full px-3 py-2 rounded-lg border border-slate-300 outline-none">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-slate-600 mb-1">Descrição</label>
+                                <textarea id="tpl-exp2-desc" rows="2" class="w-full px-3 py-2 rounded-lg border border-slate-300 outline-none">Gestão de arquivo; Atendimento ao cliente; Suporte à faturação.</textarea>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Aba: Educação -->
+                    <div id="tab-edu" class="tab-content space-y-6">
+                        <div class="p-4 border border-slate-200 rounded-xl bg-slate-50">
+                            <div class="mb-3">
+                                <label class="block text-xs font-bold text-slate-600 mb-1">Grau Académico / Curso</label>
+                                <input type="text" id="tpl-edu1-curso" value="Licenciatura em Gestão de Empresas" class="w-full px-3 py-2 rounded-lg border border-slate-300 outline-none">
+                            </div>
+                            <div class="grid grid-cols-2 gap-4">
+                                <div>
+                                    <label class="block text-xs font-bold text-slate-600 mb-1">Instituição</label>
+                                    <input type="text" id="tpl-edu1-inst" value="Universidade Eduardo Mondlane" class="w-full px-3 py-2 rounded-lg border border-slate-300 outline-none">
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-bold text-slate-600 mb-1">Ano de Conclusão</label>
+                                    <input type="text" id="tpl-edu1-ano" value="2016" class="w-full px-3 py-2 rounded-lg border border-slate-300 outline-none">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Aba: Habilidades -->
+                    <div id="tab-skills" class="tab-content">
+                        <div>
+                            <label class="block text-xs font-bold text-slate-600 mb-2">Habilidades (Separadas por vírgula)</label>
+                            <textarea id="tpl-habilidades" rows="4" class="w-full px-3 py-2 rounded-lg border border-slate-200 bg-slate-50 focus:bg-white focus:ring-2 focus:ring-indigo-500 outline-none">Liderança, Microsoft Office, SAP, Inglês Fluente, Gestão de Tempo, Comunicação</textarea>
+                            <p class="text-[10px] text-slate-400 mt-2">Ex: Marketing Digital, Liderança, Excel Avançado</p>
+                        </div>
+                    </div>
+
+                </div>
+
+                <div class="p-6 bg-slate-50 border-t border-slate-200">
+                    <button onclick="saveTemplateDocument()" class="w-full bg-indigo-600 text-white py-4 rounded-xl font-bold hover:bg-indigo-700 transition shadow-lg shadow-indigo-100 flex items-center justify-center gap-2">
+                        <i class="fas fa-save"></i> Guardar no Meu Perfil
+                    </button>
+                </div>
+            </div>
+
+            <!-- Área de Visualização do Template (Lado Direito) -->
+            <div class="flex-1 bg-slate-200/80 rounded-[2rem] p-4 md:p-10 flex flex-col items-center overflow-y-auto max-h-[900px] border border-slate-200 shadow-inner">
+                
+                <div class="flex justify-between w-full max-w-[210mm] mb-6 items-center">
+                    <span class="text-[10px] font-black text-indigo-600 uppercase tracking-widest bg-indigo-100 px-3 py-1 rounded-full border border-indigo-200 flex items-center gap-2">
+                        <span class="w-2 h-2 rounded-full bg-indigo-500 animate-pulse"></span> Atualização em Tempo Real
+                    </span>
+                    <div class="flex gap-2">
+                         <button onclick="printSection('template-preview-area')" class="text-xs font-bold text-white bg-indigo-600 px-4 py-2 rounded-lg hover:bg-indigo-700 shadow-md">
+                            <i class="fas fa-print mr-1"></i> Imprimir Template
+                         </button>
+                    </div>
+                </div>
+                
+                <div id="template-preview-area" class="w-full flex justify-center pb-10">
+                    <!-- O currículo gerado vai ser injetado aqui -->
+                    <div class="a4-preview bg-white text-slate-800" id="template-output">
+                        <!-- Conteúdo inicial será carregado via JS no onload -->
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </section>
+    <!-- === FIM DA NOVA SECÇÃO === -->
+
+
+    <!-- Secção de Preços (Original) -->
     <section id="precos" class="py-24 px-6 bg-white no-print">
         <div class="max-w-6xl mx-auto text-center">
             <h2 class="text-4xl font-black mb-4">Escolha o seu plano</h2>
@@ -197,7 +392,7 @@
                     <ul class="space-y-3 text-sm text-slate-600 mb-8">
                         <li><i class="fas fa-check text-green-500 mr-2"></i> 1 Download PDF</li>
                         <li><i class="fas fa-check text-green-500 mr-2"></i> IA Gemini Flash</li>
-                        <li><i class="fas fa-check text-green-500 mr-2"></i> Validade 24h</li>
+                        <li><i class="fas fa-check text-green-500 mr-2"></i> Templates Zety</li>
                     </ul>
                     <button onclick="handlePayment('unit')" class="w-full py-4 border-2 border-slate-200 rounded-2xl font-bold hover:bg-white transition">Pagar via M-Pesa</button>
                 </div>
@@ -207,7 +402,7 @@
                     <div class="text-3xl font-black mb-6">450 MT <span class="text-sm font-normal text-slate-400">/mês</span></div>
                     <ul class="space-y-3 text-sm text-slate-600 mb-8">
                         <li><i class="fas fa-check text-green-500 mr-2"></i> Documentos Ilimitados</li>
-                        <li><i class="fas fa-check text-green-500 mr-2"></i> Suporte 24/7</li>
+                        <li><i class="fas fa-check text-green-500 mr-2"></i> Acesso a todos Templates</li>
                         <li><i class="fas fa-check text-green-500 mr-2"></i> Sem Marcas de Água</li>
                     </ul>
                     <button onclick="handlePayment('pro')" class="w-full py-4 bg-blue-600 text-white rounded-2xl font-bold hover:bg-blue-700 transition">Assinar com M-Pesa</button>
@@ -226,7 +421,7 @@
         </div>
     </section>
 
-    <!-- Secção Meus Documentos -->
+    <!-- Secção Meus Documentos (Original) -->
     <section id="meus-docs" class="py-24 px-6 bg-slate-50 no-print">
         <div class="max-w-6xl mx-auto">
             <div class="flex justify-between items-end mb-10">
@@ -283,24 +478,21 @@
     </footer>
 
     <script>
-        // --- CONFIGURAÇÃO SUPABASE ---
-        // Usando var para evitar SyntaxError: Identifier 'supabase' has already been declared em re-renderizações
+        // ==========================================
+        // CÓDIGO ORIGINAL (MANTIDO INTACTO)
+        // ==========================================
         var SUPABASE_URL = 'https://vbxqwabfwrafomuiiedh.supabase.co';
         var SUPABASE_ANON_KEY = 'sb_publishable_QCB11qPe_6raIdDVussbpQ_VZ2W_acc';
         var supabaseClient;
 
         try {
-            // Inicializa apenas se ainda não existir
             if (!supabaseClient) {
                 supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
             }
-        } catch(e) {
-            console.log("Supabase já inicializado");
-        }
+        } catch(e) { console.log("Supabase já inicializado"); }
 
         var currentUser = null;
 
-        // --- AUTH ---
         window.onload = async () => {
             const { data: { session } } = await supabaseClient.auth.getSession();
             currentUser = session?.user;
@@ -312,6 +504,9 @@
                 updateUI(currentUser);
                 if(currentUser) loadUserDocuments();
             });
+
+            // Inicializar o novo preview do template
+            updateTemplatePreview();
         };
 
         function updateUI(user) {
@@ -337,21 +532,14 @@
         }
 
         async function handleGoogleLogin() {
-            await supabaseClient.auth.signInWithOAuth({
-                provider: 'google',
-                options: { redirectTo: window.location.origin }
-            });
+            await supabaseClient.auth.signInWithOAuth({ provider: 'google', options: { redirectTo: window.location.origin } });
         }
 
         async function handleMagicLink() {
             const email = document.getElementById('email-input').value;
             if (!email) return alert("Insira o email.");
-            const { error } = await supabaseClient.auth.signInWithOtp({
-                email,
-                options: { emailRedirectTo: window.location.origin }
-            });
-            if (error) alert(error.message);
-            else alert("Link enviado!");
+            const { error } = await supabaseClient.auth.signInWithOtp({ email, options: { emailRedirectTo: window.location.origin } });
+            if (error) alert(error.message); else alert("Link enviado!");
         }
 
         async function handleLogout() {
@@ -359,7 +547,6 @@
             location.reload();
         }
 
-        // --- IA LOGIC ---
         async function gerarDocumentoComIA() {
             const name = document.getElementById('user-name').value;
             const desc = document.getElementById('user-desc').value;
@@ -373,7 +560,7 @@
             document.getElementById('loading-state').classList.remove('hidden');
             document.getElementById('btn-gerar').disabled = true;
 
-            const apiKey = ""; // API Key automática gerenciada pelo ambiente
+            const apiKey = ""; 
             const prompt = `Gera um documento profissional moçambicano para ${name} (${phone}) do tipo ${type}. 
             Contexto: ${desc}. Retorna APENAS o HTML (sem markdown) com CSS inline formal e profissional.`;
 
@@ -402,22 +589,16 @@
             }
         }
 
-        // --- STORAGE ---
         async function saveDocument(type, title, content) {
             if(!currentUser) return;
-            await supabaseClient.from('user_documents').insert([{ 
-                user_id: currentUser.id, type, title, content 
-            }]);
+            await supabaseClient.from('user_documents').insert([{ user_id: currentUser.id, type, title, content }]);
             loadUserDocuments();
         }
 
         async function loadUserDocuments() {
             if(!currentUser) return;
             const docsList = document.getElementById('docs-list');
-            const { data } = await supabaseClient.from('user_documents')
-                .select('*')
-                .eq('user_id', currentUser.id)
-                .order('created_at', { ascending: false });
+            const { data } = await supabaseClient.from('user_documents').select('*').eq('user_id', currentUser.id).order('created_at', { ascending: false });
 
             if (data && data.length > 0) {
                 docsList.innerHTML = data.map(doc => `
@@ -454,6 +635,288 @@
             const phone = prompt("Teu M-Pesa:");
             if (phone) alert(`Pedido enviado para ${phone}.`);
         }
+
+        // Função ajustada para imprimir apenas a secção visível desejada
+        function printSection(sectionId) {
+            const originalContent = document.body.innerHTML;
+            const printContent = document.getElementById(sectionId).innerHTML;
+            document.body.innerHTML = printContent;
+            window.print();
+            document.body.innerHTML = originalContent;
+            location.reload(); // Recarrega para restaurar eventos JS
+        }
+
+
+        // ==========================================
+        // NOVO CÓDIGO: LÓGICA DO CONSTRUTOR DE TEMPLATES
+        // ==========================================
+        
+        let currentTemplate = 'moderno';
+
+        function switchTab(tabId) {
+            // Remove active class de todas as abas e conteúdos
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(el => {
+                el.classList.remove('text-indigo-600', 'border-indigo-600', 'border-b-2');
+                el.classList.add('text-slate-500');
+            });
+            
+            // Ativa a selecionada
+            document.getElementById(tabId).classList.add('active');
+            const btn = document.querySelector(`[data-target="${tabId}"]`);
+            btn.classList.remove('text-slate-500');
+            btn.classList.add('text-indigo-600', 'border-indigo-600', 'border-b-2');
+        }
+
+        function changeTemplate(type) {
+            currentTemplate = type;
+            
+            // Estiliza botões
+            const btnModerno = document.getElementById('btn-tpl-moderno');
+            const btnClassico = document.getElementById('btn-tpl-classico');
+            
+            if(type === 'moderno') {
+                btnModerno.className = "py-3 border-2 border-indigo-600 bg-indigo-50 text-indigo-700 rounded-xl font-bold text-sm transition";
+                btnClassico.className = "py-3 border-2 border-slate-200 bg-white text-slate-600 rounded-xl font-bold text-sm transition hover:border-slate-300";
+            } else {
+                btnClassico.className = "py-3 border-2 border-slate-800 bg-slate-50 text-slate-900 rounded-xl font-bold text-sm transition";
+                btnModerno.className = "py-3 border-2 border-slate-200 bg-white text-slate-600 rounded-xl font-bold text-sm transition hover:border-slate-300";
+            }
+            
+            updateTemplatePreview();
+        }
+
+        function getFormData() {
+            return {
+                nome: document.getElementById('tpl-nome').value || 'Teu Nome',
+                cargo: document.getElementById('tpl-cargo').value || 'Teu Cargo',
+                email: document.getElementById('tpl-email').value || 'email@exemplo.com',
+                telefone: document.getElementById('tpl-telefone').value || '+258 xxx xxx xxx',
+                morada: document.getElementById('tpl-morada').value || 'Cidade, País',
+                resumo: document.getElementById('tpl-resumo').value || 'O teu resumo profissional...',
+                
+                exp1: {
+                    cargo: document.getElementById('tpl-exp1-cargo').value,
+                    empresa: document.getElementById('tpl-exp1-empresa').value,
+                    periodo: document.getElementById('tpl-exp1-periodo').value,
+                    desc: document.getElementById('tpl-exp1-desc').value
+                },
+                exp2: {
+                    cargo: document.getElementById('tpl-exp2-cargo').value,
+                    empresa: document.getElementById('tpl-exp2-empresa').value,
+                    periodo: document.getElementById('tpl-exp2-periodo').value,
+                    desc: document.getElementById('tpl-exp2-desc').value
+                },
+                
+                edu1: {
+                    curso: document.getElementById('tpl-edu1-curso').value,
+                    inst: document.getElementById('tpl-edu1-inst').value,
+                    ano: document.getElementById('tpl-edu1-ano').value
+                },
+                
+                habilidades: document.getElementById('tpl-habilidades').value.split(',').map(s => s.trim()).filter(Boolean)
+            };
+        }
+
+        function updateTemplatePreview() {
+            const data = getFormData();
+            const outputDiv = document.getElementById('template-output');
+            
+            let html = '';
+
+            if (currentTemplate === 'moderno') {
+                // TEMPLATE 1: Moderno (Estilo Zety com barra lateral)
+                html = `
+                <div style="display: flex; min-height: 297mm; font-family: 'Helvetica Neue', Arial, sans-serif; color: #333;">
+                    
+                    <!-- Sidebar Escura -->
+                    <div style="width: 35%; background-color: #2c3e50; color: white; padding: 40px 30px;">
+                        
+                        <div style="width: 120px; height: 120px; background: rgba(255,255,255,0.1); border-radius: 50%; margin: 0 auto 30px; display: flex; align-items: center; justify-content: center; font-size: 40px; color: white;">
+                            ${data.nome.charAt(0)}
+                        </div>
+
+                        <h3 style="font-size: 16px; border-bottom: 2px solid #3498db; padding-bottom: 10px; margin-bottom: 20px; text-transform: uppercase; letter-spacing: 1px;">Contactos</h3>
+                        <div style="font-size: 13px; line-height: 2; margin-bottom: 40px;">
+                            <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 5px;">
+                                <i class="fas fa-envelope" style="width: 15px; text-align: center; color: #3498db;"></i> ${data.email}
+                            </div>
+                            <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 5px;">
+                                <i class="fas fa-phone" style="width: 15px; text-align: center; color: #3498db;"></i> ${data.telefone}
+                            </div>
+                            <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 5px;">
+                                <i class="fas fa-map-marker-alt" style="width: 15px; text-align: center; color: #3498db;"></i> ${data.morada}
+                            </div>
+                        </div>
+
+                        <h3 style="font-size: 16px; border-bottom: 2px solid #3498db; padding-bottom: 10px; margin-bottom: 20px; text-transform: uppercase; letter-spacing: 1px;">Habilidades</h3>
+                        <ul style="list-style: none; padding: 0; margin: 0; font-size: 13px; line-height: 1.8;">
+                            ${data.habilidades.map(hab => `
+                                <li style="margin-bottom: 8px;">
+                                    <div style="display: flex; justify-content: space-between; margin-bottom: 3px;">
+                                        <span>${hab}</span>
+                                    </div>
+                                    <div style="height: 4px; background: rgba(255,255,255,0.2); border-radius: 2px;">
+                                        <div style="width: 80%; height: 100%; background: #3498db; border-radius: 2px;"></div>
+                                    </div>
+                                </li>
+                            `).join('')}
+                        </ul>
+                    </div>
+
+                    <!-- Corpo Principal -->
+                    <div style="width: 65%; padding: 50px 40px; background-color: white;">
+                        <h1 style="font-size: 42px; margin: 0 0 5px 0; color: #2c3e50; line-height: 1.1; font-weight: 800; text-transform: uppercase;">${data.nome}</h1>
+                        <h2 style="font-size: 20px; margin: 0 0 30px 0; color: #3498db; font-weight: 400;">${data.cargo}</h2>
+                        
+                        <p style="font-size: 14px; color: #555; line-height: 1.6; margin-bottom: 40px; text-align: justify;">
+                            ${data.resumo}
+                        </p>
+
+                        <!-- Experiência -->
+                        <h3 style="font-size: 18px; color: #2c3e50; border-bottom: 2px solid #eee; padding-bottom: 10px; margin-bottom: 25px; text-transform: uppercase; font-weight: 700;">
+                            <i class="fas fa-briefcase" style="color: #3498db; margin-right: 8px;"></i> Experiência Profissional
+                        </h3>
+                        
+                        ${data.exp1.cargo ? `
+                        <div style="margin-bottom: 25px;">
+                            <div style="display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 5px;">
+                                <h4 style="margin: 0; font-size: 16px; color: #2c3e50;">${data.exp1.cargo}</h4>
+                                <span style="font-size: 12px; color: #3498db; font-weight: bold;">${data.exp1.periodo}</span>
+                            </div>
+                            <div style="font-size: 14px; font-weight: 600; color: #7f8c8d; margin-bottom: 10px;">${data.exp1.empresa}</div>
+                            <p style="font-size: 13px; color: #555; line-height: 1.6; margin: 0;">${data.exp1.desc}</p>
+                        </div>
+                        ` : ''}
+
+                        ${data.exp2.cargo ? `
+                        <div style="margin-bottom: 30px;">
+                            <div style="display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 5px;">
+                                <h4 style="margin: 0; font-size: 16px; color: #2c3e50;">${data.exp2.cargo}</h4>
+                                <span style="font-size: 12px; color: #3498db; font-weight: bold;">${data.exp2.periodo}</span>
+                            </div>
+                            <div style="font-size: 14px; font-weight: 600; color: #7f8c8d; margin-bottom: 10px;">${data.exp2.empresa}</div>
+                            <p style="font-size: 13px; color: #555; line-height: 1.6; margin: 0;">${data.exp2.desc}</p>
+                        </div>
+                        ` : ''}
+
+                        <!-- Educação -->
+                        <h3 style="font-size: 18px; color: #2c3e50; border-bottom: 2px solid #eee; padding-bottom: 10px; margin-bottom: 25px; text-transform: uppercase; font-weight: 700; margin-top: 40px;">
+                            <i class="fas fa-graduation-cap" style="color: #3498db; margin-right: 8px;"></i> Educação
+                        </h3>
+                        
+                        ${data.edu1.curso ? `
+                        <div>
+                            <div style="display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 5px;">
+                                <h4 style="margin: 0; font-size: 16px; color: #2c3e50;">${data.edu1.curso}</h4>
+                                <span style="font-size: 12px; color: #3498db; font-weight: bold;">${data.edu1.ano}</span>
+                            </div>
+                            <div style="font-size: 14px; color: #7f8c8d;">${data.edu1.inst}</div>
+                        </div>
+                        ` : ''}
+
+                    </div>
+                </div>`;
+            } 
+            else {
+                // TEMPLATE 2: Clássico (Preto e Branco / Serif)
+                html = `
+                <div style="padding: 50px 60px; min-height: 297mm; font-family: 'Times New Roman', Times, serif; color: #000; background: white;">
+                    
+                    <div style="text-align: center; border-bottom: 2px solid #000; padding-bottom: 20px; margin-bottom: 30px;">
+                        <h1 style="font-size: 36px; margin: 0 0 5px 0; text-transform: uppercase; letter-spacing: 2px;">${data.nome}</h1>
+                        <h2 style="font-size: 18px; margin: 0 0 15px 0; font-style: italic; font-weight: normal;">${data.cargo}</h2>
+                        <div style="font-size: 14px; font-family: Arial, sans-serif;">
+                            ${data.morada} &bull; ${data.telefone} &bull; ${data.email}
+                        </div>
+                    </div>
+
+                    <div style="margin-bottom: 30px;">
+                        <h3 style="font-size: 16px; text-transform: uppercase; border-bottom: 1px solid #ccc; padding-bottom: 5px; margin-bottom: 15px; letter-spacing: 1px;">Resumo Profissional</h3>
+                        <p style="font-size: 14px; line-height: 1.6; text-align: justify; margin: 0;">${data.resumo}</p>
+                    </div>
+
+                    <div style="margin-bottom: 30px;">
+                        <h3 style="font-size: 16px; text-transform: uppercase; border-bottom: 1px solid #ccc; padding-bottom: 5px; margin-bottom: 15px; letter-spacing: 1px;">Experiência Profissional</h3>
+                        
+                        ${data.exp1.cargo ? `
+                        <div style="margin-bottom: 20px;">
+                            <div style="display: flex; justify-content: space-between; font-weight: bold; font-size: 15px;">
+                                <span>${data.exp1.cargo}</span>
+                                <span>${data.exp1.periodo}</span>
+                            </div>
+                            <div style="font-style: italic; font-size: 14px; margin-bottom: 8px;">${data.exp1.empresa}</div>
+                            <p style="font-size: 14px; line-height: 1.5; margin: 0;">- ${data.exp1.desc.replace(/\n/g, '<br>- ')}</p>
+                        </div>
+                        ` : ''}
+
+                        ${data.exp2.cargo ? `
+                        <div style="margin-bottom: 20px;">
+                            <div style="display: flex; justify-content: space-between; font-weight: bold; font-size: 15px;">
+                                <span>${data.exp2.cargo}</span>
+                                <span>${data.exp2.periodo}</span>
+                            </div>
+                            <div style="font-style: italic; font-size: 14px; margin-bottom: 8px;">${data.exp2.empresa}</div>
+                            <p style="font-size: 14px; line-height: 1.5; margin: 0;">- ${data.exp2.desc.replace(/\n/g, '<br>- ')}</p>
+                        </div>
+                        ` : ''}
+                    </div>
+
+                    <div style="margin-bottom: 30px;">
+                        <h3 style="font-size: 16px; text-transform: uppercase; border-bottom: 1px solid #ccc; padding-bottom: 5px; margin-bottom: 15px; letter-spacing: 1px;">Educação</h3>
+                        ${data.edu1.curso ? `
+                        <div>
+                            <div style="display: flex; justify-content: space-between; font-weight: bold; font-size: 15px;">
+                                <span>${data.edu1.inst}</span>
+                                <span>${data.edu1.ano}</span>
+                            </div>
+                            <div style="font-size: 14px; margin-top: 3px;">${data.edu1.curso}</div>
+                        </div>
+                        ` : ''}
+                    </div>
+
+                    <div>
+                        <h3 style="font-size: 16px; text-transform: uppercase; border-bottom: 1px solid #ccc; padding-bottom: 5px; margin-bottom: 15px; letter-spacing: 1px;">Habilidades</h3>
+                        <p style="font-size: 14px; line-height: 1.6; font-family: Arial, sans-serif;">
+                            ${data.habilidades.join(' &bull; ')}
+                        </p>
+                    </div>
+
+                </div>`;
+            }
+
+            outputDiv.innerHTML = `<div class="watermark">HanzDocs</div>` + html;
+        }
+
+        async function saveTemplateDocument() {
+            if(!currentUser) {
+                alert("Por favor, faça Login para guardar o seu Currículo.");
+                toggleLogin();
+                return;
+            }
+            
+            const btn = document.querySelector('button[onclick="saveTemplateDocument()"]');
+            const originalText = btn.innerHTML;
+            btn.innerHTML = `<div class="loader" style="width: 20px; height: 20px; border-width: 2px;"></div> Guardando...`;
+            
+            const content = document.getElementById('template-output').innerHTML;
+            const title = `CV ${currentTemplate.toUpperCase()} - ${document.getElementById('tpl-nome').value}`;
+            
+            await saveDocument('cv', title, content);
+            
+            setTimeout(() => {
+                btn.innerHTML = `<i class="fas fa-check"></i> Guardado com Sucesso!`;
+                btn.classList.remove('bg-indigo-600', 'hover:bg-indigo-700');
+                btn.classList.add('bg-green-600', 'hover:bg-green-700');
+                
+                setTimeout(() => {
+                    btn.innerHTML = originalText;
+                    btn.classList.add('bg-indigo-600', 'hover:bg-indigo-700');
+                    btn.classList.remove('bg-green-600', 'hover:bg-green-700');
+                }, 3000);
+            }, 1000);
+        }
+
     </script>
 </body>
 </html>
