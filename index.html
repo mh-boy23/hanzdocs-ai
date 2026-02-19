@@ -208,6 +208,7 @@
 
     <script>
         // --- CONFIGURAÇÃO SUPABASE REAL ---
+        // As tuas chaves do projeto "mh-boy23's Project"
         const SUPABASE_URL = 'https://vbxqwabfwrafomuiiedh.supabase.co';
         const SUPABASE_ANON_KEY = 'sb_publishable_QCB11qPe_6raIdDVussbpQ_VZ2W_acc';
         
@@ -234,6 +235,7 @@
                 loginBtn.classList.add('hidden');
                 userEmailSpan.innerText = user.email;
                 if (document.getElementById('login-modal')) toggleLogin(true);
+                console.log("Utilizador autenticado no mh-boy23 Project:", user.id);
             } else {
                 profileDiv.classList.add('hidden');
                 loginBtn.classList.remove('hidden');
