@@ -34,6 +34,7 @@
             width: 100%;
             max-width: 210mm;
             margin: auto;
+            z-index: 1;
         }
 
         .watermark {
@@ -169,7 +170,7 @@
                     
                     <div class="a4-preview p-[20mm] text-slate-800" id="doc-output">
                         <div class="watermark">HanzDocs AI</div>
-                        <!-- Injetado por JS -->
+                        <div id="ai-content-inner"></div>
                     </div>
 
                     <div class="mt-8 grid grid-cols-1 sm:grid-cols-2 gap-4 w-full max-w-[210mm]">
@@ -242,8 +243,7 @@
             </div>
             
             <div id="docs-list" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-                <!-- Lista será injetada aqui -->
-                <div class="col-span-full py-20 text-center bg-white border-2 border-dashed border-slate-200 rounded-[3rem]">
+                <div id="empty-docs-msg" class="col-span-full py-20 text-center bg-white border-2 border-dashed border-slate-200 rounded-[3rem]">
                     <i class="fas fa-lock text-slate-200 text-5xl mb-4"></i>
                     <p class="text-slate-400 font-bold">Inicia sessão para guardar documentos na nuvem.</p>
                 </div>
@@ -289,7 +289,7 @@
 
     <script>
         // --- CONFIGURAÇÃO ---
-        const apiKey = ""; // Gemini API Key injetada pelo Canvas
+        const apiKey = ""; // Chave injetada automaticamente
         const SUPABASE_URL = 'https://vbxqwabfwrafomuiiedh.supabase.co';
         const SUPABASE_ANON_KEY = 'sb_publishable_QCB11qPe_6raIdDVussbpQ_VZ2W_acc';
         const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
@@ -356,7 +356,7 @@
             location.reload();
         }
 
-        // --- IA & GERADOR ---
+        // --- IA & GERADOR (CORRIGIDO) ---
         async function gerarDocumentoComIA() {
             const name = document.getElementById('user-name').value;
             const desc = document.getElementById('user-desc').value;
@@ -368,40 +368,68 @@
             document.getElementById('preview-placeholder').classList.add('hidden');
             document.getElementById('result-state').classList.add('hidden');
             document.getElementById('loading-state').classList.remove('hidden');
-            document.getElementById('btn-gerar').disabled = true;
+            const btnGerar = document.getElementById('btn-gerar');
+            btnGerar.disabled = true;
 
-            const prompt = `Gera um documento profissional para ${name} (${phone}) do tipo ${type}. 
-            Contexto: ${desc}. 
-            Retorna APENAS o HTML (sem markdown blocks) formatado para A4.
-            Usa CSS inline para aspeto formal (serif, bold headers, padding decente). 
-            Se for CV, usa estrutura moçambicana (Dados Pessoais, Perfil, Exp, Formação).
-            Adiciona títulos claros.`;
+            const prompt = `Crie um documento profissional para ${name} (${phone}) do tipo ${type}. 
+            Contexto fornecido: ${desc}. 
+            Retorne apenas o conteúdo HTML interno do documento (sem tags <html>, <head> ou <body>).
+            Use tags semânticas (h1, h2, p, strong, div).
+            Aplique estilos inline para garantir formalidade (font-family serif, alinhamento justificado).
+            O tom deve ser profissional e adaptado às normas de Moçambique.`;
+
+            // Função de Retentativa com Exponential Backoff
+            async function callGemini(retryCount = 0) {
+                try {
+                    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ 
+                            contents: [{ parts: [{ text: prompt }] }],
+                            generationConfig: {
+                                temperature: 0.7,
+                                maxOutputTokens: 2048
+                            }
+                        })
+                    });
+
+                    if (!response.ok) throw new Error("API Failure");
+
+                    const data = await response.json();
+                    return data.candidates?.[0]?.content?.parts?.[0]?.text;
+                } catch (err) {
+                    if (retryCount < 3) {
+                        const delay = Math.pow(2, retryCount) * 1000;
+                        await new Promise(resolve => setTimeout(resolve, delay));
+                        return callGemini(retryCount + 1);
+                    }
+                    throw err;
+                }
+            }
 
             try {
-                const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] })
-                });
-
-                const data = await response.json();
-                const content = data.candidates[0].content.parts[0].text.replace(/```html|```/g, '').trim();
+                let content = await callGemini();
+                if (!content) throw new Error("Empty Response");
                 
-                const output = document.getElementById('doc-output');
-                output.innerHTML = `<div class="watermark">HanzDocs AI</div>` + content;
+                // Limpeza básica de Markdown caso a IA retorne blocos de código
+                content = content.replace(/```html|```/g, '').trim();
+                
+                const outputInner = document.getElementById('ai-content-inner');
+                outputInner.innerHTML = content;
                 
                 document.getElementById('loading-state').classList.add('hidden');
                 document.getElementById('result-state').classList.remove('hidden');
 
-                // Auto-save se logado
+                // Salvar se logado
                 if(currentUser) saveDocument(type, `${type.toUpperCase()} - ${name}`, content);
 
             } catch (err) {
-                alert("Erro ao conectar com a IA. Tente novamente.");
+                console.error(err);
+                alert("Erro ao conectar com a IA. Tente novamente mais tarde.");
                 document.getElementById('loading-state').classList.add('hidden');
                 document.getElementById('preview-placeholder').classList.remove('hidden');
             } finally {
-                document.getElementById('btn-gerar').disabled = false;
+                btnGerar.disabled = false;
             }
         }
 
@@ -409,8 +437,7 @@
         async function loadUserDocuments() {
             if(!currentUser) return;
             const docsList = document.getElementById('docs-list');
-            docsList.innerHTML = '<div class="col-span-full text-center font-bold animate-pulse">A carregar os teus documentos...</div>';
-
+            
             const { data, error } = await supabaseClient
                 .from('user_documents')
                 .select('*')
@@ -428,21 +455,25 @@
                     </div>
                 `).join('');
             } else {
-                docsList.innerHTML = '<div class="col-span-full py-20 text-center text-slate-400 italic">Ainda não criaste nenhum documento.</div>';
+                docsList.innerHTML = '<div class="col-span-full py-20 text-center text-slate-400 italic">Nenhum documento guardado.</div>';
             }
         }
 
         async function saveDocument(type, title, content) {
-            const { error } = await supabaseClient
-                .from('user_documents')
-                .insert([{ user_id: currentUser.id, type, title, content }]);
-            if (!error) loadUserDocuments();
+            try {
+                await supabaseClient
+                    .from('user_documents')
+                    .insert([{ user_id: currentUser.id, type, title, content }]);
+                loadUserDocuments();
+            } catch (e) {
+                console.error("Erro ao salvar:", e);
+            }
         }
 
         async function viewSavedDoc(id) {
             const { data } = await supabaseClient.from('user_documents').select('*').eq('id', id).single();
             if (data) {
-                document.getElementById('doc-output').innerHTML = `<div class="watermark">HanzDocs AI</div>` + data.content;
+                document.getElementById('ai-content-inner').innerHTML = data.content;
                 document.getElementById('preview-placeholder').classList.add('hidden');
                 document.getElementById('result-state').classList.remove('hidden');
                 scrollToGerador();
@@ -450,20 +481,25 @@
         }
 
         // --- UTILITÁRIOS ---
-        function scrollToGerador() { document.getElementById('gerador').scrollIntoView({ behavior: 'smooth' }); }
+        function scrollToGerador() { 
+            const el = document.getElementById('gerador');
+            window.scrollTo({ top: el.offsetTop - 100, behavior: 'smooth' });
+        }
         
         function copiarTexto() {
-            const text = document.getElementById('doc-output').innerText;
-            const btn = event.target;
-            navigator.clipboard.writeText(text);
-            btn.innerText = "Copiado!";
-            setTimeout(() => btn.innerText = "Copiar", 2000);
+            const text = document.getElementById('ai-content-inner').innerText;
+            navigator.clipboard.writeText(text).then(() => {
+                const btn = event.target;
+                const original = btn.innerText;
+                btn.innerText = "Copiado!";
+                setTimeout(() => btn.innerText = original, 2000);
+            });
         }
 
         function handlePayment(plan) {
             const phone = prompt("Insira o seu número M-Pesa (84/85):");
             if (phone) {
-                alert(`Solicitação de pagamento enviada para ${phone}. Por favor, introduza o PIN no seu telemóvel.`);
+                alert(`Solicitação de pagamento enviada para ${phone}. Confirme no seu telemóvel.`);
             }
         }
     </script>
