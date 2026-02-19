@@ -24,11 +24,11 @@
 
         /* Estilos de Template Moderno */
         .template-modern { display: grid; grid-template-columns: 35% 65%; min-height: 297mm; }
-        .sidebar { background: #1e293b; color: white; padding: 40px 25px; }
-        .main-content { padding: 50px 40px; color: #334155; }
+        .sidebar-doc { background: #1e293b; color: white; padding: 40px 25px; }
+        .main-content-doc { padding: 50px 40px; color: #334155; }
         
-        .sidebar h2 { border-bottom: 1px solid #475569; padding-bottom: 10px; margin-bottom: 15px; font-size: 14px; text-transform: uppercase; letter-spacing: 1px; }
-        .main-content h2 { color: #1e293b; font-size: 18px; font-weight: 700; border-bottom: 2px solid #e2e8f0; padding-bottom: 8px; margin-top: 25px; margin-bottom: 15px; }
+        .sidebar-doc h2 { border-bottom: 1px solid #475569; padding-bottom: 10px; margin-bottom: 15px; font-size: 14px; text-transform: uppercase; letter-spacing: 1px; }
+        .main-content-doc h2 { color: #1e293b; font-size: 18px; font-weight: 700; border-bottom: 2px solid #e2e8f0; padding-bottom: 8px; margin-top: 25px; margin-bottom: 15px; }
 
         /* Estilo para Carta de Motivação */
         .template-letter { padding: 80px 60px; line-height: 1.6; color: #1e293b; }
@@ -39,132 +39,235 @@
         @keyframes blink { 0% { opacity: 0.2; } 20% { opacity: 1; } 100% { opacity: 0.2; } }
         
         @media print {
-            body { background: none; padding: 0; }
             .no-print { display: none !important; }
+            body { background: white; padding: 0; }
             .a4-container { box-shadow: none; margin: 0; width: 100%; }
         }
+
+        .nav-link { cursor: pointer; transition: color 0.3s; }
+        .nav-link:hover { color: #2563eb; }
     </style>
 </head>
-<body class="p-0 md:p-8">
+<body class="selection:bg-blue-100 selection:text-blue-700">
 
-    <div class="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-8">
-        
-        <!-- Painel de Controlo (Esquerda) -->
-        <div class="lg:col-span-4 space-y-6 no-print">
-            <div class="bg-white p-6 rounded-3xl shadow-sm border border-slate-200">
-                <div class="flex items-center gap-3 mb-6">
-                    <div class="bg-blue-600 p-2 rounded-lg text-white">
-                        <i class="fas fa-robot text-xl"></i>
-                    </div>
-                    <h1 class="text-xl font-bold">HanzDocs Engine</h1>
+    <!-- LANDING PAGE -->
+    <div id="landing-page" class="block">
+        <nav class="flex items-center justify-between px-6 py-4 bg-white/80 backdrop-blur-md sticky top-0 z-50 border-b border-slate-100">
+            <div class="flex items-center gap-2 font-bold text-2xl text-blue-600">
+                <i class="fas fa-file-alt"></i>
+                <span>HanzDocs AI</span>
+            </div>
+            <div class="hidden md:flex items-center gap-8 text-slate-600 font-medium">
+                <span class="nav-link">Como Funciona</span>
+                <span class="nav-link">Templates</span>
+                <span class="nav-link">Preços</span>
+            </div>
+            <div class="flex items-center gap-4">
+                <button onclick="showApp()" class="px-5 py-2 text-blue-600 font-semibold">Entrar</button>
+                <button onclick="showApp()" class="px-5 py-2 bg-blue-600 text-white rounded-full font-semibold hover:bg-blue-700 transition shadow-lg shadow-blue-200">
+                    Começar Grátis
+                </button>
+            </div>
+        </nav>
+
+        <section class="relative pt-20 pb-32 px-6 overflow-hidden bg-white">
+            <div class="max-w-6xl mx-auto text-center">
+                <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-50 text-blue-600 text-sm font-bold mb-6">
+                    <span class="flex h-2 w-2 rounded-full bg-blue-600"></span>
+                    Focado no Mercado Moçambicano
                 </div>
-
-                <div class="space-y-4">
-                    <div>
-                        <label class="block text-xs font-bold text-slate-500 uppercase mb-2">O que queres criar?</label>
-                        <select id="doc-type" class="w-full bg-slate-50 border border-slate-200 p-3 rounded-xl outline-none focus:ring-2 focus:ring-blue-500 transition">
-                            <option value="resume">Currículo Moderno</option>
-                            <option value="cover-letter">Carta de Apresentação</option>
-                        </select>
-                    </div>
-
-                    <div>
-                        <label class="block text-xs font-bold text-slate-500 uppercase mb-2">Nome Completo</label>
-                        <input type="text" id="user-name" placeholder="Ex: Arlindo José Matsinhe" class="w-full bg-slate-50 border border-slate-200 p-3 rounded-xl outline-none focus:ring-2 focus:ring-blue-500">
-                    </div>
-
-                    <div>
-                        <label class="block text-xs font-bold text-slate-500 uppercase mb-2">Profissão / Objetivo</label>
-                        <input type="text" id="user-job" placeholder="Ex: Contabilista Sénior" class="w-full bg-slate-50 border border-slate-200 p-3 rounded-xl outline-none focus:ring-2 focus:ring-blue-500">
-                    </div>
-
-                    <div>
-                        <label class="block text-xs font-bold text-slate-500 uppercase mb-2">Descreve a tua experiência ou vaga</label>
-                        <textarea id="user-context" rows="6" placeholder="Ex: Tenho 5 anos em logística na Portos de Moçambique. Sou bom em Excel e gestão de equipas..." class="w-full bg-slate-50 border border-slate-200 p-3 rounded-xl outline-none focus:ring-2 focus:ring-blue-500 text-sm"></textarea>
-                        <p class="text-[10px] text-slate-400 mt-2">A nossa IA vai expandir estes pontos para um tom profissional.</p>
-                    </div>
-
-                    <button onclick="generateWithAI()" id="gen-btn" class="w-full bg-slate-900 text-white py-4 rounded-xl font-bold flex items-center justify-center gap-3 hover:bg-blue-600 transition duration-300">
-                        <span>Gerar com IA</span>
-                        <i class="fas fa-sparkles"></i>
+                <h1 class="text-5xl md:text-7xl font-extrabold text-slate-900 leading-tight mb-6">
+                    Crie documentos profissionais <br />
+                    <span class="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-indigo-600 text-blue-600">em minutos com IA.</span>
+                </h1>
+                <p class="text-xl text-slate-600 max-w-2xl mx-auto mb-10 leading-relaxed">
+                    Desde Currículos (CV) a Cartas de Apresentação. Automatize a sua burocracia com a precisão da Inteligência Artificial.
+                </p>
+                <div class="flex flex-col sm:row items-center justify-center gap-4">
+                    <button onclick="showApp()" class="w-full sm:w-auto px-8 py-4 bg-blue-600 text-white text-lg font-bold rounded-xl hover:bg-blue-700 transition flex items-center justify-center gap-2 shadow-xl shadow-blue-200">
+                        Criar Documento Agora <i class="fas fa-arrow-right"></i>
                     </button>
                 </div>
             </div>
+        </section>
+    </div>
 
-            <!-- Dicas de IA -->
-            <div class="bg-blue-50 p-6 rounded-3xl border border-blue-100">
-                <h3 class="text-blue-800 font-bold text-sm mb-2 flex items-center gap-2">
-                    <i class="fas fa-lightbulb"></i> Dica de Sucesso
-                </h3>
-                <p class="text-blue-700 text-xs leading-relaxed">
-                    Quanto mais detalhes deres sobre as tuas tarefas passadas, melhor a IA conseguirá destacar as tuas competências para o mercado moçambicano.
-                </p>
-            </div>
-        </div>
-
-        <!-- Área de Preview (Direita) -->
-        <div class="lg:col-span-8">
-            
-            <div id="loading-overlay" class="hidden absolute inset-0 z-50 flex items-center justify-center bg-slate-50/80 backdrop-blur-sm rounded-3xl">
-                <div class="text-center">
-                    <div class="loader-dots flex gap-2 justify-center mb-4">
-                        <div class="w-3 h-3 bg-blue-600 rounded-full"></div>
-                        <div class="w-3 h-3 bg-blue-600 rounded-full"></div>
-                        <div class="w-3 h-3 bg-blue-600 rounded-full"></div>
+    <!-- DASHBOARD & EDITOR APP -->
+    <div id="app-interface" class="hidden min-h-screen bg-slate-50">
+        <div class="flex h-screen overflow-hidden">
+            <!-- Sidebar -->
+            <aside class="w-64 bg-white border-r border-slate-200 flex flex-col no-print">
+                <div class="p-6">
+                    <div class="flex items-center gap-2 font-bold text-blue-600 text-xl cursor-pointer" onclick="location.reload()">
+                        <i class="fas fa-file-alt"></i>
+                        <span>HanzDocs AI</span>
                     </div>
-                    <p class="font-bold text-slate-800">O Gemini está a redigir o seu documento...</p>
                 </div>
-            </div>
-
-            <div class="mb-4 flex justify-between items-center no-print">
-                <div class="flex gap-2">
-                    <button class="bg-white border border-slate-200 px-4 py-2 rounded-lg text-xs font-bold hover:bg-slate-50">Tema Moderno</button>
-                    <button class="bg-white border border-slate-200 px-4 py-2 rounded-lg text-xs font-bold opacity-50">Tema Executivo</button>
+                <nav class="flex-1 px-4 space-y-2 py-4">
+                    <button onclick="openEditor('resume')" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl transition font-medium text-slate-600 hover:bg-slate-50">
+                        <i class="fas fa-user-tie w-5"></i><span>Criar Currículo</span>
+                    </button>
+                    <button onclick="openEditor('cover-letter')" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl transition font-medium text-slate-600 hover:bg-slate-50">
+                        <i class="fas fa-envelope-open-text w-5"></i><span>Carta de Apresentação</span>
+                    </button>
+                    <div class="pt-8 pb-2 px-4 text-[10px] font-bold text-slate-400 uppercase tracking-widest">A Minha Conta</div>
+                    <button class="w-full flex items-center gap-3 px-4 py-3 rounded-xl transition font-medium text-slate-600 hover:bg-slate-50">
+                        <i class="fas fa-folder w-5"></i><span>Documentos Guardados</span>
+                    </button>
+                    <button class="w-full flex items-center gap-3 px-4 py-3 rounded-xl transition font-medium text-slate-600 hover:bg-slate-50">
+                        <i class="fas fa-crown w-5 text-yellow-500"></i><span>Plano Pro</span>
+                    </button>
+                </nav>
+                <div class="p-4 border-t border-slate-100">
+                    <button onclick="location.reload()" class="w-full flex items-center gap-3 px-4 py-3 text-red-500 hover:bg-red-50 rounded-xl transition font-medium">
+                        <i class="fas fa-sign-out-alt"></i><span>Sair</span>
+                    </button>
                 </div>
-                <button onclick="window.print()" class="bg-blue-600 text-white px-4 py-2 rounded-lg text-xs font-bold hover:bg-blue-700">
-                    <i class="fas fa-download mr-2"></i> Baixar PDF
-                </button>
-            </div>
+            </aside>
 
-            <!-- Papel A4 -->
-            <div id="document-preview" class="a4-container">
-                <!-- Template de Boas-vindas -->
-                <div class="flex items-center justify-center h-full text-slate-300 flex-col p-20 text-center">
-                    <i class="fas fa-file-invoice text-6xl mb-4"></i>
-                    <p class="text-xl font-medium">O teu documento aparecerá aqui</p>
-                    <p class="text-sm">Preenche os dados e clica em "Gerar com IA"</p>
+            <!-- Main Content Area -->
+            <main class="flex-1 overflow-y-auto relative">
+                
+                <!-- HEADER (No Dashboard) -->
+                <header id="app-header" class="h-16 bg-white border-b border-slate-200 flex items-center justify-between px-8 no-print sticky top-0 z-40">
+                    <h2 id="page-title" class="text-lg font-bold text-slate-800">Painel de Controlo</h2>
+                    <div class="flex items-center gap-4">
+                        <div class="text-sm font-medium text-slate-500 bg-slate-100 px-3 py-1 rounded-full border border-slate-200">
+                             Grátis: 1 crédito
+                        </div>
+                        <div class="h-10 w-10 bg-blue-600 rounded-full flex items-center justify-center text-white font-bold">JD</div>
+                    </div>
+                </header>
+
+                <!-- DASHBOARD CONTENT -->
+                <div id="dashboard-view" class="p-8 max-w-5xl mx-auto">
+                    <h3 class="text-2xl font-bold mb-8">Olá, Arlindo 👋</h3>
+                    <div class="grid md:grid-cols-3 gap-6 mb-12">
+                        <div onclick="openEditor('resume')" class="bg-white p-6 rounded-3xl border border-slate-200 shadow-sm hover:shadow-xl transition cursor-pointer group">
+                            <div class="h-12 w-12 bg-blue-50 text-blue-600 rounded-2xl flex items-center justify-center mb-4 group-hover:bg-blue-600 group-hover:text-white transition">
+                                <i class="fas fa-plus text-xl"></i>
+                            </div>
+                            <h4 class="font-bold text-slate-800">Novo Currículo</h4>
+                            <p class="text-sm text-slate-500 mt-1">Design moderno otimizado por IA.</p>
+                        </div>
+                        <div onclick="openEditor('cover-letter')" class="bg-white p-6 rounded-3xl border border-slate-200 shadow-sm hover:shadow-xl transition cursor-pointer group">
+                            <div class="h-12 w-12 bg-green-50 text-green-600 rounded-2xl flex items-center justify-center mb-4 group-hover:bg-green-600 group-hover:text-white transition">
+                                <i class="fas fa-file-signature text-xl"></i>
+                            </div>
+                            <h4 class="font-bold text-slate-800">Nova Carta</h4>
+                            <p class="text-sm text-slate-500 mt-1">Argumentação profissional.</p>
+                        </div>
+                        <div class="bg-gradient-to-br from-indigo-600 to-blue-700 p-6 rounded-3xl text-white shadow-xl shadow-blue-100">
+                            <h4 class="font-bold opacity-80 mb-4">Total de Documentos</h4>
+                            <div class="text-4xl font-black">0</div>
+                            <p class="text-xs mt-4">Vais criar o teu primeiro agora?</p>
+                        </div>
+                    </div>
                 </div>
-            </div>
 
+                <!-- EDITOR VIEW (Integrated AI Engine) -->
+                <div id="editor-view" class="hidden p-8 bg-slate-100 min-h-screen">
+                    <div class="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-8 relative">
+                        
+                        <!-- Coluna Form (Esquerda) -->
+                        <div class="lg:col-span-4 space-y-6 no-print">
+                            <div class="bg-white p-6 rounded-3xl shadow-sm border border-slate-200">
+                                <h3 class="font-bold text-slate-800 mb-6 flex items-center gap-2">
+                                    <i class="fas fa-magic text-blue-600"></i> Assistente de IA
+                                </h3>
+                                <div class="space-y-4">
+                                    <input type="text" id="user-name" placeholder="Nome Completo" class="w-full bg-slate-50 border border-slate-200 p-3 rounded-xl outline-none focus:ring-2 focus:ring-blue-500">
+                                    <input type="text" id="user-job" placeholder="Profissão ou Vaga Desejada" class="w-full bg-slate-50 border border-slate-200 p-3 rounded-xl outline-none focus:ring-2 focus:ring-blue-500">
+                                    <textarea id="user-context" rows="6" placeholder="Descreva os seus pontos principais..." class="w-full bg-slate-50 border border-slate-200 p-3 rounded-xl outline-none focus:ring-2 focus:ring-blue-500 text-sm"></textarea>
+                                    <button onclick="generateWithAI()" id="gen-btn" class="w-full bg-slate-900 text-white py-4 rounded-xl font-bold flex items-center justify-center gap-3 hover:bg-blue-600 transition">
+                                        <span>Gerar Conteúdo com IA</span>
+                                        <i class="fas fa-sparkles"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            <button onclick="backToDashboard()" class="w-full py-3 text-slate-500 font-bold hover:text-slate-800 transition">
+                                <i class="fas fa-arrow-left mr-2"></i> Voltar ao Dashboard
+                            </button>
+                        </div>
+
+                        <!-- Coluna Preview (Direita) -->
+                        <div class="lg:col-span-8 relative">
+                            <!-- Overlay de Carregamento -->
+                            <div id="loading-overlay" class="hidden absolute inset-0 z-50 flex items-center justify-center bg-white/80 backdrop-blur-sm rounded-3xl">
+                                <div class="text-center">
+                                    <div class="loader-dots flex gap-2 justify-center mb-4">
+                                        <div class="w-3 h-3 bg-blue-600 rounded-full"></div>
+                                        <div class="w-3 h-3 bg-blue-600 rounded-full"></div>
+                                        <div class="w-3 h-3 bg-blue-600 rounded-full"></div>
+                                    </div>
+                                    <p class="font-bold text-slate-800">O Gemini está a redigir o documento...</p>
+                                </div>
+                            </div>
+
+                            <div class="mb-4 flex justify-end no-print">
+                                <button onclick="window.print()" class="bg-blue-600 text-white px-6 py-2.5 rounded-xl text-sm font-bold hover:bg-blue-700 shadow-lg shadow-blue-100">
+                                    <i class="fas fa-file-pdf mr-2"></i> Exportar PDF
+                                </button>
+                            </div>
+
+                            <div id="document-preview" class="a4-container">
+                                <div class="flex items-center justify-center h-full text-slate-300 flex-col p-20 text-center">
+                                    <i class="fas fa-file-invoice text-6xl mb-4"></i>
+                                    <p class="text-xl font-medium">Documento Pronto para IA</p>
+                                    <p class="text-sm">Preenche os teus dados à esquerda.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </main>
         </div>
     </div>
 
     <script>
-        const apiKey = ""; // Ambiente Canvas injeta a chave automaticamente
+        const apiKey = ""; // Injetada automaticamente
+        let currentDocType = 'resume';
+
+        function showApp() {
+            document.getElementById('landing-page').classList.add('hidden');
+            document.getElementById('app-interface').classList.remove('hidden');
+        }
+
+        function openEditor(type) {
+            currentDocType = type;
+            document.getElementById('dashboard-view').classList.add('hidden');
+            document.getElementById('editor-view').classList.remove('hidden');
+            document.getElementById('page-title').innerText = type === 'resume' ? 'Editor de Currículo' : 'Editor de Carta';
+        }
+
+        function backToDashboard() {
+            document.getElementById('editor-view').classList.add('hidden');
+            document.getElementById('dashboard-view').classList.remove('hidden');
+            document.getElementById('page-title').innerText = 'Painel de Controlo';
+        }
 
         async function generateWithAI() {
             const name = document.getElementById('user-name').value;
             const job = document.getElementById('user-job').value;
             const context = document.getElementById('user-context').value;
-            const type = document.getElementById('doc-type').value;
 
             if (!name || !context) {
                 alert("Por favor, preenche o nome e a descrição.");
                 return;
             }
 
-            // Interface Loading
             const btn = document.getElementById('gen-btn');
             const loader = document.getElementById('loading-overlay');
             btn.disabled = true;
             loader.classList.remove('hidden');
 
             const systemPrompt = `És um especialista em RH em Moçambique. 
-            Gera um ${type === 'resume' ? 'Currículo Profissional' : 'Carta de Apresentação'} 
+            Gera um ${currentDocType === 'resume' ? 'Currículo Profissional' : 'Carta de Apresentação'} 
             formatado em JSON para o utilizador ${name} que é ${job}. 
             O contexto fornecido é: ${context}. 
-            Se for currículo, cria seções: Resumo, Experiência (pelo menos 3 pontos dinâmicos), Educação e Competências.
-            Usa um tom profissional e persuasivo.`;
+            Se for currículo, cria seções: resumo, experiencias (array), educacao (array) e competencias (array).
+            Se for carta, preenche carta_conteudo.`;
 
             try {
                 const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`, {
@@ -188,11 +291,10 @@
 
                 const result = await response.json();
                 const data = JSON.parse(result.candidates[0].content.parts[0].text);
-                
-                renderDocument(type, name, job, data);
+                renderDocument(currentDocType, name, job, data);
             } catch (error) {
                 console.error(error);
-                alert("Erro ao conectar com a IA. Tente novamente.");
+                alert("Erro ao conectar com a IA.");
             } finally {
                 btn.disabled = false;
                 loader.classList.add('hidden');
@@ -205,19 +307,16 @@
             if (type === 'resume') {
                 container.innerHTML = `
                     <div class="template-modern">
-                        <div class="sidebar">
+                        <div class="sidebar-doc">
                             <div class="mb-10">
                                 <h1 class="text-2xl font-extrabold leading-tight mb-2">${name}</h1>
                                 <p class="text-blue-400 font-semibold text-sm">${job}</p>
                             </div>
-                            
                             <div class="mb-8">
                                 <h2>Contactos</h2>
                                 <p class="text-xs mb-2"><i class="fas fa-phone mr-2"></i> +258 8X XXX XXXX</p>
                                 <p class="text-xs mb-2"><i class="fas fa-envelope mr-2"></i> email@exemplo.mz</p>
-                                <p class="text-xs"><i class="fas fa-map-marker-alt mr-2"></i> Maputo, Moçambique</p>
                             </div>
-
                             <div class="mb-8">
                                 <h2>Competências</h2>
                                 <ul class="text-xs space-y-2">
@@ -225,12 +324,11 @@
                                 </ul>
                             </div>
                         </div>
-                        <div class="main-content">
+                        <div class="main-content-doc">
                             <section>
                                 <h2>Perfil Profissional</h2>
-                                <p class="text-sm leading-relaxed text-slate-600">${data.resumo}</p>
+                                <p class="text-sm leading-relaxed text-slate-600 text-justify">${data.resumo}</p>
                             </section>
-
                             <section>
                                 <h2>Experiência Profissional</h2>
                                 <div class="space-y-6">
@@ -241,7 +339,6 @@
                                     `).join('')}
                                 </div>
                             </section>
-
                             <section>
                                 <h2>Educação</h2>
                                 <ul class="text-sm space-y-2 text-slate-600">
@@ -259,19 +356,15 @@
                             <h1 class="text-3xl font-bold text-slate-900">${name}</h1>
                             <p class="text-blue-600 font-bold">${job}</p>
                         </div>
-                        
                         <div class="text-right mb-12 text-sm text-slate-500">
                             <p>Moçambique, ${dataHoje}</p>
                         </div>
-
                         <div class="mb-8 text-sm">
                             <p>À Direcção de Recursos Humanos,</p>
                         </div>
-
                         <div class="text-sm text-slate-700 space-y-4 text-justify">
                             ${data.carta_conteudo.split('\n').map(p => `<p>${p}</p>`).join('')}
                         </div>
-
                         <div class="mt-16 text-sm">
                             <p>Melhores cumprimentos,</p>
                             <div class="mt-8 border-t border-slate-900 w-48 pt-2">
