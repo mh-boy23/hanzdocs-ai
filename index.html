@@ -253,8 +253,9 @@
                 });
                 
                 if (error) {
-                    if (error.message.includes("not enabled")) {
-                        alert("O login com Google ainda não foi ativado no painel do Supabase. Por favor, use o 'Magic Link' (Email) abaixo para entrar agora.");
+                    // Trata especificamente o erro de provedor não habilitado
+                    if (error.message.includes("provider is not enabled") || error.message.includes("Unsupported provider")) {
+                        alert("O login com Google não está ativo para este projeto no Supabase.\n\nPor favor, utilize o 'Magic Link' (Email) para aceder à sua conta de forma segura.");
                     } else {
                         alert("Erro Google: " + error.message);
                     }
