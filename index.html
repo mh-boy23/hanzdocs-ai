@@ -8,11 +8,10 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap');
-        body { font-family: 'Inter', sans-serif; }
+        body { font-family: 'Inter', sans-serif; scroll-behavior: smooth; }
         .glass { background: rgba(255, 255, 255, 0.8); backdrop-filter: blur(10px); }
         .card-hover:hover { transform: translateY(-5px); transition: all 0.3s ease; }
         
-        /* Estilo para simular carregamento */
         .loader {
             border: 4px solid #f3f3f3;
             border-top: 4px solid #2563eb;
@@ -29,20 +28,47 @@
 
     <!-- Navegação -->
     <nav class="glass sticky top-0 z-50 border-b border-slate-200 px-6 py-4 flex justify-between items-center">
-        <div class="flex items-center gap-2 font-bold text-2xl text-blue-600">
+        <div class="flex items-center gap-2 font-bold text-2xl text-blue-600 cursor-pointer" onclick="window.scrollTo(0,0)">
             <i class="fas fa-file-alt"></i>
             <span>HanzDocs AI</span>
         </div>
         <div class="hidden md:flex gap-6 text-sm font-semibold text-slate-600">
             <a href="#servicos" class="hover:text-blue-600 transition">Serviços</a>
+            <a href="#precos" class="hover:text-blue-600 transition">Preços</a>
             <a href="#gerador" class="hover:text-blue-600 transition">Testar IA</a>
         </div>
-        <div>
+        <div class="flex items-center gap-4">
+            <button onclick="toggleLogin()" class="text-sm font-bold text-slate-600 hover:text-blue-600">Entrar</button>
             <button onclick="document.getElementById('gerador').scrollIntoView({behavior:'smooth'})" class="bg-blue-600 text-white px-6 py-2 rounded-full font-semibold hover:bg-blue-700 transition shadow-lg shadow-blue-200">
-                Começar Grátis
+                Criar Grátis
             </button>
         </div>
     </nav>
+
+    <!-- Modal de Login (Simulado) -->
+    <div id="login-modal" class="hidden fixed inset-0 z-[100] bg-slate-900/50 flex items-center justify-center px-6">
+        <div class="bg-white rounded-[2rem] p-8 max-w-sm w-full shadow-2xl relative">
+            <button onclick="toggleLogin()" class="absolute top-4 right-4 text-slate-400 hover:text-slate-600">
+                <i class="fas fa-times"></i>
+            </button>
+            <div class="text-center mb-8">
+                <div class="w-16 h-16 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <i class="fas fa-user-lock text-2xl"></i>
+                </div>
+                <h3 class="text-2xl font-bold">Bem-vindo de volta</h3>
+                <p class="text-slate-500 text-sm">Aceda aos seus documentos guardados.</p>
+            </div>
+            <button onclick="alert('Funcionalidade de Login com Google será ligada ao Supabase no próximo passo!')" class="w-full border border-slate-200 py-3 rounded-xl font-bold flex items-center justify-center gap-3 hover:bg-slate-50 transition mb-4">
+                <img src="https://www.google.com/favicon.ico" class="w-4 h-4" alt="Google"> Entrar com Google
+            </button>
+            <div class="relative py-4">
+                <div class="absolute inset-0 flex items-center"><div class="w-full border-t border-slate-200"></div></div>
+                <div class="relative flex justify-center text-xs uppercase"><span class="bg-white px-2 text-slate-400">Ou</span></div>
+            </div>
+            <input type="email" placeholder="Seu email" class="w-full px-4 py-3 rounded-xl border border-slate-200 mb-4 outline-none">
+            <button class="w-full bg-blue-600 text-white py-3 rounded-xl font-bold hover:bg-blue-700 transition">Entrar com Email</button>
+        </div>
+    </div>
 
     <!-- Hero Section -->
     <section class="pt-20 pb-16 px-6 text-center">
@@ -51,10 +77,10 @@
                 Inteligência Artificial em Moçambique 🇲🇿
             </span>
             <h1 class="text-5xl md:text-7xl font-extrabold mb-6 leading-tight text-slate-900">
-                Documentos profissionais <br><span class="text-blue-600">gerados em segundos.</span>
+                O seu assistente para <br><span class="text-blue-600">carreira e negócios.</span>
             </h1>
             <p class="text-xl text-slate-600 mb-10 max-w-2xl mx-auto">
-                Esqueça a dificuldade de redigir. A HanzDocs AI escreve currículos, cartas e contratos seguindo as normas locais.
+                Escreva currículos, cartas de motivação e contratos profissionais em minutos, adaptados à realidade moçambicana.
             </p>
         </div>
     </section>
@@ -64,7 +90,7 @@
         <div class="max-w-5xl mx-auto bg-white rounded-[2.5rem] shadow-2xl border border-slate-100 overflow-hidden flex flex-col md:flex-row">
             <!-- Formulário -->
             <div class="md:w-1/2 p-10 border-r border-slate-50">
-                <h2 class="text-2xl font-bold mb-6">Experimente a nossa IA</h2>
+                <h2 class="text-2xl font-bold mb-6">Criação Instantânea</h2>
                 <div id="form-content" class="space-y-4">
                     <div>
                         <label class="block text-sm font-bold text-slate-700 mb-2">O que deseja criar?</label>
@@ -79,35 +105,35 @@
                         <input type="text" id="user-name" placeholder="Ex: Arlindo José" class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-blue-500 outline-none">
                     </div>
                     <div>
-                        <label class="block text-sm font-bold text-slate-700 mb-2">Breve descrição (Sua área ou objetivo)</label>
+                        <label class="block text-sm font-bold text-slate-700 mb-2">Breve descrição (Área ou objetivo)</label>
                         <textarea id="user-desc" rows="3" placeholder="Ex: Sou graduado em contabilidade e procuro estágio..." class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-blue-500 outline-none"></textarea>
                     </div>
                     <button onclick="simularGeracao()" class="w-full bg-blue-600 text-white py-4 rounded-xl font-bold hover:bg-blue-700 transition flex items-center justify-center gap-3">
-                        <i class="fas fa-magic"></i> Gerar Documento
+                        <i class="fas fa-magic"></i> Gerar com IA
                     </button>
                 </div>
             </div>
 
             <!-- Resultado / Preview -->
             <div class="md:w-1/2 bg-slate-50 p-10 flex flex-col items-center justify-center min-h-[400px]">
-                <div id="preview-placeholder" class="text-center">
+                <div id="preview-placeholder" class="text-center px-6">
                     <div class="w-20 h-20 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4 text-blue-600">
                         <i class="fas fa-robot text-3xl"></i>
                     </div>
-                    <p class="text-slate-500 font-medium">Preencha os dados ao lado para a IA trabalhar.</p>
+                    <p class="text-slate-500 font-medium">Preencha os dados e a nossa IA redigirá o documento ideal para si.</p>
                 </div>
 
                 <div id="loading-state" class="hidden text-center">
                     <div class="loader mb-4"></div>
                     <p class="text-blue-600 font-bold">A redigir documento...</p>
-                    <p class="text-xs text-slate-400">Analisando normas de Moçambique</p>
+                    <p class="text-xs text-slate-400">Seguindo normas moçambicanas</p>
                 </div>
 
                 <div id="result-state" class="hidden w-full h-full flex flex-col">
-                    <div class="bg-white border border-slate-200 p-6 rounded-xl shadow-sm text-xs font-serif text-slate-700 flex-1 overflow-auto mb-4" id="doc-output">
+                    <div class="bg-white border border-slate-200 p-6 rounded-xl shadow-sm text-[10px] font-serif text-slate-700 flex-1 overflow-auto mb-4" id="doc-output">
                         <!-- O texto gerado aparecerá aqui -->
                     </div>
-                    <button class="w-full bg-slate-900 text-white py-3 rounded-xl font-bold flex items-center justify-center gap-2">
+                    <button onclick="alert('Login necessário para baixar em PDF!')" class="w-full bg-slate-900 text-white py-3 rounded-xl font-bold flex items-center justify-center gap-2">
                         <i class="fas fa-download"></i> Baixar em PDF
                     </button>
                 </div>
@@ -115,42 +141,63 @@
         </div>
     </section>
 
-    <!-- Secção de Serviços -->
-    <section id="servicos" class="py-24 bg-white px-6">
+    <!-- Planos de Preço -->
+    <section id="precos" class="py-24 px-6 bg-slate-900 text-white">
         <div class="max-w-6xl mx-auto">
-            <h2 class="text-3xl font-bold text-center mb-16">Especializado em Moçambique</h2>
-            <div class="grid md:grid-cols-3 gap-12">
-                <div class="text-center">
-                    <div class="w-16 h-16 bg-blue-50 text-blue-600 rounded-2xl flex items-center justify-center mx-auto mb-6">
-                        <i class="fas fa-check-double text-2xl"></i>
-                    </div>
-                    <h3 class="font-bold text-xl mb-3">Normas do Trabalho</h3>
-                    <p class="text-slate-500">Documentos alinhados com a Lei 23/2007 e práticas de RH locais.</p>
+            <div class="text-center mb-16">
+                <h2 class="text-4xl font-bold mb-4">Acesso Simples e Justo</h2>
+                <p class="text-slate-400">Pague apenas pelo que precisar ou assine para acesso ilimitado.</p>
+            </div>
+            <div class="grid md:grid-cols-3 gap-8">
+                <!-- Unitário -->
+                <div class="bg-slate-800 p-8 rounded-3xl border border-slate-700 card-hover">
+                    <h3 class="text-xl font-bold mb-2 text-blue-400">Documento Único</h3>
+                    <div class="text-4xl font-bold mb-6">50 MT <span class="text-sm font-normal text-slate-400">/doc</span></div>
+                    <ul class="space-y-3 mb-8 text-sm text-slate-300">
+                        <li><i class="fas fa-check text-green-500 mr-2"></i> 1 PDF Profissional</li>
+                        <li><i class="fas fa-check text-green-500 mr-2"></i> Revisão de IA básica</li>
+                        <li><i class="fas fa-check text-green-500 mr-2"></i> Pagamento M-Pesa</li>
+                    </ul>
+                    <button class="w-full py-3 rounded-xl border border-slate-600 font-bold hover:bg-slate-700 transition">Comprar Agora</button>
                 </div>
-                <div class="text-center">
-                    <div class="w-16 h-16 bg-blue-50 text-blue-600 rounded-2xl flex items-center justify-center mx-auto mb-6">
-                        <i class="fas fa-mobile-alt text-2xl"></i>
-                    </div>
-                    <h3 class="font-bold text-xl mb-3">Pagamento via M-Pesa</h3>
-                    <p class="text-slate-500">Pague de forma simples e segura usando a sua carteira móvel.</p>
+                <!-- Popular -->
+                <div class="bg-blue-600 p-8 rounded-3xl border-4 border-blue-400 card-hover transform scale-105">
+                    <div class="bg-white text-blue-600 text-[10px] font-bold px-3 py-1 rounded-full inline-block mb-4 uppercase">Mais Popular</div>
+                    <h3 class="text-xl font-bold mb-2">Plano Pro</h3>
+                    <div class="text-4xl font-bold mb-6">250 MT <span class="text-sm font-normal text-blue-200">/mês</span></div>
+                    <ul class="space-y-3 mb-8 text-sm text-blue-50">
+                        <li><i class="fas fa-check mr-2"></i> Documentos Ilimitados</li>
+                        <li><i class="fas fa-check mr-2"></i> IA Premium (mais detalhada)</li>
+                        <li><i class="fas fa-check mr-2"></i> Suporte WhatsApp</li>
+                    </ul>
+                    <button class="w-full bg-white text-blue-600 py-3 rounded-xl font-bold hover:bg-slate-100 transition shadow-xl">Assinar com M-Pesa</button>
                 </div>
-                <div class="text-center">
-                    <div class="w-16 h-16 bg-blue-50 text-blue-600 rounded-2xl flex items-center justify-center mx-auto mb-6">
-                        <i class="fas fa-bolt text-2xl"></i>
-                    </div>
-                    <h3 class="font-bold text-xl mb-3">Rapidez Instantânea</h3>
-                    <p class="text-slate-500">O que levava horas agora leva menos de 60 segundos.</p>
+                <!-- Business -->
+                <div class="bg-slate-800 p-8 rounded-3xl border border-slate-700 card-hover">
+                    <h3 class="text-xl font-bold mb-2 text-blue-400">Empresarial</h3>
+                    <div class="text-4xl font-bold mb-6">Sob Consulta</div>
+                    <ul class="space-y-3 mb-8 text-sm text-slate-300">
+                        <li><i class="fas fa-check text-green-500 mr-2"></i> API para Empresas</li>
+                        <li><i class="fas fa-check text-green-500 mr-2"></i> Gestão de RH</li>
+                        <li><i class="fas fa-check text-green-500 mr-2"></i> Contratos Customizados</li>
+                    </ul>
+                    <button class="w-full py-3 rounded-xl border border-slate-600 font-bold hover:bg-slate-700 transition">Contactar Equipa</button>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- Rodapé -->
-    <footer class="py-12 border-t border-slate-200 text-center text-slate-400 text-sm">
-        <p>© 2024 HanzDocs AI - Eleve o seu nível profissional.</p>
+    <!-- Footer -->
+    <footer class="py-12 bg-white border-t border-slate-200 text-center text-slate-400 text-sm">
+        <p>© 2024 HanzDocs AI - Modernizando o mercado de trabalho em Moçambique.</p>
     </footer>
 
     <script>
+        function toggleLogin() {
+            const modal = document.getElementById('login-modal');
+            modal.classList.toggle('hidden');
+        }
+
         function simularGeracao() {
             const name = document.getElementById('user-name').value;
             const desc = document.getElementById('user-desc').value;
@@ -161,23 +208,21 @@
                 return;
             }
 
-            // Iniciar estados de UI
             document.getElementById('preview-placeholder').classList.add('hidden');
             document.getElementById('result-state').classList.add('hidden');
             document.getElementById('loading-state').classList.remove('hidden');
 
-            // Simular atraso da IA (2 segundos)
             setTimeout(() => {
                 document.getElementById('loading-state').classList.add('hidden');
                 document.getElementById('result-state').classList.remove('hidden');
                 
                 let texto = "";
                 if(type === 'cv') {
-                    texto = `<strong>${name.toUpperCase()}</strong><br>Maputo, Moçambique<hr><br><strong>OBJECTIVO:</strong><br>${desc}<br><br><strong>EDUCAÇÃO:</strong><br>Ensino Médio concluído em Moçambique...<br><br><strong>EXPERIÊNCIA:</strong><br>Gerado automaticamente pela HanzDocs AI...`;
+                    texto = `<strong>${name.toUpperCase()}</strong><br>Maputo, Moçambique<hr><br><strong>OBJECTIVO PROFISSIONAL:</strong><br>${desc}<br><br><strong>FORMAÇÃO ACADÉMICA:</strong><br>Nível Médio concluído (Escola Secundária local)...<br><br><strong>COMPETÊNCIAS:</strong><br>Comunicação, Proatividade, Domínio de MS Office.<br><br><strong>REFERÊNCIAS:</strong><br>Disponíveis sob pedido.`;
                 } else if(type === 'carta') {
-                    texto = `Exmo. Senhor Recrutador,<br><br>Eu, <strong>${name}</strong>, venho por este meio manifestar o meu interesse...<br><br>${desc}<br><br>Sem mais de momento, fico à espera de um contacto.`;
+                    texto = `A/C Departamento de Recursos Humanos,<br><br>Eu, <strong>${name}</strong>, venho por este meio submeter a minha candidatura para a vaga disponível...<br><br>Pela minha experiência em: "${desc}", acredito ser o candidato ideal.<br><br>Atenciosamente,<br><strong>${name}</strong>`;
                 } else {
-                    texto = `<strong>CONTRATO DE ALUGUER</strong><br><br>Entre: Locador e <strong>${name}</strong> (Locatário).<br><br>O presente contrato rege-se pelas normas do Código Civil de Moçambique...`;
+                    texto = `<strong>CONTRATO DE LOCAÇÃO DE IMÓVEL</strong><br><br>Entre o Senhorio e o Locatário <strong>${name}</strong>.<br><br>Cláusula 1ª: O objecto deste contrato é o aluguer do imóvel sito em...<br><br>Regido pelas leis da República de Moçambique.`;
                 }
                 
                 document.getElementById('doc-output').innerHTML = texto;
