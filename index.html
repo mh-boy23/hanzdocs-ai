@@ -31,6 +31,19 @@
             box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
             line-height: 1.5;
             font-family: 'Times New Roman', serif;
+            position: relative;
+        }
+
+        .watermark {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) rotate(-45deg);
+            font-size: 80px;
+            color: rgba(0,0,0,0.05);
+            pointer-events: none;
+            user-select: none;
+            white-space: nowrap;
         }
     </style>
 </head>
@@ -44,19 +57,17 @@
         </div>
         <div class="hidden md:flex gap-6 text-sm font-semibold text-slate-600">
             <a href="#servicos" class="hover:text-blue-600 transition">Serviços</a>
+            <a href="#meus-docs" class="hover:text-blue-600 transition">Meus Documentos</a>
             <a href="#precos" class="hover:text-blue-600 transition">Preços</a>
-            <a href="#gerador" class="hover:text-blue-600 transition">Testar IA</a>
         </div>
         <div class="flex items-center gap-4">
-            <!-- Perfil do Utilizador (Visível quando logado) -->
             <div id="user-profile" class="hidden flex items-center gap-4">
-                <span id="user-email" class="text-sm font-semibold text-slate-700 bg-slate-100 px-3 py-1 rounded-full"></span>
+                <span id="user-email" class="hidden sm:inline text-sm font-semibold text-slate-700 bg-slate-100 px-3 py-1 rounded-full"></span>
                 <button onclick="handleLogout()" class="text-xs font-bold text-red-500 hover:text-red-700">Sair</button>
             </div>
-            <!-- Botão Entrar (Visível quando deslogado) -->
             <button id="login-btn" onclick="toggleLogin()" class="text-sm font-bold text-slate-600 hover:text-blue-600">Entrar</button>
             <button onclick="document.getElementById('gerador').scrollIntoView({behavior:'smooth'})" class="bg-blue-600 text-white px-6 py-2 rounded-full font-semibold hover:bg-blue-700 transition shadow-lg shadow-blue-200">
-                Criar Grátis
+                Criar Novo
             </button>
         </div>
     </nav>
@@ -88,38 +99,34 @@
             <button id="magic-link-btn" onclick="handleMagicLink()" class="w-full bg-blue-600 text-white py-3 rounded-xl font-bold hover:bg-blue-700 transition">
                 Receber Link por Email
             </button>
-            <p class="text-[10px] text-slate-400 mt-4 text-center text-balance italic">Recomendado para Moçambique: Use o Magic Link se o Google der erro.</p>
         </div>
     </div>
 
     <!-- Hero Section -->
-    <section class="pt-20 pb-16 px-6 text-center">
+    <section class="pt-16 pb-12 px-6 text-center">
         <div class="max-w-4xl mx-auto">
-            <span class="inline-block bg-blue-100 text-blue-700 px-4 py-1 rounded-full text-sm font-bold mb-6">
-                Inteligência Artificial em Moçambique 🇲🇿
-            </span>
-            <h1 class="text-5xl md:text-7xl font-extrabold mb-6 leading-tight text-slate-900">
-                O seu assistente para <br><span class="text-blue-600">carreira e negócios.</span>
+            <h1 class="text-4xl md:text-6xl font-extrabold mb-6 leading-tight text-slate-900">
+                Documentos Profissionais <br><span class="text-blue-600">em segundos.</span>
             </h1>
-            <p class="text-xl text-slate-600 mb-10 max-w-2xl mx-auto">
-                Escreva currículos, cartas de motivação e contratos profissionais em minutos, adaptados à realidade moçambicana.
+            <p class="text-lg text-slate-600 mb-8 max-w-2xl mx-auto">
+                Adaptado às normas de Moçambique. Escolha, preencha e imprima.
             </p>
         </div>
     </section>
 
     <!-- Gerador Interativo -->
-    <section id="gerador" class="py-12 px-6">
+    <section id="gerador" class="py-8 px-6">
         <div class="max-w-6xl mx-auto bg-white rounded-[2.5rem] shadow-2xl border border-slate-100 overflow-hidden flex flex-col lg:flex-row">
             <!-- Formulário -->
             <div class="lg:w-1/3 p-8 border-r border-slate-50">
-                <h2 class="text-2xl font-bold mb-6">Configurar Documento</h2>
+                <h2 class="text-2xl font-bold mb-6">Criar Documento</h2>
                 <div id="form-content" class="space-y-4">
                     <div>
                         <label class="block text-sm font-bold text-slate-700 mb-2">Tipo de Documento</label>
                         <select id="doc-type" class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-blue-500 outline-none">
                             <option value="cv">Currículo Profissional</option>
                             <option value="carta">Carta de Motivação</option>
-                            <option value="contrato">Contrato de Aluguer Simples</option>
+                            <option value="contrato">Contrato de Arrendamento</option>
                         </select>
                     </div>
                     <div>
@@ -127,27 +134,27 @@
                         <input type="text" id="user-name" placeholder="Ex: Arlindo José" class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-blue-500 outline-none">
                     </div>
                     <div>
-                        <label class="block text-sm font-bold text-slate-700 mb-2">Telefone / Contacto</label>
+                        <label class="block text-sm font-bold text-slate-700 mb-2">Telefone</label>
                         <input type="text" id="user-phone" placeholder="Ex: +258 84 000 0000" class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-blue-500 outline-none">
                     </div>
                     <div>
-                        <label class="block text-sm font-bold text-slate-700 mb-2">Resumo de Experiência / Contexto</label>
-                        <textarea id="user-desc" rows="4" placeholder="Descreva brevemente o seu objetivo ou os detalhes para o contrato..." class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-blue-500 outline-none"></textarea>
+                        <label class="block text-sm font-bold text-slate-700 mb-2">Detalhes / Experiência</label>
+                        <textarea id="user-desc" rows="4" placeholder="Descreva brevemente o seu objetivo ou os detalhes..." class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-blue-500 outline-none"></textarea>
                     </div>
-                    <button onclick="gerarDocumentoComIA()" class="w-full bg-blue-600 text-white py-4 rounded-xl font-bold hover:bg-blue-700 transition flex items-center justify-center gap-3">
-                        <i class="fas fa-magic"></i> Gerar Documento
+                    <button onclick="gerarDocumentoComIA()" class="w-full bg-blue-600 text-white py-4 rounded-xl font-bold hover:bg-blue-700 transition flex items-center justify-center gap-3 shadow-lg shadow-blue-100">
+                        <i class="fas fa-magic"></i> Gerar Agora
                     </button>
                 </div>
             </div>
 
-            <!-- Resultado / Preview Estilizado -->
-            <div class="lg:w-2/3 bg-slate-100 p-4 md:p-8 flex flex-col items-center">
+            <!-- Resultado / Preview -->
+            <div class="lg:w-2/3 bg-slate-100 p-4 md:p-8 flex flex-col items-center min-h-[600px] justify-center">
                 
                 <div id="preview-placeholder" class="text-center py-20">
                     <div class="w-20 h-20 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4 text-blue-600">
                         <i class="fas fa-file-signature text-3xl"></i>
                     </div>
-                    <p class="text-slate-500 font-medium">Os seus dados aparecerão aqui num formato pronto para imprimir.</p>
+                    <p class="text-slate-500 font-medium">Preencha os dados à esquerda para visualizar.</p>
                 </div>
 
                 <div id="loading-state" class="hidden text-center py-20">
@@ -157,20 +164,18 @@
 
                 <div id="result-state" class="hidden w-full flex flex-col items-center">
                     <div class="flex justify-between w-full max-w-[210mm] mb-4">
-                        <span class="text-xs font-bold text-slate-400 uppercase tracking-widest">Digital Preview (A4)</span>
-                        <div class="flex gap-2">
-                            <button onclick="copiarTexto()" class="text-xs bg-white border border-slate-200 px-3 py-1 rounded-lg hover:bg-slate-50 transition">Copiar Texto</button>
-                        </div>
+                        <span class="text-xs font-bold text-slate-400 uppercase tracking-widest">A4 Digital Preview</span>
+                        <button onclick="copiarTexto()" class="text-xs bg-white border border-slate-200 px-3 py-1 rounded-lg hover:bg-slate-50 transition">Copiar Texto</button>
                     </div>
                     
-                    <!-- Simulação de Folha A4 -->
                     <div class="a4-preview w-full max-w-[210mm] min-h-[297mm] p-[20mm] text-slate-800 text-sm overflow-hidden" id="doc-output">
+                        <div class="watermark">HanzDocs AI</div>
                         <!-- Conteúdo Gerado -->
                     </div>
 
                     <div class="mt-8 grid grid-cols-1 md:grid-cols-2 gap-4 w-full max-w-[210mm]">
                         <button onclick="handlePayment('unit')" class="bg-blue-600 text-white py-4 rounded-xl font-bold flex items-center justify-center gap-2 hover:bg-blue-700 shadow-xl shadow-blue-200">
-                            <i class="fas fa-file-pdf"></i> Remover Marca de Água (50 MT)
+                            <i class="fas fa-file-pdf"></i> Baixar PDF (50 MT)
                         </button>
                         <button onclick="window.print()" class="bg-slate-900 text-white py-4 rounded-xl font-bold flex items-center justify-center gap-2 hover:bg-slate-800">
                             <i class="fas fa-print"></i> Imprimir Rascunho
@@ -181,52 +186,29 @@
         </div>
     </section>
 
-    <!-- Planos de Preço -->
-    <section id="precos" class="py-24 px-6 bg-slate-900 text-white">
-        <div class="max-w-6xl mx-auto text-center">
-            <h2 class="text-4xl font-bold mb-16">Planos Adaptados para Moçambique</h2>
-            <div class="grid md:grid-cols-3 gap-8 text-left">
-                <!-- Unitário -->
-                <div class="bg-slate-800 p-8 rounded-3xl border border-slate-700 card-hover">
-                    <h3 class="text-xl font-bold mb-2 text-blue-400">Documento Único</h3>
-                    <div class="text-4xl font-bold mb-6">50 MT <span class="text-sm font-normal text-slate-400">/doc</span></div>
-                    <ul class="space-y-3 mb-8 text-sm text-slate-300">
-                        <li><i class="fas fa-check text-green-500 mr-2"></i> PDF Sem Marca de Água</li>
-                        <li><i class="fas fa-check text-green-500 mr-2"></i> Revisão de IA básica</li>
-                        <li><i class="fas fa-check text-green-500 mr-2"></i> Pagamento M-Pesa</li>
-                    </ul>
-                    <button onclick="handlePayment('unit')" class="w-full py-3 rounded-xl border border-slate-600 font-bold hover:bg-slate-700 transition">Comprar Agora</button>
+    <!-- Secção Meus Documentos -->
+    <section id="meus-docs" class="py-16 px-6 bg-white">
+        <div class="max-w-6xl mx-auto">
+            <div class="flex justify-between items-end mb-8">
+                <div>
+                    <h2 class="text-3xl font-bold">Os Meus Documentos</h2>
+                    <p class="text-slate-500">Histórico de ficheiros gerados na nuvem.</p>
                 </div>
-                <!-- Popular -->
-                <div class="bg-blue-600 p-8 rounded-3xl border-4 border-blue-400 card-hover transform scale-105">
-                    <div class="bg-white text-blue-600 text-[10px] font-bold px-3 py-1 rounded-full inline-block mb-4 uppercase">Mais Popular</div>
-                    <h3 class="text-xl font-bold mb-2">Plano Pro</h3>
-                    <div class="text-4xl font-bold mb-6">250 MT <span class="text-sm font-normal text-blue-200">/mês</span></div>
-                    <ul class="space-y-3 mb-8 text-sm text-blue-50">
-                        <li><i class="fas fa-check mr-2"></i> Documentos Ilimitados</li>
-                        <li><i class="fas fa-check mr-2"></i> IA Premium (mais detalhada)</li>
-                        <li><i class="fas fa-check mr-2"></i> Suporte WhatsApp</li>
-                    </ul>
-                    <button onclick="handlePayment('pro')" class="w-full bg-white text-blue-600 py-3 rounded-xl font-bold hover:bg-slate-100 transition shadow-xl">Assinar com M-Pesa</button>
-                </div>
-                <!-- Grátis -->
-                <div class="bg-slate-800 p-8 rounded-3xl border border-slate-700 card-hover opacity-75">
-                    <h3 class="text-xl font-bold mb-2 text-slate-400">Free Tier</h3>
-                    <div class="text-4xl font-bold mb-6">0 MT <span class="text-sm font-normal text-slate-400">/sempre</span></div>
-                    <ul class="space-y-3 mb-8 text-sm text-slate-300">
-                        <li><i class="fas fa-check text-slate-500 mr-2"></i> Geração de Texto</li>
-                        <li><i class="fas fa-times text-red-500 mr-2"></i> Marca de Água no PDF</li>
-                        <li><i class="fas fa-check text-slate-500 mr-2"></i> Rascunhos Ilimitados</li>
-                    </ul>
-                    <button disabled class="w-full py-3 rounded-xl border border-slate-600 font-bold text-slate-500 cursor-not-allowed">Já Ativo</button>
+                <button onclick="loadUserDocuments()" class="text-blue-600 font-bold text-sm hover:underline">Atualizar lista</button>
+            </div>
+            
+            <div id="docs-list" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                <!-- Lista de documentos será injetada aqui -->
+                <div class="col-span-full py-12 text-center border-2 border-dashed border-slate-100 rounded-[2rem]">
+                    <p class="text-slate-400">Faça login para ver e guardar os seus documentos.</p>
                 </div>
             </div>
         </div>
     </section>
 
     <!-- Footer -->
-    <footer class="py-12 bg-white border-t border-slate-200 text-center text-slate-400 text-sm">
-        <p>© 2024 HanzDocs AI - Modernizando o mercado de trabalho em Moçambique.</p>
+    <footer class="py-12 bg-slate-50 border-t border-slate-200 text-center text-slate-400 text-sm">
+        <p>© 2024 HanzDocs AI - Soluções Digitais Moçambique.</p>
     </footer>
 
     <script>
@@ -235,12 +217,18 @@
         const SUPABASE_ANON_KEY = 'sb_publishable_QCB11qPe_6raIdDVussbpQ_VZ2W_acc';
         const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
+        let currentUser = null;
+
         window.onload = async () => {
             const { data: { session } } = await supabaseClient.auth.getSession();
-            updateUI(session?.user);
+            currentUser = session?.user;
+            updateUI(currentUser);
+            if(currentUser) loadUserDocuments();
 
             supabaseClient.auth.onAuthStateChange((_event, session) => {
-                updateUI(session?.user);
+                currentUser = session?.user;
+                updateUI(currentUser);
+                if(currentUser) loadUserDocuments();
             });
         };
 
@@ -271,18 +259,16 @@
                 provider: 'google',
                 options: { redirectTo: window.location.origin }
             });
-            if (error) alert("Use o Magic Link. O Google ainda requer configuração de Client ID.");
+            if (error) alert("Use o Magic Link por agora.");
         }
 
         async function handleMagicLink() {
             const email = document.getElementById('email-input').value;
             if (!email) { alert("Introduza o seu email."); return; }
-            
             const { error } = await supabaseClient.auth.signInWithOtp({
                 email: email,
                 options: { emailRedirectTo: window.location.origin }
             });
-
             if (error) alert("Erro: " + error.message);
             else alert("Link enviado! Verifique o seu email.");
         }
@@ -292,18 +278,69 @@
             location.reload();
         }
 
-        function handlePayment(plan) {
-            const phone = prompt("Digite o seu número M-Pesa para pagamento:");
-            if (phone) alert(`Solicitação enviada para ${phone}. Confirme no seu telemóvel.`);
+        // --- LÓGICA DE DADOS (FIRESTORE SIMULADO VIA SUPABASE) ---
+        async function loadUserDocuments() {
+            if(!currentUser) return;
+            const docsList = document.getElementById('docs-list');
+            docsList.innerHTML = '<div class="col-span-full text-center py-4">A carregar documentos...</div>';
+
+            try {
+                const { data, error } = await supabaseClient
+                    .from('user_documents')
+                    .select('*')
+                    .order('created_at', { ascending: false });
+
+                if (error) throw error;
+
+                if (!data || data.length === 0) {
+                    docsList.innerHTML = '<div class="col-span-full py-12 text-center text-slate-400 italic">Nenhum documento guardado ainda.</div>';
+                    return;
+                }
+
+                docsList.innerHTML = data.map(doc => `
+                    <div class="bg-slate-50 p-6 rounded-3xl border border-slate-100 card-hover cursor-pointer" onclick="viewSavedDoc('${doc.id}')">
+                        <div class="w-10 h-10 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center mb-4">
+                            <i class="fas ${doc.type === 'cv' ? 'fa-user-tie' : 'fa-file-contract'}"></i>
+                        </div>
+                        <h4 class="font-bold text-slate-800 truncate">${doc.title || 'Documento Sem Nome'}</h4>
+                        <p class="text-xs text-slate-400 mt-1">${new Date(doc.created_at).toLocaleDateString()}</p>
+                    </div>
+                `).join('');
+            } catch (e) {
+                docsList.innerHTML = '<div class="col-span-full py-12 text-center text-red-400">Erro ao carregar documentos. Certifique-se que a tabela existe no Supabase.</div>';
+            }
         }
 
-        function copiarTexto() {
-            const text = document.getElementById('doc-output').innerText;
-            navigator.clipboard.writeText(text);
-            alert("Texto copiado para a área de transferência!");
+        async function saveDocument(type, title, content) {
+            if(!currentUser) return;
+            const { error } = await supabaseClient
+                .from('user_documents')
+                .insert([{ 
+                    user_id: currentUser.id, 
+                    type, 
+                    title, 
+                    content 
+                }]);
+            
+            if (!error) loadUserDocuments();
         }
 
-        // LÓGICA DE GERAÇÃO "IA" (Simulada para esta fase)
+        async function viewSavedDoc(id) {
+            const { data, error } = await supabaseClient
+                .from('user_documents')
+                .select('*')
+                .eq('id', id)
+                .single();
+            
+            if (data) {
+                const output = document.getElementById('doc-output');
+                output.innerHTML = `<div class="watermark">HanzDocs AI</div>` + data.content;
+                document.getElementById('preview-placeholder').classList.add('hidden');
+                document.getElementById('result-state').classList.remove('hidden');
+                document.getElementById('gerador').scrollIntoView({behavior:'smooth'});
+            }
+        }
+
         function gerarDocumentoComIA() {
             const name = document.getElementById('user-name').value;
             const desc = document.getElementById('user-desc').value;
@@ -311,11 +348,10 @@
             const phone = document.getElementById('user-phone').value || "+258 8X XXX XXXX";
 
             if (!name || !desc) {
-                alert("Por favor, preencha o seu nome e a descrição do documento.");
+                alert("Por favor, preencha os dados obrigatórios.");
                 return;
             }
 
-            // UI Feedback
             document.getElementById('preview-placeholder').classList.add('hidden');
             document.getElementById('result-state').classList.add('hidden');
             document.getElementById('loading-state').classList.remove('hidden');
@@ -331,24 +367,11 @@
                     htmlContent = `
                         <div style="text-align: center; margin-bottom: 30px;">
                             <h1 style="font-size: 24pt; font-weight: bold; margin-bottom: 5px;">${name.toUpperCase()}</h1>
-                            <p>${phone} | Moçambique | Email: [Seu Email]</p>
+                            <p>${phone} | Moçambique</p>
                         </div>
                         <div style="margin-bottom: 20px;">
                             <h2 style="border-bottom: 1.5pt solid black; font-size: 14pt; font-weight: bold;">PERFIL PROFISSIONAL</h2>
                             <p style="margin-top: 10px; text-align: justify;">${desc}</p>
-                        </div>
-                        <div style="margin-bottom: 20px;">
-                            <h2 style="border-bottom: 1.5pt solid black; font-size: 14pt; font-weight: bold;">FORMAÇÃO ACADÉMICA</h2>
-                            <p style="margin-top: 5px;"><strong>Licenciatura / Bacharelato</strong> - [Nome da Instituição]</p>
-                            <p style="font-size: 10pt; color: #555;">Conclusão: [Ano]</p>
-                        </div>
-                        <div style="margin-bottom: 20px;">
-                            <h2 style="border-bottom: 1.5pt solid black; font-size: 14pt; font-weight: bold;">COMPETÊNCIAS</h2>
-                            <ul style="margin-top: 5px; margin-left: 20px; list-style-type: disc;">
-                                <li>Capacidade Analítica e Resolução de Problemas</li>
-                                <li>Domínio de Ferramentas Digitais</li>
-                                <li>Excelente Comunicação Escrita e Verbal</li>
-                            </ul>
                         </div>
                     `;
                 } else if(type === 'carta') {
@@ -359,55 +382,39 @@
                         </div>
                         <div style="margin-bottom: 40px;">
                             <p>À Direcção de Recursos Humanos</p>
-                            <p><strong>[Nome da Empresa]</strong></p>
-                            <p>Maputo / Beira / Nampula</p>
                         </div>
-                        <div style="margin-bottom: 20px;">
-                            <p><strong>Assunto: Candidatura à vaga de [Nome da Vaga]</strong></p>
-                        </div>
-                        <p style="text-align: justify; margin-bottom: 15px;">Exmos. Senhores,</p>
-                        <p style="text-align: justify; margin-bottom: 15px;">
-                            Eu, <strong>${name}</strong>, venho por este meio manifestar o meu profundo interesse em integrar a vossa equipa. 
-                            Com base no meu perfil: ${desc}, acredito possuir as competências necessárias para agregar valor imediato à vossa organização.
-                        </p>
-                        <p style="text-align: justify; margin-bottom: 15px;">
-                            Estou disponível para uma entrevista onde poderei detalhar como a minha experiência pode contribuir para o crescimento dos vossos projectos.
-                        </p>
-                        <div style="margin-top: 50px; text-align: center;">
-                            <p>Atentamente,</p>
-                            <div style="margin: 20px auto; border-top: 1pt solid black; width: 250px;"></div>
-                            <p><strong>${name}</strong></p>
-                            <p>${phone}</p>
-                        </div>
+                        <p style="text-align: justify; margin-bottom: 15px;">Prezados,</p>
+                        <p style="text-align: justify; margin-bottom: 15px;">Eu, ${name}, venho manifestar interesse na vaga...</p>
                     `;
                 } else {
                     htmlContent = `
                         <div style="text-align: center; margin-bottom: 30px;">
-                            <h1 style="font-size: 18pt; font-weight: bold;">CONTRATO DE ARRENDAMENTO PARA HABITAÇÃO</h1>
+                            <h1 style="font-size: 18pt; font-weight: bold;">CONTRATO DE ARRENDAMENTO</h1>
                         </div>
-                        <p style="text-align: justify; margin-bottom: 15px;">
-                            <strong>PRIMEIRO OUTORGANTE:</strong> [Nome do Senhorio], portador do BI nº [Número], residente em Moçambique.
-                        </p>
-                        <p style="text-align: justify; margin-bottom: 15px;">
-                            <strong>SEGUNDO OUTORGANTE:</strong> <strong>${name}</strong>, portador do BI nº [Número], doravante designado como Arrendatário.
-                        </p>
-                        <p style="text-align: justify; margin-bottom: 15px;">
-                            As partes acordam as seguintes cláusulas:
-                        </p>
-                        <div style="margin-left: 10px;">
-                            <p><strong>CLÁUSULA 1ª:</strong> O objeto deste contrato é o imóvel localizado em: ${desc}.</p>
-                            <p><strong>CLÁUSULA 2ª:</strong> O valor mensal do aluguer é de [Valor] MT, a serem pagos até ao dia 5 de cada mês.</p>
-                            <p><strong>CLÁUSULA 3ª:</strong> O presente contrato tem a validade de 12 meses, renováveis.</p>
-                        </div>
-                        <div style="margin-top: 60px; display: flex; justify-content: space-around;">
-                            <div style="text-align: center; border-top: 1pt solid black; width: 200px; padding-top: 5px;">O Senhorio</div>
-                            <div style="text-align: center; border-top: 1pt solid black; width: 200px; padding-top: 5px;">O Arrendatário</div>
-                        </div>
+                        <p><strong>ARRENDATÁRIO:</strong> ${name}</p>
+                        <p><strong>DETALHES DO IMÓVEL:</strong> ${desc}</p>
                     `;
                 }
                 
-                output.innerHTML = htmlContent;
+                output.innerHTML = `<div class="watermark">HanzDocs AI</div>` + htmlContent;
+                
+                // Salvar automaticamente se logado
+                if(currentUser) {
+                    saveDocument(type, `${type.toUpperCase()} - ${name}`, htmlContent);
+                }
+
             }, 2000);
+        }
+
+        function handlePayment(plan) {
+            const phone = prompt("Digite o seu número M-Pesa para pagamento:");
+            if (phone) alert(`Solicitação enviada para ${phone}. Confirme no seu telemóvel.`);
+        }
+
+        function copiarTexto() {
+            const text = document.getElementById('doc-output').innerText;
+            navigator.clipboard.writeText(text);
+            alert("Texto copiado!");
         }
     </script>
 </body>
