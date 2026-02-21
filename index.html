@@ -1,922 +1,657 @@
-<!DOCTYPE html>
-<html lang="pt-MZ">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>HanzDocs AI | Documentos Profissionais em Moçambique</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap');
-        body { font-family: 'Inter', sans-serif; scroll-behavior: smooth; }
-        .glass { background: rgba(255, 255, 255, 0.85); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); }
-        .card-hover:hover { transform: translateY(-5px); transition: all 0.3s ease; }
-        
-        .loader {
-            border: 4px solid #f3f3f3;
-            border-top: 4px solid #2563eb;
-            border-radius: 50%;
-            width: 30px;
-            height: 30px;
-            animation: spin 1s linear infinite;
-            display: inline-block;
-        }
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+import React, { useState, useMemo } from 'react';
+import { 
+  User, Mail, Phone, MapPin, Briefcase, Trash2, Download, 
+  Settings, Plus, CheckCircle, Award, Rocket, FileBadge, 
+  AlignLeft, Palette, GraduationCap, Languages, BriefcaseBusiness, 
+  PencilLine, Star, FileText, LayoutTemplate, PlusCircle, Building,
+  Calendar, FileEdit, FileCode2, Linkedin, Globe, ShieldCheck,
+  ChevronRight, Facebook, Instagram, Twitter, Type, MessageSquare,
+  Trophy, HeartHandshake, BookOpen, Quote
+} from 'lucide-react';
 
-        .a4-preview {
-            background: white;
-            box-shadow: 0 10px 25px -5px rgb(0 0 0 / 0.1);
-            line-height: 1.6;
-            font-family: 'Times New Roman', serif;
-            position: relative;
-            min-height: 297mm;
-            width: 100%;
-            max-width: 210mm;
-            margin: auto;
-            overflow: hidden;
-        }
+// --- CONFIGURAÇÕES DE BRANDING E FUNDADOR ---
+const BRAND = {
+  name: "Hanz Docs",
+  slogan: "Documentos que abrem portas.",
+  colors: {
+    primary: '#0F172A',   // Azul Profundo
+    secondary: '#2563EB', // Azul Vibrante
+    accent: '#10B981',    // Verde Esmeralda
+    light: '#F8FAFC',
+    dark: '#1E293B'
+  }
+};
 
-        .watermark {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%) rotate(-45deg);
-            font-size: 60px;
-            font-weight: 900;
-            color: rgba(0,0,0,0.03);
-            pointer-events: none;
-            user-select: none;
-            white-space: nowrap;
-            z-index: 0;
-        }
+const FOUNDER = {
+  name: "Hanz Domingos",
+  location: "Maputo, Moçambique",
+  phone: "+258 847875963",
+  emailPersonal: "Hanzdomingos@gmail.com",
+  emailCorp: "Hdomingoa@hdconsultingservice.com",
+  role: "Especialista em M&A e Transformação Digital",
+  bio: "Hanz Domingos é especialista em Monitoria e Avaliação (M&A), Gestão de Dados e Transformação Digital, com experiência em análise estratégica, automação de processos (RPA) e implementação de sistemas de informação. Com forte atuação em projetos de saúde e desenvolvimento, combina tecnologia, dados e visão estratégica para criar soluções eficientes e sustentáveis.",
+  motivation: "Acredito que o talento moçambicano precisa de ferramentas profissionais à altura do mercado internacional. Através do Hanz Docs, o meu objetivo é capacitar jovens e profissionais a apresentarem-se com excelência, aumentando as suas oportunidades de crescimento profissional dentro e fora de Moçambique."
+};
 
-        /* Animação suave para as abas do novo construtor */
-        .tab-content { display: none; }
-        .tab-content.active { display: block; animation: fadeIn 0.3s ease; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+const TEMPLATES_CV = [
+  { id: 'minimalista', name: 'Minimalista' },
+  { id: 'corporativo', name: 'Corporativo' },
+  { id: 'criativo', name: 'Criativo' },
+  { id: 'executivo', name: 'Executivo' },
+  { id: 'academico', name: 'Académico' },
+  { id: 'tecnologico', name: 'Tecnológico' },
+  { id: 'internacional', name: 'Internacional (Europass)' },
+  { id: 'jovem', name: 'Jovem / 1º Emprego' },
+  { id: 'gestao', name: 'Gestão & Liderança' },
+  { id: 'tecnico', name: 'Técnico / Engenharia' }
+];
 
-        @media print {
-            .no-print { display: none !important; }
-            body { background: white; padding: 0; }
-            .a4-preview { box-shadow: none; border: none; margin: 0; padding: 20mm; }
-            /* Garante que o fundo das cores no template seja impresso */
-            * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
-        }
-    </style>
-</head>
-<body class="bg-slate-50 text-slate-900">
+const TEMPLATES_COVER = [
+  { id: 'c_emprego', name: 'Candidatura Emprego' },
+  { id: 'c_estagio', name: 'Estágio' },
+  { id: 'c_bolsa', name: 'Bolsa de Estudo' },
+  { id: 'c_corp', name: 'Corporativa' },
+  { id: 'c_formal', name: 'Formal Tradicional' },
+  { id: 'c_moderna', name: 'Moderna Minimalista' },
+  { id: 'c_criativa', name: 'Criativa' },
+  { id: 'c_inter', name: 'Internacional' }
+];
 
-    <!-- Navegação -->
-    <nav class="glass sticky top-0 z-50 border-b border-slate-200 px-6 py-4 flex justify-between items-center no-print">
-        <div class="flex items-center gap-2 font-black text-2xl text-blue-600 cursor-pointer" onclick="location.reload()">
-            <i class="fas fa-file-contract"></i>
-            <span>HanzDocs <span class="text-slate-800">AI</span></span>
-        </div>
-        
-        <div class="hidden md:flex gap-8 text-sm font-bold text-slate-500">
-            <a href="#servicos" class="hover:text-blue-600 transition">Serviços</a>
-            <a href="#precos" class="hover:text-blue-600 transition">Preços</a>
-            <a href="#meus-docs" class="hover:text-blue-600 transition">Meus Docs</a>
-            <!-- NOVO LINK ADICIONADO AQUI -->
-            <a href="#cv-builder" class="hover:text-blue-600 transition text-blue-600 flex items-center gap-1"><i class="fas fa-magic"></i> Templates Zety</a>
-        </div>
+const TEMPLATES_MOTIVATION = [
+  { id: 'm_bolsa', name: 'Bolsa de Estudo' },
+  { id: 'm_uni', name: 'Universidade' },
+  { id: 'm_mestrado', name: 'Mestrado' },
+  { id: 'm_doutor', name: 'Doutoramento' },
+  { id: 'm_ong', name: 'ONG / Voluntariado' },
+  { id: 'm_visto', name: 'Visto de Estudo' },
+  { id: 'm_inter', name: 'Prog. Internacional' },
+  { id: 'm_gov', name: 'Oport. Governamental' }
+];
 
-        <div class="flex items-center gap-4">
-            <div id="user-profile" class="hidden flex items-center gap-3">
-                <span id="user-email" class="hidden lg:inline text-xs font-bold text-slate-500 border px-3 py-1.5 rounded-full bg-white"></span>
-                <button onclick="handleLogout()" class="text-xs font-bold text-red-500 hover:bg-red-50 px-3 py-1.5 rounded-lg transition">Sair</button>
+// --- APP PRINCIPAL ---
+export default function App() {
+  const [activeView, setActiveView] = useState('landing');
+  const [docType, setDocType] = useState('cv'); // cv, cover, motivation
+  const [activeTab, setActiveTab] = useState('perfil');
+  const [tone, setTone] = useState('profissional'); // formal, profissional, confiante, criativo
+
+  const [data, setData] = useState({
+    profile: { 
+      fullName: 'Arsénio Muianga', 
+      title: 'Analista de Dados Senior', 
+      email: 'arsenio.muianga@exemplo.mz', 
+      phone: '+258 84 123 4567', 
+      location: 'Maputo, Moçambique',
+      linkedin: 'linkedin.com/in/arsenio',
+      website: 'www.arsenio.mz',
+      summary: 'Profissional focado em BI e análise estratégica com 8 anos de experiência no mercado moçambicano e internacional.' 
+    },
+    letterData: {
+      recipient: 'Direção de RH - Vodacom Moçambique',
+      subject: 'Candidatura à vaga de Gestor de Projetos',
+      salutation: 'Exmos. Senhores,',
+      body: 'Escrevo com grande entusiasmo para me candidatar à posição mencionada...',
+      signOff: 'Atenciosamente,',
+      date: new Date().toLocaleDateString('pt-MZ')
+    },
+    sections: [
+      { id: 'exp', title: 'Experiência Profissional', type: 'list', items: [{ id: '1', title: 'Analista Lead', subtitle: 'DataCorp MZ', period: '2021-2026', desc: 'Gestão de equipas de BI e automação de relatórios.' }] },
+      { id: 'edu', title: 'Formação Académica', type: 'list', items: [{ id: 'e1', title: 'Licenciatura em Informática', subtitle: 'Univ. Eduardo Mondlane', period: '2016-2020', desc: 'Média final de 16 valores.' }] },
+      { id: 'skill_tech', title: 'Competências Técnicas', type: 'tags', items: ['Power BI', 'SQL', 'Python', 'ETL'] },
+      { id: 'skill_soft', title: 'Competências Comportamentais', type: 'tags', items: ['Liderança', 'Pensamento Crítico', 'Comunicação'] },
+      { id: 'lang', title: 'Idiomas', type: 'list', items: [{ id: 'l1', title: 'Português', subtitle: 'Nativo', period: '', desc: '' }, { id: 'l2', title: 'Inglês', subtitle: 'Avançado (C1)', period: '', desc: '' }] }
+    ],
+    settings: {
+      template: 'corporativo',
+      accentColor: BRAND.colors.secondary,
+      font: 'Inter'
+    }
+  });
+
+  const [customFieldName, setCustomFieldName] = useState('');
+
+  // Adicionar Nova Secção
+  const addSection = () => {
+    if(!customFieldName) return;
+    const newSec = { id: `sec_${Date.now()}`, title: customFieldName, type: 'list', items: [] };
+    setData(prev => ({ ...prev, sections: [...prev.sections, newSec] }));
+    setActiveTab(newSec.id);
+    setCustomFieldName('');
+  };
+
+  // Remover Secção
+  const removeSection = (id) => {
+    setData(prev => ({ ...prev, sections: prev.sections.filter(s => s.id !== id) }));
+    if(activeTab === id) setActiveTab('perfil');
+  };
+
+  // Adicionar Item em Secção
+  const addItem = (sectionId) => {
+    setData(prev => ({
+      ...prev,
+      sections: prev.sections.map(s => s.id === sectionId ? {
+        ...s,
+        items: s.type === 'tags' ? [...s.items, 'Nova Tag'] : [...s.items, { id: Date.now().toString(), title: 'Novo Item', subtitle: '', period: '', desc: '' }]
+      } : s)
+    }));
+  };
+
+  // Gerar Texto por Tom (Mockup de IA)
+  const generateText = () => {
+    const tones = {
+      formal: "Venho por este meio expressar o meu interesse formal na posição...",
+      profissional: "Escrevo para apresentar a minha candidatura à vaga de...",
+      confiante: "Estou certo de que as minhas competências em dados trarão resultados imediatos para a...",
+      criativo: "Imagine uma equipa de dados que não apenas lê números, mas conta histórias..."
+    };
+    setData(prev => ({ ...prev, letterData: { ...prev.letterData, body: tones[tone] } }));
+  };
+
+  // Renderização do Template Ativo no Canvas
+  const renderDocumentPreview = () => {
+    if (docType === 'cv') {
+      return (
+        <div className={`w-full min-h-full bg-white relative transition-all duration-500 font-${data.settings.font}`}>
+          {/* Cabeçalho */}
+          <header className={`p-10 border-b-4 mb-8`} style={{ borderColor: data.settings.accentColor }}>
+            <div className="flex justify-between items-end">
+              <div>
+                <h1 className="text-4xl font-black uppercase tracking-tighter" style={{ color: data.settings.accentColor }}>{data.profile.fullName}</h1>
+                <p className="text-xl font-bold text-slate-400 uppercase tracking-widest">{data.profile.title}</p>
+              </div>
+              <div className="text-right text-[10px] font-bold text-slate-500 uppercase leading-tight">
+                <p>{data.profile.location}</p>
+                <p>{data.profile.email}</p>
+                <p>{data.profile.phone}</p>
+                <p className="text-blue-600">{data.profile.linkedin}</p>
+              </div>
             </div>
-            <button id="login-btn" onclick="toggleLogin()" class="text-sm font-bold text-slate-600 hover:text-blue-600">Entrar</button>
-            <button onclick="scrollToGerador()" class="bg-blue-600 text-white px-5 py-2.5 rounded-full font-bold text-sm hover:bg-blue-700 transition shadow-lg shadow-blue-100">
-                Criar Novo
-            </button>
-        </div>
-    </nav>
+          </header>
 
-    <!-- Hero Section -->
-    <section class="pt-20 pb-12 px-6 text-center no-print">
-        <div class="max-w-4xl mx-auto">
-            <span class="bg-blue-50 text-blue-600 px-4 py-1.5 rounded-full text-xs font-black uppercase tracking-widest mb-6 inline-block">Inteligência Artificial & Templates</span>
-            <h1 class="text-5xl md:text-7xl font-extrabold mb-6 leading-[1.1] text-slate-900 tracking-tight">
-                Documentos que te dão <br><span class="text-blue-600">o emprego.</span>
-            </h1>
-            <p class="text-lg text-slate-600 mb-10 max-w-2xl mx-auto font-medium">
-                Gere currículos com IA do Gemini em segundos ou use os nossos novos templates interativos ao estilo Zety.
-            </p>
-            <div class="flex flex-col sm:flex-row gap-4 justify-center">
-                <button onclick="scrollToGerador()" class="bg-slate-900 text-white px-8 py-4 rounded-2xl font-bold hover:bg-blue-600 transition flex items-center justify-center gap-3">
-                    Gerador IA <i class="fas fa-robot text-xs"></i>
-                </button>
-                <a href="#cv-builder" class="bg-white border border-slate-200 text-slate-700 px-8 py-4 rounded-2xl font-bold hover:bg-slate-50 transition flex items-center justify-center gap-3">
-                    Usar Templates <i class="fas fa-paint-brush text-xs text-blue-500"></i>
-                </a>
-            </div>
-        </div>
-    </section>
+          <div className="px-10 grid grid-cols-12 gap-10">
+            <div className="col-span-8 space-y-8">
+              <section>
+                <h3 className="text-[10px] font-black uppercase tracking-[0.3em] mb-4 opacity-50">Resumo</h3>
+                <p className="text-sm text-slate-700 leading-relaxed font-medium">{data.profile.summary}</p>
+              </section>
 
-    <!-- Gerador Principal (IA Original - Intacto) -->
-    <section id="gerador" class="py-12 px-6 no-print">
-        <div class="max-w-6xl mx-auto bg-white rounded-[2.5rem] shadow-2xl border border-slate-100 overflow-hidden flex flex-col lg:flex-row min-h-[700px]">
-            
-            <!-- Painel de Inputs -->
-            <div class="lg:w-80 xl:w-96 p-8 border-r border-slate-50 flex flex-col bg-slate-50/50">
-                <div class="flex items-center gap-2 mb-8 text-blue-600">
-                    <i class="fas fa-robot"></i>
-                    <h2 class="font-black uppercase text-xs tracking-tighter">Modo IA Livre</h2>
-                </div>
-
-                <div class="space-y-5 flex-1">
-                    <div>
-                        <label class="block text-[10px] font-black text-slate-400 uppercase mb-2">O que deseja criar?</label>
-                        <select id="doc-type" class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-blue-500 outline-none font-medium bg-white">
-                            <option value="cv">Currículo (CV) Profissional</option>
-                            <option value="carta">Carta de Apresentação</option>
-                            <option value="contrato">Contrato de Arrendamento</option>
-                        </select>
-                    </div>
-
-                    <div>
-                        <label class="block text-[10px] font-black text-slate-400 uppercase mb-2">Teu Nome Completo</label>
-                        <input type="text" id="user-name" placeholder="Ex: Arlindo José" class="w-full px-4 py-3 rounded-xl border border-slate-200 outline-none focus:ring-2 focus:ring-blue-500 bg-white">
-                    </div>
-
-                    <div>
-                        <label class="block text-[10px] font-black text-slate-400 uppercase mb-2">Telefone (Contactos)</label>
-                        <input type="text" id="user-phone" placeholder="+258 84..." class="w-full px-4 py-3 rounded-xl border border-slate-200 outline-none bg-white">
-                    </div>
-
-                    <div>
-                        <label class="block text-[10px] font-black text-slate-400 uppercase mb-2">Contexto para a IA</label>
-                        <textarea id="user-desc" rows="6" placeholder="Ex: Sou graduado em contabilidade, tenho 2 anos de experiência..." class="w-full px-4 py-3 rounded-xl border border-slate-200 outline-none focus:ring-2 focus:ring-blue-500 text-sm bg-white"></textarea>
-                    </div>
-                </div>
-
-                <button onclick="gerarDocumentoComIA()" id="btn-gerar" class="w-full bg-blue-600 text-white py-4 rounded-2xl font-bold hover:bg-blue-700 transition flex items-center justify-center gap-3 mt-8 shadow-lg shadow-blue-100">
-                    <i class="fas fa-sparkles"></i> Gerar com IA
-                </button>
+              {data.sections.filter(s => s.type === 'list').map(s => (
+                <section key={s.id}>
+                  <h3 className="text-[10px] font-black uppercase tracking-[0.3em] mb-4 flex justify-between items-center" style={{ color: data.settings.accentColor }}>
+                    <span>{s.title}</span>
+                  </h3>
+                  <div className="space-y-6">
+                    {s.items.map(i => (
+                      <div key={i.id} className="group relative">
+                        <div className="flex justify-between items-start mb-1">
+                          <h4 className="font-black text-xs uppercase text-slate-800">{i.title}</h4>
+                          <span className="text-[10px] font-bold text-slate-400">{i.period}</span>
+                        </div>
+                        <p className="text-[10px] font-bold text-blue-600 uppercase mb-2">{i.subtitle}</p>
+                        <p className="text-[11px] text-slate-500 leading-relaxed">{i.desc}</p>
+                      </div>
+                    ))}
+                  </div>
+                </section>
+              ))}
             </div>
 
-            <!-- Área de Preview -->
-            <div class="flex-1 bg-slate-200/50 p-4 md:p-10 flex flex-col items-center overflow-y-auto max-h-[800px]">
-                
-                <div id="preview-placeholder" class="my-auto text-center opacity-40">
-                    <i class="fas fa-file-invoice text-7xl mb-4"></i>
-                    <p class="font-bold">O preview da IA aparecerá aqui</p>
-                </div>
-
-                <div id="loading-state" class="hidden my-auto text-center">
-                    <div class="loader mb-4"></div>
-                    <p class="text-blue-600 font-black">A redigir com Inteligência Artificial...</p>
-                </div>
-
-                <div id="result-state" class="hidden w-full flex flex-col items-center">
-                    <div class="flex justify-between w-full max-w-[210mm] mb-6 items-center">
-                        <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest bg-white px-3 py-1 rounded-full border border-slate-200">A4 Preview Mode (IA)</span>
-                        <div class="flex gap-2">
-                             <button onclick="copiarTexto()" class="text-xs font-bold text-slate-600 bg-white border border-slate-200 px-3 py-2 rounded-lg hover:bg-slate-50">Copiar</button>
-                             <button onclick="printSection('ia-preview-area')" class="text-xs font-bold text-blue-600 bg-white border border-blue-100 px-3 py-2 rounded-lg hover:bg-blue-50">Imprimir</button>
-                        </div>
-                    </div>
-                    
-                    <div id="ia-preview-area" class="w-full flex justify-center">
-                        <div class="a4-preview p-[20mm] text-slate-800" id="doc-output">
-                            <div class="watermark">HanzDocs AI</div>
-                        </div>
-                    </div>
-
-                    <div class="mt-8 grid grid-cols-1 sm:grid-cols-2 gap-4 w-full max-w-[210mm] no-print">
-                        <button onclick="handlePayment('unit')" class="bg-blue-600 text-white py-4 rounded-2xl font-black flex items-center justify-center gap-3 hover:bg-blue-700 shadow-xl shadow-blue-200 transition">
-                            <i class="fas fa-cloud-download-alt"></i> Baixar PDF HD (50 MT)
-                        </button>
-                        <button class="bg-slate-900 text-white py-4 rounded-2xl font-black flex items-center justify-center gap-3 hover:bg-slate-800 transition">
-                            <i class="fas fa-share-nodes"></i> Partilhar Link
-                        </button>
-                    </div>
-                </div>
+            <div className="col-span-4 space-y-8">
+              {data.sections.filter(s => s.type === 'tags').map(s => (
+                <section key={s.id}>
+                   <h3 className="text-[10px] font-black uppercase tracking-[0.3em] mb-4 opacity-50">{s.title}</h3>
+                   <div className="flex flex-wrap gap-2">
+                     {s.items.map((tag, idx) => (
+                       <span key={idx} className="bg-slate-100 px-3 py-1.5 rounded-lg text-[9px] font-black uppercase text-slate-600 border border-slate-200">{tag}</span>
+                     ))}
+                   </div>
+                </section>
+              ))}
             </div>
+          </div>
+          
+          <div className="absolute bottom-10 left-10 right-10 flex justify-between items-center opacity-30 border-t pt-4">
+             <span className="text-[8px] font-black uppercase">Gerado via Hanz Docs - Maputo</span>
+             <span className="text-[8px] font-black uppercase">Template: {data.settings.template}</span>
+          </div>
         </div>
-    </section>
+      );
+    } else {
+      // Preview para Cartas (Apresentação / Motivação)
+      return (
+        <div className="w-full min-h-full bg-white p-16 font-serif">
+           <div className="mb-12 text-sm space-y-1">
+              <p className="font-black text-slate-900">{data.profile.fullName}</p>
+              <p className="text-slate-500">{data.profile.location}</p>
+              <p className="text-slate-500">{data.profile.email} | {data.profile.phone}</p>
+           </div>
 
-    <!-- === NOVA SECÇÃO: CONSTRUTOR DE TEMPLATES ESTILO ZETY === -->
-    <section id="cv-builder" class="py-12 px-6 bg-slate-100/50 no-print border-t border-slate-200">
-        <div class="max-w-6xl mx-auto mb-10 text-center">
-            <span class="bg-indigo-100 text-indigo-700 px-4 py-1.5 rounded-full text-xs font-black uppercase tracking-widest mb-4 inline-block"><i class="fas fa-star text-yellow-500 mr-1"></i> Nova Funcionalidade</span>
-            <h2 class="text-4xl font-black text-slate-900">Construtor de CV em Tempo Real</h2>
-            <p class="text-slate-500 mt-2">Preencha os dados e veja o seu currículo a ser montado magicamente ao lado.</p>
+           <div className="mb-12 text-sm text-right">
+              <p className="text-slate-400 mb-6">{data.letterData.date}</p>
+              <p className="font-black">Para:</p>
+              <p className="text-slate-600 whitespace-pre-line">{data.letterData.recipient}</p>
+           </div>
+
+           <div className="mb-8">
+              <p className="font-black text-slate-900 uppercase tracking-widest border-b pb-2 mb-8">Assunto: {data.letterData.subject}</p>
+              <p className="mb-6 font-bold">{data.letterData.salutation}</p>
+              <p className="text-slate-700 leading-[1.8] text-sm whitespace-pre-line min-h-[400px]">
+                {data.letterData.body}
+              </p>
+           </div>
+
+           <div className="mt-16 border-t pt-8">
+              <p className="text-sm mb-12">{data.letterData.signOff}</p>
+              <div className="h-px w-48 bg-slate-300 mb-2"></div>
+              <p className="font-black uppercase tracking-widest text-xs">{data.profile.fullName}</p>
+           </div>
         </div>
+      );
+    }
+  };
 
-        <div class="max-w-[1400px] mx-auto flex flex-col xl:flex-row gap-8">
-            
-            <!-- Formulário do Template (Lado Esquerdo) -->
-            <div class="xl:w-[500px] bg-white rounded-[2rem] shadow-xl border border-slate-200 overflow-hidden flex flex-col max-h-[900px]">
-                
-                <!-- Escolha do Design -->
-                <div class="p-6 bg-slate-50 border-b border-slate-200">
-                    <label class="block text-[10px] font-black text-slate-400 uppercase mb-3">1. Escolha o Design</label>
-                    <div class="grid grid-cols-2 gap-3">
-                        <button onclick="changeTemplate('moderno')" class="py-3 border-2 border-indigo-600 bg-indigo-50 text-indigo-700 rounded-xl font-bold text-sm transition" id="btn-tpl-moderno">
-                            Moderno (Cor)
-                        </button>
-                        <button onclick="changeTemplate('classico')" class="py-3 border-2 border-slate-200 bg-white text-slate-600 rounded-xl font-bold text-sm transition hover:border-slate-300" id="btn-tpl-classico">
-                            Clássico (P&B)
-                        </button>
-                    </div>
-                </div>
+  return (
+    <div className="min-h-screen bg-slate-50 font-sans text-slate-900 selection:bg-blue-100">
+      
+      {/* NAVEGAÇÃO SUPERIOR */}
+      <nav className="h-20 bg-white border-b border-slate-200 px-8 flex items-center justify-between sticky top-0 z-50">
+        <div className="flex items-center gap-3 cursor-pointer group" onClick={() => setActiveView('landing')}>
+          <div className="bg-blue-600 p-2 rounded-xl text-white group-hover:rotate-12 transition-transform"><FileBadge /></div>
+          <span className="text-2xl font-black tracking-tighter uppercase">HANZ<span className="text-emerald-500">DOCS</span></span>
+        </div>
+        <div className="hidden md:flex gap-8 items-center">
+          <button onClick={() => { setActiveView('editor'); setDocType('cv'); }} className={`text-[10px] font-black uppercase tracking-widest hover:text-blue-600 transition-colors ${docType === 'cv' && activeView === 'editor' ? 'text-blue-600' : ''}`}>Currículos</button>
+          <button onClick={() => { setActiveView('editor'); setDocType('cover'); }} className={`text-[10px] font-black uppercase tracking-widest hover:text-blue-600 transition-colors ${docType === 'cover' && activeView === 'editor' ? 'text-blue-600' : ''}`}>Cartas</button>
+          <button onClick={() => setActiveView('founder')} className={`text-[10px] font-black uppercase tracking-widest hover:text-blue-600 transition-colors ${activeView === 'founder' ? 'text-blue-600' : ''}`}>O Fundador</button>
+          <div className="h-6 w-px bg-slate-200"></div>
+          <button className="bg-slate-900 text-white px-6 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-blue-600 transition-all shadow-lg shadow-blue-500/20">Login</button>
+        </div>
+      </nav>
 
-                <!-- Abas do Formulário -->
-                <div class="flex border-b border-slate-200 bg-white overflow-x-auto custom-scrollbar">
-                    <button onclick="switchTab('tab-dados')" class="px-6 py-4 font-bold text-sm text-indigo-600 border-b-2 border-indigo-600 whitespace-nowrap tab-btn" data-target="tab-dados">Dados Pessoais</button>
-                    <button onclick="switchTab('tab-exp')" class="px-6 py-4 font-bold text-sm text-slate-500 hover:text-slate-800 whitespace-nowrap tab-btn" data-target="tab-exp">Experiência</button>
-                    <button onclick="switchTab('tab-edu')" class="px-6 py-4 font-bold text-sm text-slate-500 hover:text-slate-800 whitespace-nowrap tab-btn" data-target="tab-edu">Educação</button>
-                    <button onclick="switchTab('tab-skills')" class="px-6 py-4 font-bold text-sm text-slate-500 hover:text-slate-800 whitespace-nowrap tab-btn" data-target="tab-skills">Habilidades</button>
-                </div>
-
-                <!-- Conteúdo das Abas (Inputs) -->
-                <div class="p-6 overflow-y-auto flex-1 bg-white" oninput="updateTemplatePreview()">
-                    
-                    <!-- Aba: Dados Pessoais -->
-                    <div id="tab-dados" class="tab-content active space-y-4">
-                        <div class="grid grid-cols-2 gap-4">
-                            <div>
-                                <label class="block text-xs font-bold text-slate-600 mb-1">Nome Completo</label>
-                                <input type="text" id="tpl-nome" value="João Silva" class="w-full px-3 py-2 rounded-lg border border-slate-200 bg-slate-50 focus:bg-white focus:ring-2 focus:ring-indigo-500 outline-none">
-                            </div>
-                            <div>
-                                <label class="block text-xs font-bold text-slate-600 mb-1">Cargo / Profissão</label>
-                                <input type="text" id="tpl-cargo" value="Gestor de Projetos" class="w-full px-3 py-2 rounded-lg border border-slate-200 bg-slate-50 focus:bg-white focus:ring-2 focus:ring-indigo-500 outline-none">
-                            </div>
-                        </div>
-                        <div class="grid grid-cols-2 gap-4">
-                            <div>
-                                <label class="block text-xs font-bold text-slate-600 mb-1">Email</label>
-                                <input type="email" id="tpl-email" value="joao.silva@email.com" class="w-full px-3 py-2 rounded-lg border border-slate-200 bg-slate-50 focus:bg-white focus:ring-2 focus:ring-indigo-500 outline-none">
-                            </div>
-                            <div>
-                                <label class="block text-xs font-bold text-slate-600 mb-1">Telefone</label>
-                                <input type="text" id="tpl-telefone" value="+258 84 123 4567" class="w-full px-3 py-2 rounded-lg border border-slate-200 bg-slate-50 focus:bg-white focus:ring-2 focus:ring-indigo-500 outline-none">
-                            </div>
-                        </div>
-                        <div>
-                            <label class="block text-xs font-bold text-slate-600 mb-1">Morada / Província</label>
-                            <input type="text" id="tpl-morada" value="Maputo, Moçambique" class="w-full px-3 py-2 rounded-lg border border-slate-200 bg-slate-50 focus:bg-white focus:ring-2 focus:ring-indigo-500 outline-none">
-                        </div>
-                        <div>
-                            <label class="block text-xs font-bold text-slate-600 mb-1">Resumo Profissional</label>
-                            <textarea id="tpl-resumo" rows="4" class="w-full px-3 py-2 rounded-lg border border-slate-200 bg-slate-50 focus:bg-white focus:ring-2 focus:ring-indigo-500 outline-none">Profissional dedicado com mais de 5 anos de experiência na gestão de equipas e otimização de processos. Foco em resultados e melhoria contínua operacional.</textarea>
-                        </div>
-                    </div>
-
-                    <!-- Aba: Experiência -->
-                    <div id="tab-exp" class="tab-content space-y-6">
-                        <div class="p-4 border border-slate-200 rounded-xl bg-slate-50 relative">
-                            <span class="absolute -top-2.5 left-4 bg-slate-50 px-2 text-[10px] font-black uppercase text-slate-400">Emprego Mais Recente</span>
-                            <div class="grid grid-cols-2 gap-4 mb-3">
-                                <div>
-                                    <label class="block text-xs font-bold text-slate-600 mb-1">Cargo</label>
-                                    <input type="text" id="tpl-exp1-cargo" value="Gestor Sénior" class="w-full px-3 py-2 rounded-lg border border-slate-300 outline-none">
-                                </div>
-                                <div>
-                                    <label class="block text-xs font-bold text-slate-600 mb-1">Empresa</label>
-                                    <input type="text" id="tpl-exp1-empresa" value="Tech Moz Lda" class="w-full px-3 py-2 rounded-lg border border-slate-300 outline-none">
-                                </div>
-                            </div>
-                            <div class="mb-3">
-                                <label class="block text-xs font-bold text-slate-600 mb-1">Período (Ex: 2020 - Presente)</label>
-                                <input type="text" id="tpl-exp1-periodo" value="Jan 2020 - Presente" class="w-full px-3 py-2 rounded-lg border border-slate-300 outline-none">
-                            </div>
-                            <div>
-                                <label class="block text-xs font-bold text-slate-600 mb-1">Descrição das Tarefas</label>
-                                <textarea id="tpl-exp1-desc" rows="3" class="w-full px-3 py-2 rounded-lg border border-slate-300 outline-none">Liderança de equipas multidisciplinares; Aumento de 20% na eficiência operacional; Implementação de novas metodologias ágeis.</textarea>
-                            </div>
-                        </div>
-
-                        <div class="p-4 border border-slate-200 rounded-xl bg-slate-50 relative">
-                            <span class="absolute -top-2.5 left-4 bg-slate-50 px-2 text-[10px] font-black uppercase text-slate-400">Emprego Anterior</span>
-                            <div class="grid grid-cols-2 gap-4 mb-3">
-                                <div>
-                                    <label class="block text-xs font-bold text-slate-600 mb-1">Cargo</label>
-                                    <input type="text" id="tpl-exp2-cargo" value="Assistente Administrativo" class="w-full px-3 py-2 rounded-lg border border-slate-300 outline-none">
-                                </div>
-                                <div>
-                                    <label class="block text-xs font-bold text-slate-600 mb-1">Empresa</label>
-                                    <input type="text" id="tpl-exp2-empresa" value="Grupo Alfa" class="w-full px-3 py-2 rounded-lg border border-slate-300 outline-none">
-                                </div>
-                            </div>
-                            <div class="mb-3">
-                                <label class="block text-xs font-bold text-slate-600 mb-1">Período</label>
-                                <input type="text" id="tpl-exp2-periodo" value="Mar 2017 - Dez 2019" class="w-full px-3 py-2 rounded-lg border border-slate-300 outline-none">
-                            </div>
-                            <div>
-                                <label class="block text-xs font-bold text-slate-600 mb-1">Descrição</label>
-                                <textarea id="tpl-exp2-desc" rows="2" class="w-full px-3 py-2 rounded-lg border border-slate-300 outline-none">Gestão de arquivo; Atendimento ao cliente; Suporte à faturação.</textarea>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Aba: Educação -->
-                    <div id="tab-edu" class="tab-content space-y-6">
-                        <div class="p-4 border border-slate-200 rounded-xl bg-slate-50">
-                            <div class="mb-3">
-                                <label class="block text-xs font-bold text-slate-600 mb-1">Grau Académico / Curso</label>
-                                <input type="text" id="tpl-edu1-curso" value="Licenciatura em Gestão de Empresas" class="w-full px-3 py-2 rounded-lg border border-slate-300 outline-none">
-                            </div>
-                            <div class="grid grid-cols-2 gap-4">
-                                <div>
-                                    <label class="block text-xs font-bold text-slate-600 mb-1">Instituição</label>
-                                    <input type="text" id="tpl-edu1-inst" value="Universidade Eduardo Mondlane" class="w-full px-3 py-2 rounded-lg border border-slate-300 outline-none">
-                                </div>
-                                <div>
-                                    <label class="block text-xs font-bold text-slate-600 mb-1">Ano de Conclusão</label>
-                                    <input type="text" id="tpl-edu1-ano" value="2016" class="w-full px-3 py-2 rounded-lg border border-slate-300 outline-none">
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Aba: Habilidades -->
-                    <div id="tab-skills" class="tab-content">
-                        <div>
-                            <label class="block text-xs font-bold text-slate-600 mb-2">Habilidades (Separadas por vírgula)</label>
-                            <textarea id="tpl-habilidades" rows="4" class="w-full px-3 py-2 rounded-lg border border-slate-200 bg-slate-50 focus:bg-white focus:ring-2 focus:ring-indigo-500 outline-none">Liderança, Microsoft Office, SAP, Inglês Fluente, Gestão de Tempo, Comunicação</textarea>
-                            <p class="text-[10px] text-slate-400 mt-2">Ex: Marketing Digital, Liderança, Excel Avançado</p>
-                        </div>
-                    </div>
-
-                </div>
-
-                <div class="p-6 bg-slate-50 border-t border-slate-200">
-                    <button onclick="saveTemplateDocument()" class="w-full bg-indigo-600 text-white py-4 rounded-xl font-bold hover:bg-indigo-700 transition shadow-lg shadow-indigo-100 flex items-center justify-center gap-2">
-                        <i class="fas fa-save"></i> Guardar no Meu Perfil
+      {/* VIEWS */}
+      {activeView === 'landing' && <LandingView onStart={() => setActiveView('editor')} />}
+      {activeView === 'founder' && <FounderSection />}
+      
+      {activeView === 'editor' && (
+        <div className="flex h-[calc(100vh-5rem)] overflow-hidden">
+          
+          {/* Sidebar Editor */}
+          <aside className="w-[400px] bg-white border-r border-slate-200 flex flex-col overflow-y-auto custom-scrollbar">
+            <div className="p-8 space-y-8 pb-32">
+              
+              {/* Seletor de Tipo de Doc */}
+              <div className="space-y-2">
+                <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Documento</p>
+                <div className="flex gap-1 p-1 bg-slate-100 rounded-xl">
+                  {[
+                    { id: 'cv', label: 'CV', icon: User },
+                    { id: 'cover', label: 'Carta', icon: MessageSquare },
+                    { id: 'motivation', label: 'Motivação', icon: HeartHandshake }
+                  ].map(t => (
+                    <button 
+                      key={t.id}
+                      onClick={() => setDocType(t.id)}
+                      className={`flex-1 py-3 flex items-center justify-center gap-2 text-[9px] font-black uppercase rounded-lg transition-all ${docType === t.id ? 'bg-white text-blue-600 shadow-sm' : 'text-slate-400 hover:text-slate-600'}`}
+                    >
+                      <t.icon size={14}/> {t.label}
                     </button>
+                  ))}
                 </div>
-            </div>
+              </div>
 
-            <!-- Área de Visualização do Template (Lado Direito) -->
-            <div class="flex-1 bg-slate-200/80 rounded-[2rem] p-4 md:p-10 flex flex-col items-center overflow-y-auto max-h-[900px] border border-slate-200 shadow-inner">
-                
-                <div class="flex justify-between w-full max-w-[210mm] mb-6 items-center">
-                    <span class="text-[10px] font-black text-indigo-600 uppercase tracking-widest bg-indigo-100 px-3 py-1 rounded-full border border-indigo-200 flex items-center gap-2">
-                        <span class="w-2 h-2 rounded-full bg-indigo-500 animate-pulse"></span> Atualização em Tempo Real
-                    </span>
-                    <div class="flex gap-2">
-                         <button onclick="printSection('template-preview-area')" class="text-xs font-bold text-white bg-indigo-600 px-4 py-2 rounded-lg hover:bg-indigo-700 shadow-md">
-                            <i class="fas fa-print mr-1"></i> Imprimir Template
-                         </button>
+              {/* Seletor de Template Baseado no Tipo */}
+              <div className="space-y-4">
+                <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Template Selecionado</p>
+                <select 
+                  className="w-full bg-slate-50 border border-slate-200 p-3 rounded-xl text-xs font-bold outline-none focus:ring-2 focus:ring-blue-500/20"
+                  value={data.settings.template}
+                  onChange={(e) => setData({...data, settings: {...data.settings, template: e.target.value}})}
+                >
+                  {docType === 'cv' ? TEMPLATES_CV.map(t => <option key={t.id} value={t.id}>{t.name}</option>) : 
+                   docType === 'cover' ? TEMPLATES_COVER.map(t => <option key={t.id} value={t.id}>{t.name}</option>) :
+                   TEMPLATES_MOTIVATION.map(t => <option key={t.id} value={t.id}>{t.name}</option>)}
+                </select>
+              </div>
+
+              {/* Editor de Conteúdo */}
+              <div className="space-y-4">
+                 <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Campos e Secções</p>
+                 <div className="space-y-2">
+                    <button onClick={() => setActiveTab('perfil')} className={`w-full flex items-center justify-between p-4 rounded-xl font-black text-[10px] uppercase tracking-widest transition-all ${activeTab === 'perfil' ? 'bg-blue-600 text-white shadow-lg shadow-blue-500/30' : 'bg-slate-50 text-slate-600 hover:bg-slate-100'}`}>
+                      <span className="flex items-center gap-3"><User size={16}/> Dados Pessoais</span>
+                    </button>
+                    {docType !== 'cv' && (
+                      <button onClick={() => setActiveTab('carta')} className={`w-full flex items-center justify-between p-4 rounded-xl font-black text-[10px] uppercase tracking-widest transition-all ${activeTab === 'carta' ? 'bg-blue-600 text-white shadow-lg shadow-blue-500/30' : 'bg-slate-50 text-slate-600 hover:bg-slate-100'}`}>
+                        <span className="flex items-center gap-3"><FileEdit size={16}/> Corpo da Carta</span>
+                      </button>
+                    )}
+                    {data.sections.map(s => (
+                      <div key={s.id} className="flex gap-2">
+                        <button onClick={() => setActiveTab(s.id)} className={`flex-1 flex items-center justify-between p-4 rounded-xl font-black text-[10px] uppercase tracking-widest transition-all ${activeTab === s.id ? 'bg-blue-600 text-white shadow-lg shadow-blue-500/30' : 'bg-slate-50 text-slate-600 hover:bg-slate-100'}`}>
+                          <span className="flex items-center gap-3"><FileText size={16}/> {s.title}</span>
+                        </button>
+                        <button onClick={() => removeSection(s.id)} className="bg-red-50 text-red-400 p-4 rounded-xl hover:bg-red-500 hover:text-white transition-all"><Trash2 size={16}/></button>
+                      </div>
+                    ))}
+                 </div>
+
+                 {/* Adicionar Secção Personalizada */}
+                 <div className="pt-4 flex gap-2">
+                    <input 
+                      className="flex-1 bg-slate-50 border border-slate-200 p-3 rounded-xl text-xs font-bold outline-none focus:border-blue-500"
+                      placeholder="Nova Secção (ex: Projetos)"
+                      value={customFieldName}
+                      onChange={(e) => setCustomFieldName(e.target.value)}
+                    />
+                    <button onClick={addSection} className="bg-emerald-500 text-white p-3 rounded-xl shadow-lg shadow-emerald-500/20 hover:scale-105 transition-transform"><Plus size={18}/></button>
+                 </div>
+              </div>
+
+              {/* Configurações de Estilo */}
+              <div className="pt-8 border-t border-slate-100 space-y-6">
+                 <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Identidade Visual</p>
+                 <div className="space-y-4">
+                    <div className="flex justify-between items-center">
+                      <span className="text-[10px] font-black uppercase tracking-widest">Cor de Destaque</span>
+                      <div className="flex gap-2">
+                        {['#2563EB', '#10B981', '#F59E0B', '#EF4444', '#0F172A'].map(c => (
+                          <button 
+                            key={c}
+                            onClick={() => setData({...data, settings: {...data.settings, accentColor: c}})}
+                            className={`w-6 h-6 rounded-full border-2 ${data.settings.accentColor === c ? 'border-slate-400 scale-125' : 'border-transparent'}`}
+                            style={{ backgroundColor: c }}
+                          />
+                        ))}
+                      </div>
                     </div>
-                </div>
+                    {docType !== 'cv' && (
+                      <div className="space-y-3 pt-4">
+                        <span className="text-[10px] font-black uppercase tracking-widest">Tom da Escrita</span>
+                        <div className="grid grid-cols-2 gap-2">
+                           {['formal', 'profissional', 'confiante', 'criativo'].map(t => (
+                             <button 
+                               key={t}
+                               onClick={() => setTone(t)}
+                               className={`p-2 rounded-lg border text-[8px] font-black uppercase transition-all ${tone === t ? 'border-blue-600 bg-blue-50 text-blue-600' : 'border-slate-100 text-slate-400'}`}
+                             >
+                               {t}
+                             </button>
+                           ))}
+                        </div>
+                        <button onClick={generateText} className="w-full bg-slate-900 text-white p-3 rounded-xl text-[9px] font-black uppercase tracking-widest flex items-center justify-center gap-2 hover:bg-blue-600">
+                          <Rocket size={14}/> Sugerir Texto IA
+                        </button>
+                      </div>
+                    )}
+                 </div>
+              </div>
+
+            </div>
+          </aside>
+
+          {/* Área de Visualização e Edição Contextual */}
+          <main className="flex-1 bg-slate-100 overflow-y-auto flex">
+            {/* Editor Central */}
+            <div className="w-1/3 bg-white border-r border-slate-200 p-8 overflow-y-auto custom-scrollbar">
+              <div className="space-y-6">
+                <h3 className="text-[10px] font-black uppercase tracking-[0.3em] text-blue-600">{activeTab}</h3>
                 
-                <div id="template-preview-area" class="w-full flex justify-center pb-10">
-                    <!-- O currículo gerado vai ser injetado aqui -->
-                    <div class="a4-preview bg-white text-slate-800" id="template-output">
-                        <!-- Conteúdo inicial será carregado via JS no onload -->
+                {activeTab === 'perfil' && (
+                  <div className="space-y-4">
+                    <InputGroup label="Nome Completo" value={data.profile.fullName} onChange={v => setData({...data, profile: {...data.profile, fullName: v}})} />
+                    <InputGroup label="Título Profissional" value={data.profile.title} onChange={v => setData({...data, profile: {...data.profile, title: v}})} />
+                    <InputGroup label="Email" value={data.profile.email} onChange={v => setData({...data, profile: {...data.profile, email: v}})} />
+                    <InputGroup label="Telefone" value={data.profile.phone} onChange={v => setData({...data, profile: {...data.profile, phone: v}})} />
+                    <InputGroup label="Localização" value={data.profile.location} onChange={v => setData({...data, profile: {...data.profile, location: v}})} />
+                    <div className="space-y-2">
+                       <label className="text-[9px] font-black uppercase text-slate-400">Resumo Profissional</label>
+                       <textarea 
+                         className="w-full bg-slate-50 border border-slate-200 p-3 rounded-xl text-xs font-medium min-h-[120px] outline-none focus:border-blue-500"
+                         value={data.profile.summary}
+                         onChange={(e) => setData({...data, profile: {...data.profile, summary: e.target.value}})}
+                       />
                     </div>
-                </div>
+                  </div>
+                )}
+
+                {activeTab === 'carta' && (
+                  <div className="space-y-4">
+                    <InputGroup label="Destinatário" value={data.letterData.recipient} onChange={v => setData({...data, letterData: {...data.letterData, recipient: v}})} multiline />
+                    <InputGroup label="Assunto" value={data.letterData.subject} onChange={v => setData({...data, letterData: {...data.letterData, subject: v}})} />
+                    <InputGroup label="Saudação" value={data.letterData.salutation} onChange={v => setData({...data, letterData: {...data.letterData, salutation: v}})} />
+                    <div className="space-y-2">
+                       <label className="text-[9px] font-black uppercase text-slate-400">Corpo do Texto</label>
+                       <textarea 
+                         className="w-full bg-slate-50 border border-slate-200 p-3 rounded-xl text-xs font-medium min-h-[400px] outline-none focus:border-blue-500"
+                         value={data.letterData.body}
+                         onChange={(e) => setData({...data, letterData: {...data.letterData, body: e.target.value}})}
+                       />
+                    </div>
+                  </div>
+                )}
+
+                {data.sections.map(s => activeTab === s.id && (
+                  <div key={s.id} className="space-y-6">
+                    {s.items.map((item, idx) => (
+                      <div key={item.id || idx} className="p-4 bg-slate-50 rounded-2xl border border-slate-100 space-y-4 relative group">
+                        <button className="absolute -top-2 -right-2 bg-red-500 text-white p-1 rounded-full opacity-0 group-hover:opacity-100 transition-opacity">
+                          <Plus size={12} className="rotate-45" />
+                        </button>
+                        {s.type === 'list' ? (
+                          <>
+                            <InputGroup label="Título" value={item.title} onChange={v => {
+                              const newItems = [...s.items];
+                              newItems[idx].title = v;
+                              setData({...data, sections: data.sections.map(sec => sec.id === s.id ? {...sec, items: newItems} : sec)});
+                            }} />
+                            <InputGroup label="Subtítulo / Empresa" value={item.subtitle} onChange={v => {
+                              const newItems = [...s.items];
+                              newItems[idx].subtitle = v;
+                              setData({...data, sections: data.sections.map(sec => sec.id === s.id ? {...sec, items: newItems} : sec)});
+                            }} />
+                            <InputGroup label="Período" value={item.period} onChange={v => {
+                              const newItems = [...s.items];
+                              newItems[idx].period = v;
+                              setData({...data, sections: data.sections.map(sec => sec.id === s.id ? {...sec, items: newItems} : sec)});
+                            }} />
+                            <textarea 
+                              className="w-full bg-white border border-slate-200 p-3 rounded-xl text-[11px] outline-none" 
+                              placeholder="Descrição..."
+                              value={item.desc}
+                              onChange={e => {
+                                const newItems = [...s.items];
+                                newItems[idx].desc = e.target.value;
+                                setData({...data, sections: data.sections.map(sec => sec.id === s.id ? {...sec, items: newItems} : sec)});
+                              }}
+                            />
+                          </>
+                        ) : (
+                          <InputGroup label={`Tag ${idx + 1}`} value={item} onChange={v => {
+                            const newItems = [...s.items];
+                            newItems[idx] = v;
+                            setData({...data, sections: data.sections.map(sec => sec.id === s.id ? {...sec, items: newItems} : sec)});
+                          }} />
+                        )}
+                      </div>
+                    ))}
+                    <button onClick={() => addItem(s.id)} className="w-full border-2 border-dashed border-slate-200 p-4 rounded-2xl text-[10px] font-black uppercase text-slate-400 hover:border-blue-400 hover:text-blue-500 transition-all">
+                      + Adicionar Item
+                    </button>
+                  </div>
+                ))}
+              </div>
             </div>
 
+            {/* Canvas de Visualização */}
+            <div className="flex-1 p-12 overflow-y-auto flex flex-col items-center custom-scrollbar">
+              <div className="mb-6 flex gap-4">
+                 <button className="bg-white border border-slate-200 px-6 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest flex items-center gap-2 hover:bg-slate-50">
+                    <Download size={16} /> Exportar PDF
+                 </button>
+                 <button className="bg-blue-600 text-white px-6 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest flex items-center gap-2 hover:bg-blue-700 shadow-xl shadow-blue-500/20">
+                    <CheckCircle size={16} /> Finalizar
+                 </button>
+              </div>
+              <div className="w-[794px] min-h-[1123px] bg-white shadow-2xl origin-top transition-transform duration-300">
+                {renderDocumentPreview()}
+              </div>
+            </div>
+          </main>
         </div>
-    </section>
-    <!-- === FIM DA NOVA SECÇÃO === -->
+      )}
 
-
-    <!-- Secção de Preços (Original) -->
-    <section id="precos" class="py-24 px-6 bg-white no-print">
-        <div class="max-w-6xl mx-auto text-center">
-            <h2 class="text-4xl font-black mb-4">Escolha o seu plano</h2>
-            <p class="text-slate-500 mb-16">Pague uma vez ou subscreva para acesso ilimitado.</p>
-            
-            <div class="grid md:grid-cols-3 gap-8">
-                <div class="p-8 border border-slate-100 rounded-[2.5rem] bg-slate-50/50 text-left">
-                    <h3 class="font-bold text-xl mb-2">Documento Único</h3>
-                    <div class="text-3xl font-black mb-6">50 MT <span class="text-sm font-normal text-slate-400">/doc</span></div>
-                    <ul class="space-y-3 text-sm text-slate-600 mb-8">
-                        <li><i class="fas fa-check text-green-500 mr-2"></i> 1 Download PDF</li>
-                        <li><i class="fas fa-check text-green-500 mr-2"></i> IA Gemini Flash</li>
-                        <li><i class="fas fa-check text-green-500 mr-2"></i> Templates Zety</li>
-                    </ul>
-                    <button onclick="handlePayment('unit')" class="w-full py-4 border-2 border-slate-200 rounded-2xl font-bold hover:bg-white transition">Pagar via M-Pesa</button>
-                </div>
-                <div class="p-8 border-4 border-blue-600 rounded-[2.5rem] bg-white text-left relative shadow-2xl shadow-blue-100 scale-105">
-                    <span class="absolute -top-4 left-1/2 -translate-x-1/2 bg-blue-600 text-white px-4 py-1 rounded-full text-[10px] font-black uppercase">Recomendado</span>
-                    <h3 class="font-bold text-xl mb-2">Mensal Pro</h3>
-                    <div class="text-3xl font-black mb-6">450 MT <span class="text-sm font-normal text-slate-400">/mês</span></div>
-                    <ul class="space-y-3 text-sm text-slate-600 mb-8">
-                        <li><i class="fas fa-check text-green-500 mr-2"></i> Documentos Ilimitados</li>
-                        <li><i class="fas fa-check text-green-500 mr-2"></i> Acesso a todos Templates</li>
-                        <li><i class="fas fa-check text-green-500 mr-2"></i> Sem Marcas de Água</li>
-                    </ul>
-                    <button onclick="handlePayment('pro')" class="w-full py-4 bg-blue-600 text-white rounded-2xl font-bold hover:bg-blue-700 transition">Assinar com M-Pesa</button>
-                </div>
-                <div class="p-8 border border-slate-100 rounded-[2.5rem] bg-slate-50/50 text-left">
-                    <h3 class="font-bold text-xl mb-2">Empresas</h3>
-                    <div class="text-3xl font-black mb-6">Custom</div>
-                    <ul class="space-y-3 text-sm text-slate-600 mb-8">
-                        <li><i class="fas fa-check text-green-500 mr-2"></i> Branding Personalizado</li>
-                        <li><i class="fas fa-check text-green-500 mr-2"></i> Acesso via API</li>
-                        <li><i class="fas fa-check text-green-500 mr-2"></i> Multi-utilizadores</li>
-                    </ul>
-                    <button class="w-full py-4 border-2 border-slate-200 rounded-2xl font-bold hover:bg-white transition">Contactar Vendas</button>
-                </div>
-            </div>
+      {/* FOOTER */}
+      <footer className="bg-white border-t border-slate-200 py-12 px-8">
+        <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-8">
+          <div className="flex items-center gap-3">
+            <div className="bg-slate-900 p-2 rounded-lg text-white"><FileBadge size={18} /></div>
+            <span className="text-lg font-black tracking-tighter uppercase">HANZ<span className="text-emerald-500">DOCS</span></span>
+          </div>
+          <p className="text-slate-400 text-[10px] font-bold uppercase tracking-widest">© 2026 Hanz Docs. A plataforma líder em documentos profissionais de Moçambique.</p>
+          <div className="flex gap-4">
+            <Facebook size={18} className="text-slate-400 hover:text-blue-600 cursor-pointer" />
+            <Instagram size={18} className="text-slate-400 hover:text-blue-600 cursor-pointer" />
+            <Linkedin size={18} className="text-slate-400 hover:text-blue-600 cursor-pointer" />
+          </div>
         </div>
-    </section>
+      </footer>
 
-    <!-- Secção Meus Documentos (Original) -->
-    <section id="meus-docs" class="py-24 px-6 bg-slate-50 no-print">
-        <div class="max-w-6xl mx-auto">
-            <div class="flex justify-between items-end mb-10">
-                <div>
-                    <h2 class="text-3xl font-black italic">Os Meus <span class="text-blue-600">Documentos</span></h2>
-                    <p class="text-slate-500 font-medium">Acede aos teus ficheiros guardados em qualquer lugar.</p>
-                </div>
-                <button onclick="loadUserDocuments()" class="text-blue-600 font-bold text-sm hover:underline"><i class="fas fa-sync-alt mr-2"></i>Atualizar</button>
-            </div>
-            
-            <div id="docs-list" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-                <div class="col-span-full py-20 text-center bg-white border-2 border-dashed border-slate-200 rounded-[3rem]">
-                    <i class="fas fa-lock text-slate-200 text-5xl mb-4"></i>
-                    <p class="text-slate-400 font-bold">Inicia sessão para guardar documentos na nuvem.</p>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Modal de Login -->
-    <div id="login-modal" class="hidden fixed inset-0 z-[100] bg-slate-900/60 backdrop-blur-sm flex items-center justify-center px-6 no-print">
-        <div class="bg-white rounded-[2.5rem] p-10 max-w-sm w-full shadow-2xl relative">
-            <button onclick="toggleLogin()" class="absolute top-6 right-6 text-slate-300 hover:text-slate-600">
-                <i class="fas fa-times text-xl"></i>
-            </button>
-            <div class="text-center mb-8">
-                <div class="w-16 h-16 bg-blue-600 text-white rounded-2xl flex items-center justify-center mx-auto mb-4 rotate-3">
-                    <i class="fas fa-user-shield text-2xl"></i>
-                </div>
-                <h3 class="text-2xl font-black">Aceder HanzDocs</h3>
-                <p class="text-slate-500 text-sm font-medium">Sincroniza os teus dados agora.</p>
-            </div>
-
-            <button onclick="handleGoogleLogin()" class="w-full border-2 border-slate-100 py-3.5 rounded-2xl font-black flex items-center justify-center gap-3 hover:bg-slate-50 transition mb-4 text-sm">
-                Google Login
-            </button>
-            
-            <div class="relative py-4">
-                <div class="absolute inset-0 flex items-center"><div class="w-full border-t border-slate-100"></div></div>
-                <div class="relative flex justify-center text-[10px] uppercase font-black"><span class="bg-white px-3 text-slate-400 tracking-tighter">Ou Magic Link</span></div>
-            </div>
-            
-            <input type="email" id="email-input" placeholder="Teu email" class="w-full px-5 py-4 rounded-2xl border-2 border-slate-100 mb-4 outline-none focus:border-blue-500 transition font-medium">
-            <button onclick="handleMagicLink()" class="w-full bg-slate-900 text-white py-4 rounded-2xl font-black hover:bg-blue-600 transition shadow-lg shadow-blue-100">
-                Enviar Link de Acesso
-            </button>
-        </div>
+      <style>{`
+        .custom-scrollbar::-webkit-scrollbar { width: 6px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #CBD5E1; border-radius: 10px; }
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&family=Montserrat:wght@400;700;900&family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap');
+      `}</style>
     </div>
+  );
+}
 
-    <footer class="py-12 bg-white border-t border-slate-100 text-center no-print">
-        <p class="text-slate-400 text-xs font-bold uppercase tracking-widest leading-loose">
-            © 2024 HanzDocs AI — Made with <i class="fas fa-heart text-red-500"></i> in Mozambique
-        </p>
-    </footer>
+// --- COMPONENTES AUXILIARES ---
 
-    <script>
-        // ==========================================
-        // CÓDIGO ORIGINAL (MANTIDO INTACTO)
-        // ==========================================
-        var SUPABASE_URL = 'https://vbxqwabfwrafomuiiedh.supabase.co';
-        var SUPABASE_ANON_KEY = 'sb_publishable_QCB11qPe_6raIdDVussbpQ_VZ2W_acc';
-        var supabaseClient;
+function InputGroup({ label, value, onChange, multiline = false }) {
+  return (
+    <div className="space-y-2">
+      <label className="text-[9px] font-black uppercase text-slate-400 tracking-widest">{label}</label>
+      {multiline ? (
+        <textarea 
+          className="w-full bg-slate-50 border border-slate-200 p-3 rounded-xl text-xs font-bold outline-none focus:border-blue-500 min-h-[80px]"
+          value={value}
+          onChange={(e) => onChange(e.target.value)}
+        />
+      ) : (
+        <input 
+          className="w-full bg-slate-50 border border-slate-200 p-3 rounded-xl text-xs font-bold outline-none focus:border-blue-500"
+          value={value}
+          onChange={(e) => onChange(e.target.value)}
+        />
+      )}
+    </div>
+  );
+}
 
-        try {
-            if (!supabaseClient) {
-                supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-            }
-        } catch(e) { console.log("Supabase já inicializado"); }
+function LandingView({ onStart }) {
+  return (
+    <div className="py-20 px-8 max-w-7xl mx-auto text-center space-y-12">
+      <div className="inline-block bg-blue-50 text-blue-600 px-6 py-2 rounded-full text-xs font-black uppercase tracking-widest border border-blue-100 animate-pulse">
+        🚀 Disponível em Moçambique, Angola e Portugal
+      </div>
+      <h1 className="text-6xl md:text-[100px] font-black tracking-tighter text-slate-900 leading-[0.85]">
+        TRANSFORME SEU PERFIL <br/><span className="text-blue-600 underline decoration-emerald-500 underline-offset-[12px] italic">EM OPORTUNIDADE.</span>
+      </h1>
+      <p className="text-xl text-slate-500 font-medium max-w-2xl mx-auto leading-relaxed">
+        Templates premium para CVs, Cartas de Apresentação e Motivação. O padrão internacional que o mercado moçambicano exige.
+      </p>
+      <div className="flex flex-col md:flex-row justify-center gap-4">
+        <button onClick={onStart} className="bg-blue-600 text-white px-12 py-6 rounded-[24px] font-black uppercase tracking-widest hover:bg-slate-900 transition-all shadow-2xl shadow-blue-500/40 hover:-translate-y-1">
+          Começar Agora
+        </button>
+        <button className="bg-white border-2 border-slate-200 text-slate-900 px-12 py-6 rounded-[24px] font-black uppercase tracking-widest hover:border-blue-600 transition-all">
+          Ver Modelos
+        </button>
+      </div>
 
-        var currentUser = null;
+      <div className="pt-24 grid grid-cols-1 md:grid-cols-4 gap-6 text-left">
+        {[
+          { icon: LayoutTemplate, title: "10+ Templates CV", desc: "Minimalista, Criativo, Executivo e Académico." },
+          { icon: MessageSquare, title: "8+ Cartas Apres.", desc: "Para emprego, estágio ou candidatura internacional." },
+          { icon: HeartHandshake, title: "8+ Motivação", desc: "Focadas em bolsas, mestrados e vistos de estudo." },
+          { icon: Rocket, title: "Sugestão IA", desc: "Gerador de texto automático baseado no cargo e tom desejado." }
+        ].map((f, i) => (
+          <div key={i} className="bg-white p-8 rounded-[40px] border border-slate-100 shadow-sm hover:shadow-xl transition-all space-y-4">
+            <div className="bg-blue-50 w-12 h-12 rounded-2xl flex items-center justify-center text-blue-600"><f.icon size={24}/></div>
+            <h3 className="font-black uppercase tracking-widest text-[11px]">{f.title}</h3>
+            <p className="text-slate-400 text-xs font-medium leading-relaxed">{f.desc}</p>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
 
-        window.onload = async () => {
-            const { data: { session } } = await supabaseClient.auth.getSession();
-            currentUser = session?.user;
-            updateUI(currentUser);
-            if(currentUser) loadUserDocuments();
+function FounderSection() {
+  return (
+    <div className="py-24 px-8 bg-white overflow-hidden relative">
+      <div className="max-w-6xl mx-auto relative z-10">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-20 items-center">
+          <div className="relative">
+            <div className="w-full aspect-square rounded-[60px] bg-slate-900 overflow-hidden relative z-10 shadow-3xl">
+               <div className="absolute inset-0 bg-gradient-to-br from-blue-600/40 to-emerald-500/40 mix-blend-overlay"></div>
+               <div className="flex items-center justify-center h-full text-white">
+                  <User size={200} strokeWidth={0.5} opacity={0.5} />
+               </div>
+            </div>
+            <div className="absolute -bottom-10 -right-10 w-64 h-64 bg-emerald-400 rounded-full blur-[120px] opacity-20"></div>
+            <div className="absolute -top-10 -left-10 w-64 h-64 bg-blue-400 rounded-full blur-[120px] opacity-20"></div>
+          </div>
+          <div className="space-y-8">
+             <div className="space-y-4">
+                <span className="bg-blue-50 text-blue-600 px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-[0.2em]">O Fundador</span>
+                <h2 className="text-7xl font-black text-slate-900 tracking-tighter leading-tight">{FOUNDER.name}</h2>
+                <p className="text-blue-600 font-black uppercase tracking-[0.3em] text-xs italic">{FOUNDER.role}</p>
+             </div>
+             <p className="text-slate-600 leading-relaxed font-medium text-xl italic border-l-8 border-emerald-500 pl-10">
+                "{FOUNDER.bio}"
+             </p>
+             <div className="grid grid-cols-2 gap-4 pt-4">
+                <div className="bg-slate-50 p-6 rounded-3xl border border-slate-100">
+                   <p className="text-[9px] font-black text-slate-400 uppercase mb-2">Localização</p>
+                   <p className="font-black text-sm">{FOUNDER.location}</p>
+                </div>
+                <div className="bg-slate-50 p-6 rounded-3xl border border-slate-100">
+                   <p className="text-[9px] font-black text-slate-400 uppercase mb-2">Contacto</p>
+                   <p className="font-black text-sm">{FOUNDER.emailCorp}</p>
+                </div>
+             </div>
+          </div>
+        </div>
 
-            supabaseClient.auth.onAuthStateChange((_event, session) => {
-                currentUser = session?.user;
-                updateUI(currentUser);
-                if(currentUser) loadUserDocuments();
-            });
-
-            // Inicializar o novo preview do template
-            updateTemplatePreview();
-        };
-
-        function updateUI(user) {
-            const profileDiv = document.getElementById('user-profile');
-            const loginBtn = document.getElementById('login-btn');
-            const userEmailSpan = document.getElementById('user-email');
-
-            if (user) {
-                profileDiv.classList.remove('hidden');
-                loginBtn.classList.add('hidden');
-                userEmailSpan.innerText = user.email;
-                toggleLogin(true);
-            } else {
-                profileDiv.classList.add('hidden');
-                loginBtn.classList.remove('hidden');
-            }
-        }
-
-        function toggleLogin(forceClose = false) {
-            const modal = document.getElementById('login-modal');
-            if (forceClose) modal.classList.add('hidden');
-            else modal.classList.toggle('hidden');
-        }
-
-        async function handleGoogleLogin() {
-            await supabaseClient.auth.signInWithOAuth({ provider: 'google', options: { redirectTo: window.location.origin } });
-        }
-
-        async function handleMagicLink() {
-            const email = document.getElementById('email-input').value;
-            if (!email) return alert("Insira o email.");
-            const { error } = await supabaseClient.auth.signInWithOtp({ email, options: { emailRedirectTo: window.location.origin } });
-            if (error) alert(error.message); else alert("Link enviado!");
-        }
-
-        async function handleLogout() {
-            await supabaseClient.auth.signOut();
-            location.reload();
-        }
-
-        async function gerarDocumentoComIA() {
-            const name = document.getElementById('user-name').value;
-            const desc = document.getElementById('user-desc').value;
-            const type = document.getElementById('doc-type').value;
-            const phone = document.getElementById('user-phone').value || "+258";
-
-            if (!name || !desc) return alert("Preencha o Nome e o Contexto!");
-
-            document.getElementById('preview-placeholder').classList.add('hidden');
-            document.getElementById('result-state').classList.add('hidden');
-            document.getElementById('loading-state').classList.remove('hidden');
-            document.getElementById('btn-gerar').disabled = true;
-
-            const apiKey = ""; 
-            const prompt = `Gera um documento profissional moçambicano para ${name} (${phone}) do tipo ${type}. 
-            Contexto: ${desc}. Retorna APENAS o HTML (sem markdown) com CSS inline formal e profissional.`;
-
-            try {
-                const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] })
-                });
-
-                const data = await response.json();
-                let content = data.candidates[0].content.parts[0].text;
-                content = content.replace(/```html|```/g, '').trim();
-                
-                document.getElementById('doc-output').innerHTML = `<div class="watermark">HanzDocs AI</div>` + content;
-                document.getElementById('loading-state').classList.add('hidden');
-                document.getElementById('result-state').classList.remove('hidden');
-
-                if(currentUser) saveDocument(type, `${type.toUpperCase()} - ${name}`, content);
-            } catch (err) {
-                alert("Erro ao gerar. Tenta novamente.");
-                document.getElementById('loading-state').classList.add('hidden');
-                document.getElementById('preview-placeholder').classList.remove('hidden');
-            } finally {
-                document.getElementById('btn-gerar').disabled = false;
-            }
-        }
-
-        async function saveDocument(type, title, content) {
-            if(!currentUser) return;
-            await supabaseClient.from('user_documents').insert([{ user_id: currentUser.id, type, title, content }]);
-            loadUserDocuments();
-        }
-
-        async function loadUserDocuments() {
-            if(!currentUser) return;
-            const docsList = document.getElementById('docs-list');
-            const { data } = await supabaseClient.from('user_documents').select('*').eq('user_id', currentUser.id).order('created_at', { ascending: false });
-
-            if (data && data.length > 0) {
-                docsList.innerHTML = data.map(doc => `
-                    <div class="bg-white p-6 rounded-[2rem] border border-slate-100 card-hover cursor-pointer shadow-sm" onclick="viewSavedDoc('${doc.id}')">
-                        <div class="w-10 h-10 bg-blue-50 text-blue-600 rounded-xl flex items-center justify-center mb-4">
-                            <i class="fas fa-file-alt"></i>
-                        </div>
-                        <h4 class="font-bold text-slate-800 truncate text-sm">${doc.title}</h4>
-                        <p class="text-[10px] text-slate-400 mt-1 font-black">${new Date(doc.created_at).toLocaleDateString()}</p>
-                    </div>
-                `).join('');
-            } else {
-                docsList.innerHTML = '<div class="col-span-full py-10 text-center text-slate-400 italic">Nenhum documento encontrado.</div>';
-            }
-        }
-
-        async function viewSavedDoc(id) {
-            const { data } = await supabaseClient.from('user_documents').select('*').eq('id', id).single();
-            if (data) {
-                document.getElementById('doc-output').innerHTML = `<div class="watermark">HanzDocs AI</div>` + data.content;
-                document.getElementById('preview-placeholder').classList.add('hidden');
-                document.getElementById('result-state').classList.remove('hidden');
-                document.getElementById('gerador').scrollIntoView({ behavior: 'smooth' });
-            }
-        }
-
-        function scrollToGerador() { document.getElementById('gerador').scrollIntoView({ behavior: 'smooth' }); }
-        function copiarTexto() {
-            const text = document.getElementById('doc-output').innerText;
-            navigator.clipboard.writeText(text);
-            alert("Copiado!");
-        }
-        function handlePayment(plan) {
-            const phone = prompt("Teu M-Pesa:");
-            if (phone) alert(`Pedido enviado para ${phone}.`);
-        }
-
-        // Função ajustada para imprimir apenas a secção visível desejada
-        function printSection(sectionId) {
-            const originalContent = document.body.innerHTML;
-            const printContent = document.getElementById(sectionId).innerHTML;
-            document.body.innerHTML = printContent;
-            window.print();
-            document.body.innerHTML = originalContent;
-            location.reload(); // Recarrega para restaurar eventos JS
-        }
-
-
-        // ==========================================
-        // NOVO CÓDIGO: LÓGICA DO CONSTRUTOR DE TEMPLATES
-        // ==========================================
-        
-        let currentTemplate = 'moderno';
-
-        function switchTab(tabId) {
-            // Remove active class de todas as abas e conteúdos
-            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
-            document.querySelectorAll('.tab-btn').forEach(el => {
-                el.classList.remove('text-indigo-600', 'border-indigo-600', 'border-b-2');
-                el.classList.add('text-slate-500');
-            });
-            
-            // Ativa a selecionada
-            document.getElementById(tabId).classList.add('active');
-            const btn = document.querySelector(`[data-target="${tabId}"]`);
-            btn.classList.remove('text-slate-500');
-            btn.classList.add('text-indigo-600', 'border-indigo-600', 'border-b-2');
-        }
-
-        function changeTemplate(type) {
-            currentTemplate = type;
-            
-            // Estiliza botões
-            const btnModerno = document.getElementById('btn-tpl-moderno');
-            const btnClassico = document.getElementById('btn-tpl-classico');
-            
-            if(type === 'moderno') {
-                btnModerno.className = "py-3 border-2 border-indigo-600 bg-indigo-50 text-indigo-700 rounded-xl font-bold text-sm transition";
-                btnClassico.className = "py-3 border-2 border-slate-200 bg-white text-slate-600 rounded-xl font-bold text-sm transition hover:border-slate-300";
-            } else {
-                btnClassico.className = "py-3 border-2 border-slate-800 bg-slate-50 text-slate-900 rounded-xl font-bold text-sm transition";
-                btnModerno.className = "py-3 border-2 border-slate-200 bg-white text-slate-600 rounded-xl font-bold text-sm transition hover:border-slate-300";
-            }
-            
-            updateTemplatePreview();
-        }
-
-        function getFormData() {
-            return {
-                nome: document.getElementById('tpl-nome').value || 'Teu Nome',
-                cargo: document.getElementById('tpl-cargo').value || 'Teu Cargo',
-                email: document.getElementById('tpl-email').value || 'email@exemplo.com',
-                telefone: document.getElementById('tpl-telefone').value || '+258 xxx xxx xxx',
-                morada: document.getElementById('tpl-morada').value || 'Cidade, País',
-                resumo: document.getElementById('tpl-resumo').value || 'O teu resumo profissional...',
-                
-                exp1: {
-                    cargo: document.getElementById('tpl-exp1-cargo').value,
-                    empresa: document.getElementById('tpl-exp1-empresa').value,
-                    periodo: document.getElementById('tpl-exp1-periodo').value,
-                    desc: document.getElementById('tpl-exp1-desc').value
-                },
-                exp2: {
-                    cargo: document.getElementById('tpl-exp2-cargo').value,
-                    empresa: document.getElementById('tpl-exp2-empresa').value,
-                    periodo: document.getElementById('tpl-exp2-periodo').value,
-                    desc: document.getElementById('tpl-exp2-desc').value
-                },
-                
-                edu1: {
-                    curso: document.getElementById('tpl-edu1-curso').value,
-                    inst: document.getElementById('tpl-edu1-inst').value,
-                    ano: document.getElementById('tpl-edu1-ano').value
-                },
-                
-                habilidades: document.getElementById('tpl-habilidades').value.split(',').map(s => s.trim()).filter(Boolean)
-            };
-        }
-
-        function updateTemplatePreview() {
-            const data = getFormData();
-            const outputDiv = document.getElementById('template-output');
-            
-            let html = '';
-
-            if (currentTemplate === 'moderno') {
-                // TEMPLATE 1: Moderno (Estilo Zety com barra lateral)
-                html = `
-                <div style="display: flex; min-height: 297mm; font-family: 'Helvetica Neue', Arial, sans-serif; color: #333;">
-                    
-                    <!-- Sidebar Escura -->
-                    <div style="width: 35%; background-color: #2c3e50; color: white; padding: 40px 30px;">
-                        
-                        <div style="width: 120px; height: 120px; background: rgba(255,255,255,0.1); border-radius: 50%; margin: 0 auto 30px; display: flex; align-items: center; justify-content: center; font-size: 40px; color: white;">
-                            ${data.nome.charAt(0)}
-                        </div>
-
-                        <h3 style="font-size: 16px; border-bottom: 2px solid #3498db; padding-bottom: 10px; margin-bottom: 20px; text-transform: uppercase; letter-spacing: 1px;">Contactos</h3>
-                        <div style="font-size: 13px; line-height: 2; margin-bottom: 40px;">
-                            <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 5px;">
-                                <i class="fas fa-envelope" style="width: 15px; text-align: center; color: #3498db;"></i> ${data.email}
-                            </div>
-                            <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 5px;">
-                                <i class="fas fa-phone" style="width: 15px; text-align: center; color: #3498db;"></i> ${data.telefone}
-                            </div>
-                            <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 5px;">
-                                <i class="fas fa-map-marker-alt" style="width: 15px; text-align: center; color: #3498db;"></i> ${data.morada}
-                            </div>
-                        </div>
-
-                        <h3 style="font-size: 16px; border-bottom: 2px solid #3498db; padding-bottom: 10px; margin-bottom: 20px; text-transform: uppercase; letter-spacing: 1px;">Habilidades</h3>
-                        <ul style="list-style: none; padding: 0; margin: 0; font-size: 13px; line-height: 1.8;">
-                            ${data.habilidades.map(hab => `
-                                <li style="margin-bottom: 8px;">
-                                    <div style="display: flex; justify-content: space-between; margin-bottom: 3px;">
-                                        <span>${hab}</span>
-                                    </div>
-                                    <div style="height: 4px; background: rgba(255,255,255,0.2); border-radius: 2px;">
-                                        <div style="width: 80%; height: 100%; background: #3498db; border-radius: 2px;"></div>
-                                    </div>
-                                </li>
-                            `).join('')}
-                        </ul>
-                    </div>
-
-                    <!-- Corpo Principal -->
-                    <div style="width: 65%; padding: 50px 40px; background-color: white;">
-                        <h1 style="font-size: 42px; margin: 0 0 5px 0; color: #2c3e50; line-height: 1.1; font-weight: 800; text-transform: uppercase;">${data.nome}</h1>
-                        <h2 style="font-size: 20px; margin: 0 0 30px 0; color: #3498db; font-weight: 400;">${data.cargo}</h2>
-                        
-                        <p style="font-size: 14px; color: #555; line-height: 1.6; margin-bottom: 40px; text-align: justify;">
-                            ${data.resumo}
-                        </p>
-
-                        <!-- Experiência -->
-                        <h3 style="font-size: 18px; color: #2c3e50; border-bottom: 2px solid #eee; padding-bottom: 10px; margin-bottom: 25px; text-transform: uppercase; font-weight: 700;">
-                            <i class="fas fa-briefcase" style="color: #3498db; margin-right: 8px;"></i> Experiência Profissional
-                        </h3>
-                        
-                        ${data.exp1.cargo ? `
-                        <div style="margin-bottom: 25px;">
-                            <div style="display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 5px;">
-                                <h4 style="margin: 0; font-size: 16px; color: #2c3e50;">${data.exp1.cargo}</h4>
-                                <span style="font-size: 12px; color: #3498db; font-weight: bold;">${data.exp1.periodo}</span>
-                            </div>
-                            <div style="font-size: 14px; font-weight: 600; color: #7f8c8d; margin-bottom: 10px;">${data.exp1.empresa}</div>
-                            <p style="font-size: 13px; color: #555; line-height: 1.6; margin: 0;">${data.exp1.desc}</p>
-                        </div>
-                        ` : ''}
-
-                        ${data.exp2.cargo ? `
-                        <div style="margin-bottom: 30px;">
-                            <div style="display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 5px;">
-                                <h4 style="margin: 0; font-size: 16px; color: #2c3e50;">${data.exp2.cargo}</h4>
-                                <span style="font-size: 12px; color: #3498db; font-weight: bold;">${data.exp2.periodo}</span>
-                            </div>
-                            <div style="font-size: 14px; font-weight: 600; color: #7f8c8d; margin-bottom: 10px;">${data.exp2.empresa}</div>
-                            <p style="font-size: 13px; color: #555; line-height: 1.6; margin: 0;">${data.exp2.desc}</p>
-                        </div>
-                        ` : ''}
-
-                        <!-- Educação -->
-                        <h3 style="font-size: 18px; color: #2c3e50; border-bottom: 2px solid #eee; padding-bottom: 10px; margin-bottom: 25px; text-transform: uppercase; font-weight: 700; margin-top: 40px;">
-                            <i class="fas fa-graduation-cap" style="color: #3498db; margin-right: 8px;"></i> Educação
-                        </h3>
-                        
-                        ${data.edu1.curso ? `
-                        <div>
-                            <div style="display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 5px;">
-                                <h4 style="margin: 0; font-size: 16px; color: #2c3e50;">${data.edu1.curso}</h4>
-                                <span style="font-size: 12px; color: #3498db; font-weight: bold;">${data.edu1.ano}</span>
-                            </div>
-                            <div style="font-size: 14px; color: #7f8c8d;">${data.edu1.inst}</div>
-                        </div>
-                        ` : ''}
-
-                    </div>
-                </div>`;
-            } 
-            else {
-                // TEMPLATE 2: Clássico (Preto e Branco / Serif)
-                html = `
-                <div style="padding: 50px 60px; min-height: 297mm; font-family: 'Times New Roman', Times, serif; color: #000; background: white;">
-                    
-                    <div style="text-align: center; border-bottom: 2px solid #000; padding-bottom: 20px; margin-bottom: 30px;">
-                        <h1 style="font-size: 36px; margin: 0 0 5px 0; text-transform: uppercase; letter-spacing: 2px;">${data.nome}</h1>
-                        <h2 style="font-size: 18px; margin: 0 0 15px 0; font-style: italic; font-weight: normal;">${data.cargo}</h2>
-                        <div style="font-size: 14px; font-family: Arial, sans-serif;">
-                            ${data.morada} &bull; ${data.telefone} &bull; ${data.email}
-                        </div>
-                    </div>
-
-                    <div style="margin-bottom: 30px;">
-                        <h3 style="font-size: 16px; text-transform: uppercase; border-bottom: 1px solid #ccc; padding-bottom: 5px; margin-bottom: 15px; letter-spacing: 1px;">Resumo Profissional</h3>
-                        <p style="font-size: 14px; line-height: 1.6; text-align: justify; margin: 0;">${data.resumo}</p>
-                    </div>
-
-                    <div style="margin-bottom: 30px;">
-                        <h3 style="font-size: 16px; text-transform: uppercase; border-bottom: 1px solid #ccc; padding-bottom: 5px; margin-bottom: 15px; letter-spacing: 1px;">Experiência Profissional</h3>
-                        
-                        ${data.exp1.cargo ? `
-                        <div style="margin-bottom: 20px;">
-                            <div style="display: flex; justify-content: space-between; font-weight: bold; font-size: 15px;">
-                                <span>${data.exp1.cargo}</span>
-                                <span>${data.exp1.periodo}</span>
-                            </div>
-                            <div style="font-style: italic; font-size: 14px; margin-bottom: 8px;">${data.exp1.empresa}</div>
-                            <p style="font-size: 14px; line-height: 1.5; margin: 0;">- ${data.exp1.desc.replace(/\n/g, '<br>- ')}</p>
-                        </div>
-                        ` : ''}
-
-                        ${data.exp2.cargo ? `
-                        <div style="margin-bottom: 20px;">
-                            <div style="display: flex; justify-content: space-between; font-weight: bold; font-size: 15px;">
-                                <span>${data.exp2.cargo}</span>
-                                <span>${data.exp2.periodo}</span>
-                            </div>
-                            <div style="font-style: italic; font-size: 14px; margin-bottom: 8px;">${data.exp2.empresa}</div>
-                            <p style="font-size: 14px; line-height: 1.5; margin: 0;">- ${data.exp2.desc.replace(/\n/g, '<br>- ')}</p>
-                        </div>
-                        ` : ''}
-                    </div>
-
-                    <div style="margin-bottom: 30px;">
-                        <h3 style="font-size: 16px; text-transform: uppercase; border-bottom: 1px solid #ccc; padding-bottom: 5px; margin-bottom: 15px; letter-spacing: 1px;">Educação</h3>
-                        ${data.edu1.curso ? `
-                        <div>
-                            <div style="display: flex; justify-content: space-between; font-weight: bold; font-size: 15px;">
-                                <span>${data.edu1.inst}</span>
-                                <span>${data.edu1.ano}</span>
-                            </div>
-                            <div style="font-size: 14px; margin-top: 3px;">${data.edu1.curso}</div>
-                        </div>
-                        ` : ''}
-                    </div>
-
-                    <div>
-                        <h3 style="font-size: 16px; text-transform: uppercase; border-bottom: 1px solid #ccc; padding-bottom: 5px; margin-bottom: 15px; letter-spacing: 1px;">Habilidades</h3>
-                        <p style="font-size: 14px; line-height: 1.6; font-family: Arial, sans-serif;">
-                            ${data.habilidades.join(' &bull; ')}
-                        </p>
-                    </div>
-
-                </div>`;
-            }
-
-            outputDiv.innerHTML = `<div class="watermark">HanzDocs</div>` + html;
-        }
-
-        async function saveTemplateDocument() {
-            if(!currentUser) {
-                alert("Por favor, faça Login para guardar o seu Currículo.");
-                toggleLogin();
-                return;
-            }
-            
-            const btn = document.querySelector('button[onclick="saveTemplateDocument()"]');
-            const originalText = btn.innerHTML;
-            btn.innerHTML = `<div class="loader" style="width: 20px; height: 20px; border-width: 2px;"></div> Guardando...`;
-            
-            const content = document.getElementById('template-output').innerHTML;
-            const title = `CV ${currentTemplate.toUpperCase()} - ${document.getElementById('tpl-nome').value}`;
-            
-            await saveDocument('cv', title, content);
-            
-            setTimeout(() => {
-                btn.innerHTML = `<i class="fas fa-check"></i> Guardado com Sucesso!`;
-                btn.classList.remove('bg-indigo-600', 'hover:bg-indigo-700');
-                btn.classList.add('bg-green-600', 'hover:bg-green-700');
-                
-                setTimeout(() => {
-                    btn.innerHTML = originalText;
-                    btn.classList.add('bg-indigo-600', 'hover:bg-indigo-700');
-                    btn.classList.remove('bg-green-600', 'hover:bg-green-700');
-                }, 3000);
-            }, 1000);
-        }
-
-    </script>
-</body>
-</html>
+        <div className="mt-32 bg-slate-900 rounded-[64px] p-20 text-white relative overflow-hidden group">
+           <div className="relative z-10 grid grid-cols-1 md:grid-cols-12 gap-12 items-center">
+              <div className="md:col-span-8 space-y-8">
+                <div className="flex items-center gap-4">
+                   <div className="h-px w-12 bg-emerald-500"></div>
+                   <h3 className="text-3xl font-black uppercase tracking-widest text-emerald-500">A Missão Hanz Docs</h3>
+                </div>
+                <p className="text-slate-300 text-2xl leading-relaxed font-medium">
+                  {FOUNDER.motivation}
+                </p>
+              </div>
+              <div className="md:col-span-4 grid grid-cols-2 gap-4">
+                 {[
+                   { icon: Award, label: 'Qualidade Premium' },
+                   { icon: ShieldCheck, label: 'Confiança' },
+                   { icon: Globe, label: 'Padrão Inter.' },
+                   { icon: Rocket, label: 'Inovação' }
+                 ].map((item, i) => (
+                   <div key={i} className="bg-white/5 border border-white/10 p-6 rounded-[32px] flex flex-col items-center gap-3 text-center">
+                      <item.icon className="text-blue-400" size={24} />
+                      <p className="text-[8px] font-black uppercase tracking-widest">{item.label}</p>
+                   </div>
+                 ))}
+              </div>
+           </div>
+           <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-blue-600/10 blur-[150px] rounded-full group-hover:bg-blue-600/20 transition-all duration-700"></div>
+        </div>
+      </div>
+    </div>
+  );
+}
