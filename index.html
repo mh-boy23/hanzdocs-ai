@@ -1,657 +1,398 @@
-import React, { useState, useMemo } from 'react';
-import { 
-  User, Mail, Phone, MapPin, Briefcase, Trash2, Download, 
-  Settings, Plus, CheckCircle, Award, Rocket, FileBadge, 
-  AlignLeft, Palette, GraduationCap, Languages, BriefcaseBusiness, 
-  PencilLine, Star, FileText, LayoutTemplate, PlusCircle, Building,
-  Calendar, FileEdit, FileCode2, Linkedin, Globe, ShieldCheck,
-  ChevronRight, Facebook, Instagram, Twitter, Type, MessageSquare,
-  Trophy, HeartHandshake, BookOpen, Quote
-} from 'lucide-react';
-
-// --- CONFIGURAÇÕES DE BRANDING E FUNDADOR ---
-const BRAND = {
-  name: "Hanz Docs",
-  slogan: "Documentos que abrem portas.",
-  colors: {
-    primary: '#0F172A',   // Azul Profundo
-    secondary: '#2563EB', // Azul Vibrante
-    accent: '#10B981',    // Verde Esmeralda
-    light: '#F8FAFC',
-    dark: '#1E293B'
-  }
-};
-
-const FOUNDER = {
-  name: "Hanz Domingos",
-  location: "Maputo, Moçambique",
-  phone: "+258 847875963",
-  emailPersonal: "Hanzdomingos@gmail.com",
-  emailCorp: "Hdomingoa@hdconsultingservice.com",
-  role: "Especialista em M&A e Transformação Digital",
-  bio: "Hanz Domingos é especialista em Monitoria e Avaliação (M&A), Gestão de Dados e Transformação Digital, com experiência em análise estratégica, automação de processos (RPA) e implementação de sistemas de informação. Com forte atuação em projetos de saúde e desenvolvimento, combina tecnologia, dados e visão estratégica para criar soluções eficientes e sustentáveis.",
-  motivation: "Acredito que o talento moçambicano precisa de ferramentas profissionais à altura do mercado internacional. Através do Hanz Docs, o meu objetivo é capacitar jovens e profissionais a apresentarem-se com excelência, aumentando as suas oportunidades de crescimento profissional dentro e fora de Moçambique."
-};
-
-const TEMPLATES_CV = [
-  { id: 'minimalista', name: 'Minimalista' },
-  { id: 'corporativo', name: 'Corporativo' },
-  { id: 'criativo', name: 'Criativo' },
-  { id: 'executivo', name: 'Executivo' },
-  { id: 'academico', name: 'Académico' },
-  { id: 'tecnologico', name: 'Tecnológico' },
-  { id: 'internacional', name: 'Internacional (Europass)' },
-  { id: 'jovem', name: 'Jovem / 1º Emprego' },
-  { id: 'gestao', name: 'Gestão & Liderança' },
-  { id: 'tecnico', name: 'Técnico / Engenharia' }
-];
-
-const TEMPLATES_COVER = [
-  { id: 'c_emprego', name: 'Candidatura Emprego' },
-  { id: 'c_estagio', name: 'Estágio' },
-  { id: 'c_bolsa', name: 'Bolsa de Estudo' },
-  { id: 'c_corp', name: 'Corporativa' },
-  { id: 'c_formal', name: 'Formal Tradicional' },
-  { id: 'c_moderna', name: 'Moderna Minimalista' },
-  { id: 'c_criativa', name: 'Criativa' },
-  { id: 'c_inter', name: 'Internacional' }
-];
-
-const TEMPLATES_MOTIVATION = [
-  { id: 'm_bolsa', name: 'Bolsa de Estudo' },
-  { id: 'm_uni', name: 'Universidade' },
-  { id: 'm_mestrado', name: 'Mestrado' },
-  { id: 'm_doutor', name: 'Doutoramento' },
-  { id: 'm_ong', name: 'ONG / Voluntariado' },
-  { id: 'm_visto', name: 'Visto de Estudo' },
-  { id: 'm_inter', name: 'Prog. Internacional' },
-  { id: 'm_gov', name: 'Oport. Governamental' }
-];
-
-// --- APP PRINCIPAL ---
-export default function App() {
-  const [activeView, setActiveView] = useState('landing');
-  const [docType, setDocType] = useState('cv'); // cv, cover, motivation
-  const [activeTab, setActiveTab] = useState('perfil');
-  const [tone, setTone] = useState('profissional'); // formal, profissional, confiante, criativo
-
-  const [data, setData] = useState({
-    profile: { 
-      fullName: 'Arsénio Muianga', 
-      title: 'Analista de Dados Senior', 
-      email: 'arsenio.muianga@exemplo.mz', 
-      phone: '+258 84 123 4567', 
-      location: 'Maputo, Moçambique',
-      linkedin: 'linkedin.com/in/arsenio',
-      website: 'www.arsenio.mz',
-      summary: 'Profissional focado em BI e análise estratégica com 8 anos de experiência no mercado moçambicano e internacional.' 
-    },
-    letterData: {
-      recipient: 'Direção de RH - Vodacom Moçambique',
-      subject: 'Candidatura à vaga de Gestor de Projetos',
-      salutation: 'Exmos. Senhores,',
-      body: 'Escrevo com grande entusiasmo para me candidatar à posição mencionada...',
-      signOff: 'Atenciosamente,',
-      date: new Date().toLocaleDateString('pt-MZ')
-    },
-    sections: [
-      { id: 'exp', title: 'Experiência Profissional', type: 'list', items: [{ id: '1', title: 'Analista Lead', subtitle: 'DataCorp MZ', period: '2021-2026', desc: 'Gestão de equipas de BI e automação de relatórios.' }] },
-      { id: 'edu', title: 'Formação Académica', type: 'list', items: [{ id: 'e1', title: 'Licenciatura em Informática', subtitle: 'Univ. Eduardo Mondlane', period: '2016-2020', desc: 'Média final de 16 valores.' }] },
-      { id: 'skill_tech', title: 'Competências Técnicas', type: 'tags', items: ['Power BI', 'SQL', 'Python', 'ETL'] },
-      { id: 'skill_soft', title: 'Competências Comportamentais', type: 'tags', items: ['Liderança', 'Pensamento Crítico', 'Comunicação'] },
-      { id: 'lang', title: 'Idiomas', type: 'list', items: [{ id: 'l1', title: 'Português', subtitle: 'Nativo', period: '', desc: '' }, { id: 'l2', title: 'Inglês', subtitle: 'Avançado (C1)', period: '', desc: '' }] }
-    ],
-    settings: {
-      template: 'corporativo',
-      accentColor: BRAND.colors.secondary,
-      font: 'Inter'
-    }
-  });
-
-  const [customFieldName, setCustomFieldName] = useState('');
-
-  // Adicionar Nova Secção
-  const addSection = () => {
-    if(!customFieldName) return;
-    const newSec = { id: `sec_${Date.now()}`, title: customFieldName, type: 'list', items: [] };
-    setData(prev => ({ ...prev, sections: [...prev.sections, newSec] }));
-    setActiveTab(newSec.id);
-    setCustomFieldName('');
-  };
-
-  // Remover Secção
-  const removeSection = (id) => {
-    setData(prev => ({ ...prev, sections: prev.sections.filter(s => s.id !== id) }));
-    if(activeTab === id) setActiveTab('perfil');
-  };
-
-  // Adicionar Item em Secção
-  const addItem = (sectionId) => {
-    setData(prev => ({
-      ...prev,
-      sections: prev.sections.map(s => s.id === sectionId ? {
-        ...s,
-        items: s.type === 'tags' ? [...s.items, 'Nova Tag'] : [...s.items, { id: Date.now().toString(), title: 'Novo Item', subtitle: '', period: '', desc: '' }]
-      } : s)
-    }));
-  };
-
-  // Gerar Texto por Tom (Mockup de IA)
-  const generateText = () => {
-    const tones = {
-      formal: "Venho por este meio expressar o meu interesse formal na posição...",
-      profissional: "Escrevo para apresentar a minha candidatura à vaga de...",
-      confiante: "Estou certo de que as minhas competências em dados trarão resultados imediatos para a...",
-      criativo: "Imagine uma equipa de dados que não apenas lê números, mas conta histórias..."
-    };
-    setData(prev => ({ ...prev, letterData: { ...prev.letterData, body: tones[tone] } }));
-  };
-
-  // Renderização do Template Ativo no Canvas
-  const renderDocumentPreview = () => {
-    if (docType === 'cv') {
-      return (
-        <div className={`w-full min-h-full bg-white relative transition-all duration-500 font-${data.settings.font}`}>
-          {/* Cabeçalho */}
-          <header className={`p-10 border-b-4 mb-8`} style={{ borderColor: data.settings.accentColor }}>
-            <div className="flex justify-between items-end">
-              <div>
-                <h1 className="text-4xl font-black uppercase tracking-tighter" style={{ color: data.settings.accentColor }}>{data.profile.fullName}</h1>
-                <p className="text-xl font-bold text-slate-400 uppercase tracking-widest">{data.profile.title}</p>
-              </div>
-              <div className="text-right text-[10px] font-bold text-slate-500 uppercase leading-tight">
-                <p>{data.profile.location}</p>
-                <p>{data.profile.email}</p>
-                <p>{data.profile.phone}</p>
-                <p className="text-blue-600">{data.profile.linkedin}</p>
-              </div>
-            </div>
-          </header>
-
-          <div className="px-10 grid grid-cols-12 gap-10">
-            <div className="col-span-8 space-y-8">
-              <section>
-                <h3 className="text-[10px] font-black uppercase tracking-[0.3em] mb-4 opacity-50">Resumo</h3>
-                <p className="text-sm text-slate-700 leading-relaxed font-medium">{data.profile.summary}</p>
-              </section>
-
-              {data.sections.filter(s => s.type === 'list').map(s => (
-                <section key={s.id}>
-                  <h3 className="text-[10px] font-black uppercase tracking-[0.3em] mb-4 flex justify-between items-center" style={{ color: data.settings.accentColor }}>
-                    <span>{s.title}</span>
-                  </h3>
-                  <div className="space-y-6">
-                    {s.items.map(i => (
-                      <div key={i.id} className="group relative">
-                        <div className="flex justify-between items-start mb-1">
-                          <h4 className="font-black text-xs uppercase text-slate-800">{i.title}</h4>
-                          <span className="text-[10px] font-bold text-slate-400">{i.period}</span>
-                        </div>
-                        <p className="text-[10px] font-bold text-blue-600 uppercase mb-2">{i.subtitle}</p>
-                        <p className="text-[11px] text-slate-500 leading-relaxed">{i.desc}</p>
-                      </div>
-                    ))}
-                  </div>
-                </section>
-              ))}
-            </div>
-
-            <div className="col-span-4 space-y-8">
-              {data.sections.filter(s => s.type === 'tags').map(s => (
-                <section key={s.id}>
-                   <h3 className="text-[10px] font-black uppercase tracking-[0.3em] mb-4 opacity-50">{s.title}</h3>
-                   <div className="flex flex-wrap gap-2">
-                     {s.items.map((tag, idx) => (
-                       <span key={idx} className="bg-slate-100 px-3 py-1.5 rounded-lg text-[9px] font-black uppercase text-slate-600 border border-slate-200">{tag}</span>
-                     ))}
-                   </div>
-                </section>
-              ))}
-            </div>
-          </div>
-          
-          <div className="absolute bottom-10 left-10 right-10 flex justify-between items-center opacity-30 border-t pt-4">
-             <span className="text-[8px] font-black uppercase">Gerado via Hanz Docs - Maputo</span>
-             <span className="text-[8px] font-black uppercase">Template: {data.settings.template}</span>
-          </div>
-        </div>
-      );
-    } else {
-      // Preview para Cartas (Apresentação / Motivação)
-      return (
-        <div className="w-full min-h-full bg-white p-16 font-serif">
-           <div className="mb-12 text-sm space-y-1">
-              <p className="font-black text-slate-900">{data.profile.fullName}</p>
-              <p className="text-slate-500">{data.profile.location}</p>
-              <p className="text-slate-500">{data.profile.email} | {data.profile.phone}</p>
-           </div>
-
-           <div className="mb-12 text-sm text-right">
-              <p className="text-slate-400 mb-6">{data.letterData.date}</p>
-              <p className="font-black">Para:</p>
-              <p className="text-slate-600 whitespace-pre-line">{data.letterData.recipient}</p>
-           </div>
-
-           <div className="mb-8">
-              <p className="font-black text-slate-900 uppercase tracking-widest border-b pb-2 mb-8">Assunto: {data.letterData.subject}</p>
-              <p className="mb-6 font-bold">{data.letterData.salutation}</p>
-              <p className="text-slate-700 leading-[1.8] text-sm whitespace-pre-line min-h-[400px]">
-                {data.letterData.body}
-              </p>
-           </div>
-
-           <div className="mt-16 border-t pt-8">
-              <p className="text-sm mb-12">{data.letterData.signOff}</p>
-              <div className="h-px w-48 bg-slate-300 mb-2"></div>
-              <p className="font-black uppercase tracking-widest text-xs">{data.profile.fullName}</p>
-           </div>
-        </div>
-      );
-    }
-  };
-
-  return (
-    <div className="min-h-screen bg-slate-50 font-sans text-slate-900 selection:bg-blue-100">
-      
-      {/* NAVEGAÇÃO SUPERIOR */}
-      <nav className="h-20 bg-white border-b border-slate-200 px-8 flex items-center justify-between sticky top-0 z-50">
-        <div className="flex items-center gap-3 cursor-pointer group" onClick={() => setActiveView('landing')}>
-          <div className="bg-blue-600 p-2 rounded-xl text-white group-hover:rotate-12 transition-transform"><FileBadge /></div>
-          <span className="text-2xl font-black tracking-tighter uppercase">HANZ<span className="text-emerald-500">DOCS</span></span>
-        </div>
-        <div className="hidden md:flex gap-8 items-center">
-          <button onClick={() => { setActiveView('editor'); setDocType('cv'); }} className={`text-[10px] font-black uppercase tracking-widest hover:text-blue-600 transition-colors ${docType === 'cv' && activeView === 'editor' ? 'text-blue-600' : ''}`}>Currículos</button>
-          <button onClick={() => { setActiveView('editor'); setDocType('cover'); }} className={`text-[10px] font-black uppercase tracking-widest hover:text-blue-600 transition-colors ${docType === 'cover' && activeView === 'editor' ? 'text-blue-600' : ''}`}>Cartas</button>
-          <button onClick={() => setActiveView('founder')} className={`text-[10px] font-black uppercase tracking-widest hover:text-blue-600 transition-colors ${activeView === 'founder' ? 'text-blue-600' : ''}`}>O Fundador</button>
-          <div className="h-6 w-px bg-slate-200"></div>
-          <button className="bg-slate-900 text-white px-6 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-blue-600 transition-all shadow-lg shadow-blue-500/20">Login</button>
-        </div>
-      </nav>
-
-      {/* VIEWS */}
-      {activeView === 'landing' && <LandingView onStart={() => setActiveView('editor')} />}
-      {activeView === 'founder' && <FounderSection />}
-      
-      {activeView === 'editor' && (
-        <div className="flex h-[calc(100vh-5rem)] overflow-hidden">
-          
-          {/* Sidebar Editor */}
-          <aside className="w-[400px] bg-white border-r border-slate-200 flex flex-col overflow-y-auto custom-scrollbar">
-            <div className="p-8 space-y-8 pb-32">
-              
-              {/* Seletor de Tipo de Doc */}
-              <div className="space-y-2">
-                <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Documento</p>
-                <div className="flex gap-1 p-1 bg-slate-100 rounded-xl">
-                  {[
-                    { id: 'cv', label: 'CV', icon: User },
-                    { id: 'cover', label: 'Carta', icon: MessageSquare },
-                    { id: 'motivation', label: 'Motivação', icon: HeartHandshake }
-                  ].map(t => (
-                    <button 
-                      key={t.id}
-                      onClick={() => setDocType(t.id)}
-                      className={`flex-1 py-3 flex items-center justify-center gap-2 text-[9px] font-black uppercase rounded-lg transition-all ${docType === t.id ? 'bg-white text-blue-600 shadow-sm' : 'text-slate-400 hover:text-slate-600'}`}
-                    >
-                      <t.icon size={14}/> {t.label}
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-              {/* Seletor de Template Baseado no Tipo */}
-              <div className="space-y-4">
-                <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Template Selecionado</p>
-                <select 
-                  className="w-full bg-slate-50 border border-slate-200 p-3 rounded-xl text-xs font-bold outline-none focus:ring-2 focus:ring-blue-500/20"
-                  value={data.settings.template}
-                  onChange={(e) => setData({...data, settings: {...data.settings, template: e.target.value}})}
-                >
-                  {docType === 'cv' ? TEMPLATES_CV.map(t => <option key={t.id} value={t.id}>{t.name}</option>) : 
-                   docType === 'cover' ? TEMPLATES_COVER.map(t => <option key={t.id} value={t.id}>{t.name}</option>) :
-                   TEMPLATES_MOTIVATION.map(t => <option key={t.id} value={t.id}>{t.name}</option>)}
-                </select>
-              </div>
-
-              {/* Editor de Conteúdo */}
-              <div className="space-y-4">
-                 <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Campos e Secções</p>
-                 <div className="space-y-2">
-                    <button onClick={() => setActiveTab('perfil')} className={`w-full flex items-center justify-between p-4 rounded-xl font-black text-[10px] uppercase tracking-widest transition-all ${activeTab === 'perfil' ? 'bg-blue-600 text-white shadow-lg shadow-blue-500/30' : 'bg-slate-50 text-slate-600 hover:bg-slate-100'}`}>
-                      <span className="flex items-center gap-3"><User size={16}/> Dados Pessoais</span>
-                    </button>
-                    {docType !== 'cv' && (
-                      <button onClick={() => setActiveTab('carta')} className={`w-full flex items-center justify-between p-4 rounded-xl font-black text-[10px] uppercase tracking-widest transition-all ${activeTab === 'carta' ? 'bg-blue-600 text-white shadow-lg shadow-blue-500/30' : 'bg-slate-50 text-slate-600 hover:bg-slate-100'}`}>
-                        <span className="flex items-center gap-3"><FileEdit size={16}/> Corpo da Carta</span>
-                      </button>
-                    )}
-                    {data.sections.map(s => (
-                      <div key={s.id} className="flex gap-2">
-                        <button onClick={() => setActiveTab(s.id)} className={`flex-1 flex items-center justify-between p-4 rounded-xl font-black text-[10px] uppercase tracking-widest transition-all ${activeTab === s.id ? 'bg-blue-600 text-white shadow-lg shadow-blue-500/30' : 'bg-slate-50 text-slate-600 hover:bg-slate-100'}`}>
-                          <span className="flex items-center gap-3"><FileText size={16}/> {s.title}</span>
-                        </button>
-                        <button onClick={() => removeSection(s.id)} className="bg-red-50 text-red-400 p-4 rounded-xl hover:bg-red-500 hover:text-white transition-all"><Trash2 size={16}/></button>
-                      </div>
-                    ))}
-                 </div>
-
-                 {/* Adicionar Secção Personalizada */}
-                 <div className="pt-4 flex gap-2">
-                    <input 
-                      className="flex-1 bg-slate-50 border border-slate-200 p-3 rounded-xl text-xs font-bold outline-none focus:border-blue-500"
-                      placeholder="Nova Secção (ex: Projetos)"
-                      value={customFieldName}
-                      onChange={(e) => setCustomFieldName(e.target.value)}
-                    />
-                    <button onClick={addSection} className="bg-emerald-500 text-white p-3 rounded-xl shadow-lg shadow-emerald-500/20 hover:scale-105 transition-transform"><Plus size={18}/></button>
-                 </div>
-              </div>
-
-              {/* Configurações de Estilo */}
-              <div className="pt-8 border-t border-slate-100 space-y-6">
-                 <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Identidade Visual</p>
-                 <div className="space-y-4">
-                    <div className="flex justify-between items-center">
-                      <span className="text-[10px] font-black uppercase tracking-widest">Cor de Destaque</span>
-                      <div className="flex gap-2">
-                        {['#2563EB', '#10B981', '#F59E0B', '#EF4444', '#0F172A'].map(c => (
-                          <button 
-                            key={c}
-                            onClick={() => setData({...data, settings: {...data.settings, accentColor: c}})}
-                            className={`w-6 h-6 rounded-full border-2 ${data.settings.accentColor === c ? 'border-slate-400 scale-125' : 'border-transparent'}`}
-                            style={{ backgroundColor: c }}
-                          />
-                        ))}
-                      </div>
-                    </div>
-                    {docType !== 'cv' && (
-                      <div className="space-y-3 pt-4">
-                        <span className="text-[10px] font-black uppercase tracking-widest">Tom da Escrita</span>
-                        <div className="grid grid-cols-2 gap-2">
-                           {['formal', 'profissional', 'confiante', 'criativo'].map(t => (
-                             <button 
-                               key={t}
-                               onClick={() => setTone(t)}
-                               className={`p-2 rounded-lg border text-[8px] font-black uppercase transition-all ${tone === t ? 'border-blue-600 bg-blue-50 text-blue-600' : 'border-slate-100 text-slate-400'}`}
-                             >
-                               {t}
-                             </button>
-                           ))}
-                        </div>
-                        <button onClick={generateText} className="w-full bg-slate-900 text-white p-3 rounded-xl text-[9px] font-black uppercase tracking-widest flex items-center justify-center gap-2 hover:bg-blue-600">
-                          <Rocket size={14}/> Sugerir Texto IA
-                        </button>
-                      </div>
-                    )}
-                 </div>
-              </div>
-
-            </div>
-          </aside>
-
-          {/* Área de Visualização e Edição Contextual */}
-          <main className="flex-1 bg-slate-100 overflow-y-auto flex">
-            {/* Editor Central */}
-            <div className="w-1/3 bg-white border-r border-slate-200 p-8 overflow-y-auto custom-scrollbar">
-              <div className="space-y-6">
-                <h3 className="text-[10px] font-black uppercase tracking-[0.3em] text-blue-600">{activeTab}</h3>
-                
-                {activeTab === 'perfil' && (
-                  <div className="space-y-4">
-                    <InputGroup label="Nome Completo" value={data.profile.fullName} onChange={v => setData({...data, profile: {...data.profile, fullName: v}})} />
-                    <InputGroup label="Título Profissional" value={data.profile.title} onChange={v => setData({...data, profile: {...data.profile, title: v}})} />
-                    <InputGroup label="Email" value={data.profile.email} onChange={v => setData({...data, profile: {...data.profile, email: v}})} />
-                    <InputGroup label="Telefone" value={data.profile.phone} onChange={v => setData({...data, profile: {...data.profile, phone: v}})} />
-                    <InputGroup label="Localização" value={data.profile.location} onChange={v => setData({...data, profile: {...data.profile, location: v}})} />
-                    <div className="space-y-2">
-                       <label className="text-[9px] font-black uppercase text-slate-400">Resumo Profissional</label>
-                       <textarea 
-                         className="w-full bg-slate-50 border border-slate-200 p-3 rounded-xl text-xs font-medium min-h-[120px] outline-none focus:border-blue-500"
-                         value={data.profile.summary}
-                         onChange={(e) => setData({...data, profile: {...data.profile, summary: e.target.value}})}
-                       />
-                    </div>
-                  </div>
-                )}
-
-                {activeTab === 'carta' && (
-                  <div className="space-y-4">
-                    <InputGroup label="Destinatário" value={data.letterData.recipient} onChange={v => setData({...data, letterData: {...data.letterData, recipient: v}})} multiline />
-                    <InputGroup label="Assunto" value={data.letterData.subject} onChange={v => setData({...data, letterData: {...data.letterData, subject: v}})} />
-                    <InputGroup label="Saudação" value={data.letterData.salutation} onChange={v => setData({...data, letterData: {...data.letterData, salutation: v}})} />
-                    <div className="space-y-2">
-                       <label className="text-[9px] font-black uppercase text-slate-400">Corpo do Texto</label>
-                       <textarea 
-                         className="w-full bg-slate-50 border border-slate-200 p-3 rounded-xl text-xs font-medium min-h-[400px] outline-none focus:border-blue-500"
-                         value={data.letterData.body}
-                         onChange={(e) => setData({...data, letterData: {...data.letterData, body: e.target.value}})}
-                       />
-                    </div>
-                  </div>
-                )}
-
-                {data.sections.map(s => activeTab === s.id && (
-                  <div key={s.id} className="space-y-6">
-                    {s.items.map((item, idx) => (
-                      <div key={item.id || idx} className="p-4 bg-slate-50 rounded-2xl border border-slate-100 space-y-4 relative group">
-                        <button className="absolute -top-2 -right-2 bg-red-500 text-white p-1 rounded-full opacity-0 group-hover:opacity-100 transition-opacity">
-                          <Plus size={12} className="rotate-45" />
-                        </button>
-                        {s.type === 'list' ? (
-                          <>
-                            <InputGroup label="Título" value={item.title} onChange={v => {
-                              const newItems = [...s.items];
-                              newItems[idx].title = v;
-                              setData({...data, sections: data.sections.map(sec => sec.id === s.id ? {...sec, items: newItems} : sec)});
-                            }} />
-                            <InputGroup label="Subtítulo / Empresa" value={item.subtitle} onChange={v => {
-                              const newItems = [...s.items];
-                              newItems[idx].subtitle = v;
-                              setData({...data, sections: data.sections.map(sec => sec.id === s.id ? {...sec, items: newItems} : sec)});
-                            }} />
-                            <InputGroup label="Período" value={item.period} onChange={v => {
-                              const newItems = [...s.items];
-                              newItems[idx].period = v;
-                              setData({...data, sections: data.sections.map(sec => sec.id === s.id ? {...sec, items: newItems} : sec)});
-                            }} />
-                            <textarea 
-                              className="w-full bg-white border border-slate-200 p-3 rounded-xl text-[11px] outline-none" 
-                              placeholder="Descrição..."
-                              value={item.desc}
-                              onChange={e => {
-                                const newItems = [...s.items];
-                                newItems[idx].desc = e.target.value;
-                                setData({...data, sections: data.sections.map(sec => sec.id === s.id ? {...sec, items: newItems} : sec)});
-                              }}
-                            />
-                          </>
-                        ) : (
-                          <InputGroup label={`Tag ${idx + 1}`} value={item} onChange={v => {
-                            const newItems = [...s.items];
-                            newItems[idx] = v;
-                            setData({...data, sections: data.sections.map(sec => sec.id === s.id ? {...sec, items: newItems} : sec)});
-                          }} />
-                        )}
-                      </div>
-                    ))}
-                    <button onClick={() => addItem(s.id)} className="w-full border-2 border-dashed border-slate-200 p-4 rounded-2xl text-[10px] font-black uppercase text-slate-400 hover:border-blue-400 hover:text-blue-500 transition-all">
-                      + Adicionar Item
-                    </button>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {/* Canvas de Visualização */}
-            <div className="flex-1 p-12 overflow-y-auto flex flex-col items-center custom-scrollbar">
-              <div className="mb-6 flex gap-4">
-                 <button className="bg-white border border-slate-200 px-6 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest flex items-center gap-2 hover:bg-slate-50">
-                    <Download size={16} /> Exportar PDF
-                 </button>
-                 <button className="bg-blue-600 text-white px-6 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest flex items-center gap-2 hover:bg-blue-700 shadow-xl shadow-blue-500/20">
-                    <CheckCircle size={16} /> Finalizar
-                 </button>
-              </div>
-              <div className="w-[794px] min-h-[1123px] bg-white shadow-2xl origin-top transition-transform duration-300">
-                {renderDocumentPreview()}
-              </div>
-            </div>
-          </main>
-        </div>
-      )}
-
-      {/* FOOTER */}
-      <footer className="bg-white border-t border-slate-200 py-12 px-8">
-        <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-8">
-          <div className="flex items-center gap-3">
-            <div className="bg-slate-900 p-2 rounded-lg text-white"><FileBadge size={18} /></div>
-            <span className="text-lg font-black tracking-tighter uppercase">HANZ<span className="text-emerald-500">DOCS</span></span>
-          </div>
-          <p className="text-slate-400 text-[10px] font-bold uppercase tracking-widest">© 2026 Hanz Docs. A plataforma líder em documentos profissionais de Moçambique.</p>
-          <div className="flex gap-4">
-            <Facebook size={18} className="text-slate-400 hover:text-blue-600 cursor-pointer" />
-            <Instagram size={18} className="text-slate-400 hover:text-blue-600 cursor-pointer" />
-            <Linkedin size={18} className="text-slate-400 hover:text-blue-600 cursor-pointer" />
-          </div>
-        </div>
-      </footer>
-
-      <style>{`
+<!DOCTYPE html>
+<html lang="pt-MZ">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hanz Docs - Documentos Profissionais</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;900&family=Montserrat:wght@700;900&display=swap" rel="stylesheet">
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .font-brand { font-family: 'Montserrat', sans-serif; }
+        .a4-canvas {
+            width: 210mm;
+            min-height: 297mm;
+            background: white;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            margin: 0 auto;
+            transform-origin: top center;
+        }
         .custom-scrollbar::-webkit-scrollbar { width: 6px; }
         .custom-scrollbar::-webkit-scrollbar-thumb { background: #CBD5E1; border-radius: 10px; }
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&family=Montserrat:wght@400;700;900&family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap');
-      `}</style>
-    </div>
-  );
-}
+        
+        /* Estilos de Impressão */
+        @media print {
+            body * { visibility: hidden; }
+            .a4-canvas, .a4-canvas * { visibility: visible; }
+            .a4-canvas { position: absolute; left: 0; top: 0; box-shadow: none; }
+        }
 
-// --- COMPONENTES AUXILIARES ---
+        .tab-active { background: #2563EB !important; color: white !important; box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3); }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-900">
 
-function InputGroup({ label, value, onChange, multiline = false }) {
-  return (
-    <div className="space-y-2">
-      <label className="text-[9px] font-black uppercase text-slate-400 tracking-widest">{label}</label>
-      {multiline ? (
-        <textarea 
-          className="w-full bg-slate-50 border border-slate-200 p-3 rounded-xl text-xs font-bold outline-none focus:border-blue-500 min-h-[80px]"
-          value={value}
-          onChange={(e) => onChange(e.target.value)}
-        />
-      ) : (
-        <input 
-          className="w-full bg-slate-50 border border-slate-200 p-3 rounded-xl text-xs font-bold outline-none focus:border-blue-500"
-          value={value}
-          onChange={(e) => onChange(e.target.value)}
-        />
-      )}
-    </div>
-  );
-}
-
-function LandingView({ onStart }) {
-  return (
-    <div className="py-20 px-8 max-w-7xl mx-auto text-center space-y-12">
-      <div className="inline-block bg-blue-50 text-blue-600 px-6 py-2 rounded-full text-xs font-black uppercase tracking-widest border border-blue-100 animate-pulse">
-        🚀 Disponível em Moçambique, Angola e Portugal
-      </div>
-      <h1 className="text-6xl md:text-[100px] font-black tracking-tighter text-slate-900 leading-[0.85]">
-        TRANSFORME SEU PERFIL <br/><span className="text-blue-600 underline decoration-emerald-500 underline-offset-[12px] italic">EM OPORTUNIDADE.</span>
-      </h1>
-      <p className="text-xl text-slate-500 font-medium max-w-2xl mx-auto leading-relaxed">
-        Templates premium para CVs, Cartas de Apresentação e Motivação. O padrão internacional que o mercado moçambicano exige.
-      </p>
-      <div className="flex flex-col md:flex-row justify-center gap-4">
-        <button onClick={onStart} className="bg-blue-600 text-white px-12 py-6 rounded-[24px] font-black uppercase tracking-widest hover:bg-slate-900 transition-all shadow-2xl shadow-blue-500/40 hover:-translate-y-1">
-          Começar Agora
-        </button>
-        <button className="bg-white border-2 border-slate-200 text-slate-900 px-12 py-6 rounded-[24px] font-black uppercase tracking-widest hover:border-blue-600 transition-all">
-          Ver Modelos
-        </button>
-      </div>
-
-      <div className="pt-24 grid grid-cols-1 md:grid-cols-4 gap-6 text-left">
-        {[
-          { icon: LayoutTemplate, title: "10+ Templates CV", desc: "Minimalista, Criativo, Executivo e Académico." },
-          { icon: MessageSquare, title: "8+ Cartas Apres.", desc: "Para emprego, estágio ou candidatura internacional." },
-          { icon: HeartHandshake, title: "8+ Motivação", desc: "Focadas em bolsas, mestrados e vistos de estudo." },
-          { icon: Rocket, title: "Sugestão IA", desc: "Gerador de texto automático baseado no cargo e tom desejado." }
-        ].map((f, i) => (
-          <div key={i} className="bg-white p-8 rounded-[40px] border border-slate-100 shadow-sm hover:shadow-xl transition-all space-y-4">
-            <div className="bg-blue-50 w-12 h-12 rounded-2xl flex items-center justify-center text-blue-600"><f.icon size={24}/></div>
-            <h3 className="font-black uppercase tracking-widest text-[11px]">{f.title}</h3>
-            <p className="text-slate-400 text-xs font-medium leading-relaxed">{f.desc}</p>
-          </div>
-        ))}
-      </div>
-    </div>
-  );
-}
-
-function FounderSection() {
-  return (
-    <div className="py-24 px-8 bg-white overflow-hidden relative">
-      <div className="max-w-6xl mx-auto relative z-10">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-20 items-center">
-          <div className="relative">
-            <div className="w-full aspect-square rounded-[60px] bg-slate-900 overflow-hidden relative z-10 shadow-3xl">
-               <div className="absolute inset-0 bg-gradient-to-br from-blue-600/40 to-emerald-500/40 mix-blend-overlay"></div>
-               <div className="flex items-center justify-center h-full text-white">
-                  <User size={200} strokeWidth={0.5} opacity={0.5} />
-               </div>
+    <!-- Navegação -->
+    <nav class="h-20 bg-white border-b border-slate-200 px-8 flex items-center justify-between sticky top-0 z-50">
+        <div class="flex items-center gap-3 cursor-pointer" onclick="showView('landing')">
+            <div class="bg-blue-600 p-2 rounded-xl text-white">
+                <i data-lucide="file-badge"></i>
             </div>
-            <div className="absolute -bottom-10 -right-10 w-64 h-64 bg-emerald-400 rounded-full blur-[120px] opacity-20"></div>
-            <div className="absolute -top-10 -left-10 w-64 h-64 bg-blue-400 rounded-full blur-[120px] opacity-20"></div>
-          </div>
-          <div className="space-y-8">
-             <div className="space-y-4">
-                <span className="bg-blue-50 text-blue-600 px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-[0.2em]">O Fundador</span>
-                <h2 className="text-7xl font-black text-slate-900 tracking-tighter leading-tight">{FOUNDER.name}</h2>
-                <p className="text-blue-600 font-black uppercase tracking-[0.3em] text-xs italic">{FOUNDER.role}</p>
-             </div>
-             <p className="text-slate-600 leading-relaxed font-medium text-xl italic border-l-8 border-emerald-500 pl-10">
-                "{FOUNDER.bio}"
-             </p>
-             <div className="grid grid-cols-2 gap-4 pt-4">
-                <div className="bg-slate-50 p-6 rounded-3xl border border-slate-100">
-                   <p className="text-[9px] font-black text-slate-400 uppercase mb-2">Localização</p>
-                   <p className="font-black text-sm">{FOUNDER.location}</p>
-                </div>
-                <div className="bg-slate-50 p-6 rounded-3xl border border-slate-100">
-                   <p className="text-[9px] font-black text-slate-400 uppercase mb-2">Contacto</p>
-                   <p className="font-black text-sm">{FOUNDER.emailCorp}</p>
-                </div>
-             </div>
-          </div>
+            <span class="text-2xl font-black tracking-tighter uppercase font-brand">HANZ<span class="text-emerald-500">DOCS</span></span>
         </div>
+        <div class="hidden md:flex gap-8 items-center">
+            <button onclick="openEditor('cv')" class="text-[10px] font-black uppercase tracking-widest hover:text-blue-600">Currículos</button>
+            <button onclick="openEditor('cover')" class="text-[10px] font-black uppercase tracking-widest hover:text-blue-600">Cartas</button>
+            <button onclick="showView('founder')" class="text-[10px] font-black uppercase tracking-widest hover:text-blue-600">O Fundador</button>
+            <div class="h-6 w-px bg-slate-200"></div>
+            <button class="bg-slate-900 text-white px-6 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-blue-600 transition-all">Entrar</button>
+        </div>
+    </nav>
 
-        <div className="mt-32 bg-slate-900 rounded-[64px] p-20 text-white relative overflow-hidden group">
-           <div className="relative z-10 grid grid-cols-1 md:grid-cols-12 gap-12 items-center">
-              <div className="md:col-span-8 space-y-8">
-                <div className="flex items-center gap-4">
-                   <div className="h-px w-12 bg-emerald-500"></div>
-                   <h3 className="text-3xl font-black uppercase tracking-widest text-emerald-500">A Missão Hanz Docs</h3>
-                </div>
-                <p className="text-slate-300 text-2xl leading-relaxed font-medium">
-                  {FOUNDER.motivation}
-                </p>
-              </div>
-              <div className="md:col-span-4 grid grid-cols-2 gap-4">
-                 {[
-                   { icon: Award, label: 'Qualidade Premium' },
-                   { icon: ShieldCheck, label: 'Confiança' },
-                   { icon: Globe, label: 'Padrão Inter.' },
-                   { icon: Rocket, label: 'Inovação' }
-                 ].map((item, i) => (
-                   <div key={i} className="bg-white/5 border border-white/10 p-6 rounded-[32px] flex flex-col items-center gap-3 text-center">
-                      <item.icon className="text-blue-400" size={24} />
-                      <p className="text-[8px] font-black uppercase tracking-widest">{item.label}</p>
-                   </div>
-                 ))}
-              </div>
-           </div>
-           <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-blue-600/10 blur-[150px] rounded-full group-hover:bg-blue-600/20 transition-all duration-700"></div>
+    <!-- Landing Page -->
+    <div id="view-landing" class="view py-20 px-8 max-w-7xl mx-auto text-center space-y-12">
+        <div class="inline-block bg-blue-50 text-blue-600 px-6 py-2 rounded-full text-xs font-black uppercase tracking-widest border border-blue-100">
+            🚀 O Padrão de Excelência em Moçambique
         </div>
-      </div>
+        <h1 class="text-6xl md:text-[80px] font-black tracking-tighter text-slate-900 leading-tight font-brand">
+            DOCUMENTOS QUE <br><span class="text-blue-600 italic">ABREM PORTAS.</span>
+        </h1>
+        <p class="text-xl text-slate-500 font-medium max-w-2xl mx-auto leading-relaxed">
+            Crie CVs e cartas profissionais com o toque estratégico de Hanz Domingos.
+        </p>
+        <div class="flex justify-center gap-4">
+            <button onclick="openEditor('cv')" class="bg-blue-600 text-white px-12 py-6 rounded-3xl font-black uppercase tracking-widest shadow-2xl shadow-blue-500/40 hover:-translate-y-1 transition-all">Começar Agora</button>
+        </div>
     </div>
-  );
-}
+
+    <!-- O Fundador -->
+    <div id="view-founder" class="view hidden py-24 px-8 bg-white">
+        <div class="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-16 items-center">
+            <div class="bg-slate-900 aspect-square rounded-[60px] relative overflow-hidden flex items-center justify-center">
+                <i data-lucide="user" class="text-white/20 w-64 h-64"></i>
+                <div class="absolute bottom-10 left-10 text-white">
+                    <p class="font-black text-2xl">Hanz Domingos</p>
+                    <p class="text-emerald-400 text-xs uppercase tracking-widest">Fundador & Especialista</p>
+                </div>
+            </div>
+            <div class="space-y-6">
+                <h2 class="text-5xl font-black font-brand">A Visão por trás do Hanz Docs</h2>
+                <p class="text-slate-600 text-lg leading-relaxed">
+                    Hanz Domingos é especialista em Monitoria e Avaliação (M&A) e Transformação Digital. Com este projeto, ele visa capacitar o talento moçambicano com ferramentas que atendam aos rigorosos padrões do mercado internacional.
+                </p>
+                <div class="pt-6 border-t border-slate-100 flex gap-4">
+                    <div class="bg-blue-50 p-4 rounded-2xl flex-1">
+                        <p class="text-[10px] font-black text-blue-600 uppercase">Localização</p>
+                        <p class="font-bold">Maputo, MZ</p>
+                    </div>
+                    <div class="bg-emerald-50 p-4 rounded-2xl flex-1">
+                        <p class="text-[10px] font-black text-emerald-600 uppercase">Foco</p>
+                        <p class="font-bold">Estratégia & Dados</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Editor Principal -->
+    <div id="view-editor" class="view hidden flex h-[calc(100vh-5rem)] overflow-hidden">
+        <!-- Barra Lateral Esquerda: Estrutura -->
+        <aside class="w-80 bg-white border-r border-slate-200 flex flex-col overflow-y-auto p-6 space-y-8 custom-scrollbar">
+            <div>
+                <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-3">Tipo de Documento</p>
+                <div class="grid grid-cols-1 gap-2">
+                    <button onclick="setDocType('cv')" id="btn-cv" class="tab-active flex items-center gap-3 p-4 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all">
+                        <i data-lucide="user" size="16"></i> Currículo
+                    </button>
+                    <button onclick="setDocType('cover')" id="btn-cover" class="bg-slate-50 text-slate-500 flex items-center gap-3 p-4 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all">
+                        <i data-lucide="message-square" size="16"></i> Carta Apresentação
+                    </button>
+                    <button onclick="setDocType('motivation')" id="btn-motivation" class="bg-slate-50 text-slate-500 flex items-center gap-3 p-4 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all">
+                        <i data-lucide="heart-handshake" size="16"></i> Motivação
+                    </button>
+                </div>
+            </div>
+
+            <div id="section-list">
+                <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-3">Campos do Documento</p>
+                <div class="space-y-2" id="dynamic-tabs">
+                    <!-- Gerado via JS -->
+                </div>
+            </div>
+
+            <div class="pt-6 border-t">
+                <button onclick="window.print()" class="w-full bg-slate-900 text-white p-4 rounded-xl text-[10px] font-black uppercase tracking-widest flex items-center justify-center gap-2 hover:bg-blue-600 transition-all">
+                    <i data-lucide="download" size="16"></i> Baixar PDF
+                </button>
+            </div>
+        </aside>
+
+        <!-- Editor Central: Inputs -->
+        <main class="w-96 bg-white border-r border-slate-200 p-8 overflow-y-auto custom-scrollbar">
+            <div id="editor-fields" class="space-y-6">
+                <!-- Campos de input gerados dinamicamente -->
+            </div>
+        </main>
+
+        <!-- Preview: Canvas -->
+        <section class="flex-1 bg-slate-100 overflow-y-auto p-12 custom-scrollbar flex flex-col items-center">
+            <div id="preview-canvas" class="a4-canvas p-16">
+                <!-- Conteúdo do CV/Carta gerado aqui -->
+            </div>
+        </section>
+    </div>
+
+    <script>
+        // Estado Global
+        let currentDocType = 'cv';
+        let activeSection = 'perfil';
+        
+        let data = {
+            profile: {
+                name: 'Arsénio Muianga',
+                title: 'Especialista em TI',
+                email: 'arsenio@exemplo.mz',
+                phone: '+258 84 000 0000',
+                location: 'Maputo, Moçambique',
+                summary: 'Profissional resiliente com foco em resultados...'
+            },
+            letter: {
+                recipient: 'RH - Vodacom Moçambique',
+                subject: 'Candidatura à vaga de Analista',
+                salutation: 'Exmos. Senhores,',
+                body: 'Escrevo com grande interesse para me candidatar...',
+                signoff: 'Atentamente,'
+            },
+            experience: [
+                { id: 1, title: 'Analista Pleno', company: 'DataCorp', period: '2022 - Presente', desc: 'Gestão de infraestrutura...' }
+            ],
+            education: [
+                { id: 1, degree: 'Licenciatura em Eng. Informática', school: 'UEM', period: '2018 - 2022' }
+            ],
+            skills: ['Redes', 'Cloud Computing', 'Cibersegurança']
+        };
+
+        // Inicialização
+        function init() {
+            lucide.createIcons();
+            updateTabs();
+            renderEditor();
+            renderPreview();
+        }
+
+        // Navegação de Views
+        function showView(viewId) {
+            document.querySelectorAll('.view').forEach(v => v.classList.add('hidden'));
+            document.getElementById('view-' + viewId).classList.remove('hidden');
+        }
+
+        function openEditor(type) {
+            currentDocType = type;
+            showView('editor');
+            setDocType(type);
+        }
+
+        function setDocType(type) {
+            currentDocType = type;
+            ['cv', 'cover', 'motivation'].forEach(t => {
+                const btn = document.getElementById('btn-' + t);
+                btn.className = (t === type) ? 'tab-active flex items-center gap-3 p-4 rounded-xl text-[10px] font-black uppercase tracking-widest' : 'bg-slate-50 text-slate-500 flex items-center gap-3 p-4 rounded-xl text-[10px] font-black uppercase tracking-widest';
+            });
+            activeSection = 'perfil';
+            updateTabs();
+            renderEditor();
+            renderPreview();
+        }
+
+        // Atualiza a lista de abas na sidebar esquerda
+        function updateTabs() {
+            const container = document.getElementById('dynamic-tabs');
+            let tabs = [
+                { id: 'perfil', label: 'Dados Pessoais', icon: 'user' }
+            ];
+
+            if (currentDocType === 'cv') {
+                tabs.push({ id: 'experiencia', label: 'Experiência', icon: 'briefcase' });
+                tabs.push({ id: 'formacao', label: 'Educação', icon: 'graduation-cap' });
+                tabs.push({ id: 'competencias', label: 'Habilidades', icon: 'award' });
+            } else {
+                tabs.push({ id: 'conteudo-carta', label: 'Corpo do Texto', icon: 'file-text' });
+            }
+
+            container.innerHTML = tabs.map(t => `
+                <button onclick="setActiveTab('${t.id}')" class="w-full flex items-center gap-3 p-4 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${activeSection === t.id ? 'tab-active' : 'bg-slate-50 text-slate-600 hover:bg-slate-100'}">
+                    <i data-lucide="${t.icon}" size="14"></i> ${t.label}
+                </button>
+            `).join('');
+            lucide.createIcons();
+        }
+
+        function setActiveTab(id) {
+            activeSection = id;
+            updateTabs();
+            renderEditor();
+        }
+
+        // Renderiza os campos de input no centro
+        function renderEditor() {
+            const container = document.getElementById('editor-fields');
+            let html = `<h3 class="text-[10px] font-black uppercase tracking-widest text-blue-600">${activeSection}</h3>`;
+
+            if (activeSection === 'perfil') {
+                html += `
+                    ${inputField('Nome Completo', 'name', data.profile.name, 'profile')}
+                    ${inputField('Título Profissional', 'title', data.profile.title, 'profile')}
+                    ${inputField('Email', 'email', data.profile.email, 'profile')}
+                    ${inputField('Telefone', 'phone', data.profile.phone, 'profile')}
+                    ${inputArea('Resumo Profissional', 'summary', data.profile.summary, 'profile')}
+                `;
+            } else if (activeSection === 'conteudo-carta') {
+                html += `
+                    ${inputField('Destinatário', 'recipient', data.letter.recipient, 'letter')}
+                    ${inputField('Assunto', 'subject', data.letter.subject, 'letter')}
+                    ${inputArea('Corpo da Carta', 'body', data.letter.body, 'letter')}
+                `;
+            } else if (activeSection === 'experiencia') {
+                html += data.experience.map((exp, idx) => `
+                    <div class="p-4 bg-slate-50 rounded-xl space-y-3 mb-4">
+                        ${inputField('Cargo', 'title', exp.title, `experience.${idx}`)}
+                        ${inputField('Empresa', 'company', exp.company, `experience.${idx}`)}
+                        ${inputField('Período', 'period', exp.period, `experience.${idx}`)}
+                    </div>
+                `).join('') + `<button onclick="addExperience()" class="w-full border-2 border-dashed p-4 rounded-xl text-[10px] font-black uppercase text-slate-400">+ Adicionar</button>`;
+            } else if (activeSection === 'competencias') {
+                html += `
+                    <div class="flex flex-wrap gap-2 mb-4">
+                        ${data.skills.map((s, idx) => `
+                            <span class="bg-blue-100 text-blue-700 px-3 py-1 rounded-full text-xs font-bold flex items-center gap-2">
+                                ${s} <button onclick="removeSkill(${idx})">×</button>
+                            </span>
+                        `).join('')}
+                    </div>
+                    <input id="new-skill" onkeydown="if(event.key==='Enter') addSkill(this.value)" placeholder="Digite e aperte Enter" class="w-full p-3 border rounded-xl text-xs outline-none">
+                `;
+            }
+
+            container.innerHTML = html;
+        }
+
+        // Helpers de Input
+        function inputField(label, key, value, path) {
+            return `
+                <div class="space-y-1">
+                    <label class="text-[9px] font-black uppercase text-slate-400">${label}</label>
+                    <input oninput="updateData('${path}.${key}', this.value)" value="${value}" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold outline-none focus:border-blue-500">
+                </div>
+            `;
+        }
+
+        function inputArea(label, key, value, path) {
+            return `
+                <div class="space-y-1">
+                    <label class="text-[9px] font-black uppercase text-slate-400">${label}</label>
+                    <textarea oninput="updateData('${path}.${key}', this.value)" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl text-xs font-medium outline-none focus:border-blue-500 min-h-[150px]">${value}</textarea>
+                </div>
+            `;
+        }
+
+        // Lógica de Dados
+        function updateData(path, val) {
+            const parts = path.split('.');
+            let obj = data;
+            for (let i = 0; i < parts.length - 1; i++) obj = obj[parts[i]];
+            obj[parts[parts.length - 1]] = val;
+            renderPreview();
+        }
+
+        function addExperience() {
+            data.experience.push({ id: Date.now(), title: 'Novo Cargo', company: 'Nova Empresa', period: '2024', desc: '' });
+            renderEditor(); renderPreview();
+        }
+
+        function addSkill(val) {
+            if(!val) return;
+            data.skills.push(val);
+            document.getElementById('new-skill').value = '';
+            renderEditor(); renderPreview();
+        }
+
+        function removeSkill(idx) {
+            data.skills.splice(idx, 1);
+            renderEditor(); renderPreview();
+        }
+
+        // Renderização do Preview A4
+        function renderPreview() {
+            const canvas = document.getElementById('preview-canvas');
+            
+            if (currentDocType === 'cv') {
+                canvas.innerHTML = `
+                    <header class="border-b-4 border-blue-600 pb-8 mb-8 flex justify-between items-end">
+                        <div>
+                            <h1 class="text-4xl font-black uppercase text-slate-900">${data.profile.name}</h1>
+                            <p class="text-xl font-bold text-blue-600 uppercase tracking-widest">${data.profile.title}</p>
+                        </div>
+                        <div class="text-[10px] text-right text-slate-500 font-bold leading-tight">
+                            <p>${data.profile.email}</p>
+                            <p>${data.profile.phone}</p>
+                            <p>${data.profile.location}</p>
+                        </div>
+                    </header>
+                    <div class="grid grid-cols-12 gap-10">
+                        <div class="col-span-8 space-y-8">
+                            <section>
+                                <h2 class="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-2">Perfil</h2>
+                                <p class="text-sm text-slate-700 leading-relaxed">${data.profile.summary}</p>
+                            </section>
+                            <section>
+                                <h2 class="text-[10px] font-black uppercase tracking-widest text-blue-600 mb-4">Experiência Profissional</h2>
+                                ${data.experience.map(exp => `
+                                    <div class="mb-6">
+                                        <div class="flex justify-between items-start">
+                                            <h3 class="font-black text-xs uppercase">${exp.title}</h3>
+                                            <span class="text-[10px] font-bold text-slate-400">${exp.period}</span>
+                                        </div>
+                                        <p class="text-[10px] font-bold text-blue-500 uppercase mb-2">${exp.company}</p>
+                                        <p class="text-xs text-slate-500">${exp.desc || ''}</p>
+                                    </div>
+                                `).join('')}
+                            </section>
+                        </div>
+                        <div class="col-span-4 space-y-8">
+                            <section>
+                                <h2 class="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-4">Competências</h2>
+                                <div class="flex flex-wrap gap-2">
+                                    ${data.skills.map(s => `<span class="bg-slate-100 px-3 py-1 rounded text-[9px] font-black uppercase text-slate-600">${s}</span>`).join('')}
+                                </div>
+                            </section>
+                        </div>
+                    </div>
+                `;
+            } else {
+                canvas.innerHTML = `
+                    <div class="text-sm mb-12">
+                        <p class="font-black">${data.profile.name}</p>
+                        <p class="text-slate-500">${data.profile.location}</p>
+                        <p class="text-slate-500">${data.profile.email} | ${data.profile.phone}</p>
+                    </div>
+                    <div class="text-right mb-12 text-sm">
+                        <p class="text-slate-400 mb-4">${new Date().toLocaleDateString('pt-MZ')}</p>
+                        <p class="font-black">Para:</p>
+                        <p class="text-slate-600">${data.letter.recipient}</p>
+                    </div>
+                    <h2 class="font-black uppercase border-b pb-2 mb-8 text-sm">Assunto: ${data.letter.subject}</h2>
+                    <p class="font-bold mb-4 text-sm">${data.letter.salutation}</p>
+                    <p class="text-sm text-slate-700 leading-relaxed whitespace-pre-line mb-12">${data.letter.body}</p>
+                    <p class="text-sm mb-12">${data.letter.signoff}</p>
+                    <div class="h-px w-48 bg-slate-300 mb-2"></div>
+                    <p class="font-black uppercase text-xs">${data.profile.name}</p>
+                `;
+            }
+        }
+
+        window.onload = init;
+    </script>
+</body>
+</html>
