@@ -1,498 +1,674 @@
 <!DOCTYPE html>
-<html lang="pt-PT">
+<html lang="pt">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hanz Docs | Gerador de CV Profissional</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+    <title>Hanz Docs – Crie CV e Cartas Profissionais</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz@14..32&family=Poppins:wght@600;700&display=swap" rel="stylesheet">
+    <!-- Font Awesome 6 (gratuito) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
-        [x-cloak] { display: none !important; }
-        body { font-family: 'Plus Jakarta Sans', sans-serif; }
-        
-        /* Estilos de Impressão e Preview */
-        .preview-page {
-            width: 210mm;
-            min-height: 297mm;
-            background: white;
-            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
-            margin: 0 auto;
-            transform-origin: top center;
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
         }
-
-        @media print {
-            .no-print { display: none !important; }
-            body { background: white; }
-            .preview-page { 
-                margin: 0; 
-                box-shadow: none; 
-                transform: scale(1) !important;
+        body {
+            font-family: 'Inter', sans-serif;
+            color: #0F172A;
+            background-color: #FFFFFF;
+            line-height: 1.5;
+        }
+        h1, h2, h3, h4 {
+            font-family: 'Poppins', sans-serif;
+            font-weight: 700;
+        }
+        .container {
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 0 24px;
+        }
+        /* Cores */
+        .bg-primary { background-color: #0F172A; }
+        .bg-secondary { background-color: #2563EB; }
+        .bg-accent { background-color: #10B981; }
+        .text-primary { color: #0F172A; }
+        .text-secondary { color: #2563EB; }
+        .text-accent { color: #10B981; }
+        .btn {
+            display: inline-block;
+            padding: 12px 28px;
+            border-radius: 8px;
+            font-weight: 600;
+            text-decoration: none;
+            transition: 0.2s;
+            border: none;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        .btn-primary {
+            background-color: #2563EB;
+            color: white;
+        }
+        .btn-primary:hover {
+            background-color: #1E4BB3;
+        }
+        .btn-secondary {
+            background-color: transparent;
+            color: #2563EB;
+            border: 2px solid #2563EB;
+        }
+        .btn-secondary:hover {
+            background-color: #2563EB;
+            color: white;
+        }
+        .btn-accent {
+            background-color: #10B981;
+            color: white;
+        }
+        .btn-accent:hover {
+            background-color: #0E9F6E;
+        }
+        .section {
+            padding: 80px 0;
+        }
+        .section-title {
+            font-size: 2.2rem;
+            margin-bottom: 48px;
+            text-align: center;
+        }
+        .grid-4 {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 30px;
+        }
+        .grid-3 {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 30px;
+        }
+        .grid-2 {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 40px;
+            align-items: center;
+        }
+        /* Header */
+        header {
+            padding: 20px 0;
+            border-bottom: 1px solid #F3F4F6;
+        }
+        .header-inner {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .logo {
+            font-family: 'Poppins', sans-serif;
+            font-size: 28px;
+            font-weight: 700;
+            color: #0F172A;
+        }
+        .logo span {
+            color: #2563EB;
+        }
+        .nav-links {
+            display: flex;
+            gap: 32px;
+            align-items: center;
+        }
+        .nav-links a {
+            text-decoration: none;
+            color: #374151;
+            font-weight: 500;
+        }
+        .nav-links a:hover {
+            color: #2563EB;
+        }
+        /* Hero */
+        .hero {
+            padding: 60px 0;
+        }
+        .hero h1 {
+            font-size: 3.2rem;
+            line-height: 1.2;
+            margin-bottom: 24px;
+        }
+        .hero p {
+            font-size: 1.2rem;
+            color: #374151;
+            margin-bottom: 32px;
+        }
+        .hero-buttons {
+            display: flex;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+        .hero-image {
+            background-color: #F3F4F6;
+            border-radius: 20px;
+            padding: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+        }
+        .mock-editor {
+            display: flex;
+            gap: 16px;
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+        }
+        .mock-form {
+            flex: 1;
+        }
+        .mock-form .field {
+            height: 20px;
+            background: #E5E7EB;
+            border-radius: 4px;
+            margin-bottom: 12px;
+        }
+        .mock-form .field.w-50 { width: 60%; }
+        .mock-form .field.w-80 { width: 80%; }
+        .mock-preview {
+            flex: 1;
+            background: #0F172A;
+            border-radius: 8px;
+            padding: 16px;
+            color: white;
+        }
+        .mock-preview .line {
+            height: 8px;
+            background: rgba(255,255,255,0.2);
+            margin-bottom: 10px;
+            border-radius: 4px;
+        }
+        /* Steps */
+        .step-card {
+            text-align: center;
+            padding: 24px;
+            background: #F9FAFB;
+            border-radius: 16px;
+        }
+        .step-icon {
+            font-size: 40px;
+            color: #2563EB;
+            margin-bottom: 16px;
+        }
+        /* Templates */
+        .template-card {
+            background: white;
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+            transition: 0.2s;
+            border: 1px solid #F3F4F6;
+        }
+        .template-card:hover {
+            box-shadow: 0 12px 24px rgba(0,0,0,0.1);
+        }
+        .template-img {
+            height: 160px;
+            background: #E5E7EB;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #6B7280;
+            font-size: 14px;
+        }
+        .template-info {
+            padding: 16px;
+        }
+        .template-tags {
+            display: flex;
+            gap: 8px;
+            margin: 8px 0;
+        }
+        .tag {
+            background: #F3F4F6;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+        }
+        /* Benefits */
+        .benefit-item {
+            display: flex;
+            gap: 16px;
+            align-items: flex-start;
+        }
+        .benefit-icon {
+            font-size: 28px;
+            color: #10B981;
+            min-width: 40px;
+        }
+        /* Testimonials */
+        .testimonial-card {
+            background: #F9FAFB;
+            padding: 24px;
+            border-radius: 16px;
+        }
+        .testimonial-author {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-top: 16px;
+        }
+        .author-avatar {
+            width: 48px;
+            height: 48px;
+            background: #2563EB;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+        }
+        /* Founder */
+        .founder-card {
+            background: #0F172A;
+            color: white;
+            padding: 48px;
+            border-radius: 24px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 40px;
+            align-items: center;
+        }
+        .founder-info h3 {
+            font-size: 2rem;
+            margin-bottom: 8px;
+        }
+        .founder-contact {
+            margin: 16px 0;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        .founder-contact i {
+            width: 24px;
+            color: #10B981;
+        }
+        .founder-motivation {
+            font-size: 1.1rem;
+            border-left: 4px solid #10B981;
+            padding-left: 24px;
+        }
+        /* Footer */
+        footer {
+            background: #F3F4F6;
+            padding: 48px 0 24px;
+        }
+        .footer-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr 1fr;
+            gap: 40px;
+            margin-bottom: 40px;
+        }
+        .footer-logo {
+            font-family: 'Poppins', sans-serif;
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 16px;
+        }
+        .footer-links a {
+            display: block;
+            color: #374151;
+            text-decoration: none;
+            margin-bottom: 8px;
+        }
+        .social-icons {
+            display: flex;
+            gap: 16px;
+            font-size: 24px;
+        }
+        .copyright {
+            text-align: center;
+            color: #6B7280;
+            border-top: 1px solid #D1D5DB;
+            padding-top: 24px;
+        }
+        @media (max-width: 768px) {
+            .grid-4, .grid-3, .grid-2 {
+                grid-template-columns: 1fr;
+            }
+            .header-inner {
+                flex-direction: column;
+                gap: 16px;
+            }
+            .hero h1 {
+                font-size: 2.5rem;
+            }
+            .founder-card {
+                flex-direction: column;
+                text-align: center;
+            }
+            .founder-motivation {
+                border-left: none;
+                border-top: 4px solid #10B981;
+                padding-left: 0;
+                padding-top: 24px;
+            }
+            .footer-grid {
+                grid-template-columns: 1fr;
             }
         }
-
-        .step-indicator.active { @apply bg-blue-600 text-white shadow-lg shadow-blue-200; }
-        .step-indicator.complete { @apply bg-green-500 text-white; }
-        
-        /* Scrollbar Personalizada */
-        .custom-scroll::-webkit-scrollbar { width: 6px; }
-        .custom-scroll::-webkit-scrollbar-track { background: transparent; }
-        .custom-scroll::-webkit-scrollbar-thumb { background: #e2e8f0; border-radius: 10px; }
     </style>
 </head>
-<body class="bg-[#F8FAFC] text-[#1E293B]" x-data="hanzDocs()" x-cloak>
-
-    <!-- LANDING PAGE (Visível apenas quando view === 'landing') -->
-    <template x-if="view === 'landing'">
-        <div class="min-h-screen">
-            <!-- Header Landing -->
-            <header class="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
-                <div class="flex items-center gap-2">
-                    <div class="w-10 h-10 bg-blue-600 rounded-xl flex items-center justify-center text-white font-bold text-xl">H</div>
-                    <span class="font-extrabold text-xl tracking-tight">Hanz Docs</span>
-                </div>
-                <nav class="hidden md:flex items-center gap-8 text-sm font-semibold text-slate-600">
-                    <a href="#" class="hover:text-blue-600">Modelos</a>
-                    <a href="#" class="hover:text-blue-600">Preços</a>
-                    <a href="#" class="hover:text-blue-600">Dicas de Carreira</a>
-                </nav>
-                <button @click="startEditing()" class="bg-blue-600 text-white px-6 py-2.5 rounded-full font-bold text-sm hover:bg-blue-700 transition-all shadow-lg shadow-blue-200">
-                    Criar Meu CV
-                </button>
-            </header>
-
-            <!-- Hero Section -->
-            <main class="max-w-7xl mx-auto px-6 pt-16 pb-24 text-center">
-                <span class="bg-blue-50 text-blue-600 px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-widest mb-6 inline-block">Novo: Templates ATS-Friendly 2024</span>
-                <h1 class="text-5xl md:text-7xl font-extrabold tracking-tight mb-6 leading-[1.1]">
-                    Crie o seu CV e Cartas <br> <span class="text-blue-600">Profissionais em Minutos</span>
-                </h1>
-                <p class="text-lg text-slate-500 max-w-2xl mx-auto mb-10">
-                    Utilize a nossa ferramenta inteligente para criar documentos que impressionam recrutadores. Escolha um modelo e deixe a nossa tecnologia guiar o seu sucesso.
-                </p>
-                <div class="flex flex-col sm:flex-row items-center justify-center gap-4">
-                    <button @click="startEditing()" class="w-full sm:w-auto bg-slate-900 text-white px-10 py-4 rounded-2xl font-bold text-lg hover:bg-blue-600 transition-all shadow-xl shadow-slate-200">
-                        Começar Agora — É Grátis
-                    </button>
-                    <button class="w-full sm:w-auto bg-white border border-slate-200 text-slate-700 px-10 py-4 rounded-2xl font-bold text-lg hover:border-blue-600 transition-all">
-                        Importar CV Existente
-                    </button>
-                </div>
-
-                <!-- Template Preview Grid -->
-                <div class="grid grid-cols-2 md:grid-cols-4 gap-6 mt-20">
-                    <template x-for="tpl in templatesList">
-                        <div @click="selectTemplate(tpl.id)" class="group cursor-pointer">
-                            <div class="aspect-[3/4] bg-white rounded-2xl border-2 border-slate-100 p-4 transition-all group-hover:border-blue-500 group-hover:shadow-2xl group-hover:-translate-y-2">
-                                <div class="w-full h-full bg-slate-50 rounded-lg overflow-hidden relative">
-                                    <div class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 bg-blue-600/10 transition-opacity">
-                                        <span class="bg-blue-600 text-white px-4 py-2 rounded-lg text-xs font-bold">Usar Este Modelo</span>
-                                    </div>
-                                    <!-- Miniatura Mockup -->
-                                    <div class="p-4 space-y-2">
-                                        <div class="h-4 w-1/2 bg-slate-200 rounded"></div>
-                                        <div class="h-2 w-full bg-slate-100 rounded"></div>
-                                        <div class="h-2 w-3/4 bg-slate-100 rounded"></div>
-                                        <div class="mt-4 grid grid-cols-2 gap-2">
-                                            <div class="h-20 bg-slate-200 rounded"></div>
-                                            <div class="h-20 bg-slate-100 rounded"></div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <p class="mt-4 font-bold text-slate-700" x-text="tpl.name"></p>
-                        </div>
-                    </template>
-                </div>
-            </main>
+<body>
+    <!-- Header -->
+    <header>
+        <div class="container header-inner">
+            <div class="logo">Hanz <span>Docs</span></div>
+            <nav class="nav-links">
+                <a href="#">Templates</a>
+                <a href="#">Preços</a>
+                <a href="#">Blog</a>
+                <a href="#">Entrar</a>
+                <a href="#" class="btn btn-primary">Registar</a>
+            </nav>
         </div>
-    </template>
+    </header>
 
-    <!-- APP EDITOR VIEW (Visível quando view === 'editor') -->
-    <template x-if="view === 'editor'">
-        <div class="flex flex-col h-screen bg-[#F1F5F9]">
-            <!-- Editor Nav -->
-            <header class="h-16 bg-white border-b border-slate-200 flex items-center justify-between px-6 no-print">
-                <div class="flex items-center gap-4">
-                    <button @click="view = 'landing'" class="text-slate-400 hover:text-slate-600">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
-                    </button>
-                    <div class="flex items-center gap-2">
-                        <span class="font-extrabold text-sm tracking-tight">Hanz Docs</span>
-                        <span class="h-4 w-px bg-slate-200"></span>
-                        <span class="text-xs font-bold text-slate-400 uppercase tracking-widest" x-text="docType === 'cv' ? 'Currículo' : 'Carta'"></span>
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="container grid-2">
+            <div>
+                <h1>Crie o seu CV e Cartas Profissionais em Minutos</h1>
+                <p>Templates modernos, conteúdo inteligente e exportação imediata. Destaque-se no mercado moçambicano e internacional.</p>
+                <div class="hero-buttons">
+                    <a href="#" class="btn btn-primary">Começar Agora</a>
+                    <a href="#" class="btn btn-secondary">Ver Templates</a>
+                </div>
+            </div>
+            <div class="hero-image">
+                <div class="mock-editor">
+                    <div class="mock-form">
+                        <div class="field w-80"></div>
+                        <div class="field w-50"></div>
+                        <div class="field w-80"></div>
+                        <div class="field"></div>
+                        <div class="field w-60"></div>
+                        <div style="background:#2563EB; height:32px; border-radius:6px; margin-top:16px;"></div>
+                    </div>
+                    <div class="mock-preview">
+                        <div class="line" style="width:70%"></div>
+                        <div class="line" style="width:40%"></div>
+                        <div class="line" style="width:90%"></div>
+                        <div class="line" style="width:60%"></div>
+                        <div class="line" style="width:50%"></div>
                     </div>
                 </div>
-
-                <!-- Step Tracker -->
-                <div class="hidden md:flex items-center gap-10">
-                    <template x-for="(step, idx) in steps">
-                        <div class="flex items-center gap-3">
-                            <div class="w-6 h-6 rounded-full border-2 flex items-center justify-center text-[10px] font-black"
-                                 :class="currentStep === idx ? 'border-blue-600 text-blue-600 bg-blue-50' : (currentStep > idx ? 'bg-blue-600 border-blue-600 text-white' : 'border-slate-200 text-slate-300')"
-                                 x-text="idx + 1"></div>
-                            <span class="text-[10px] font-bold uppercase tracking-widest" :class="currentStep === idx ? 'text-slate-900' : 'text-slate-400'" x-text="step"></span>
-                            <template x-if="idx < steps.length - 1">
-                                <div class="w-6 h-px bg-slate-200 ml-2"></div>
-                            </template>
-                        </div>
-                    </template>
-                </div>
-
-                <div class="flex items-center gap-3">
-                    <button @click="window.print()" class="bg-blue-600 text-white px-5 py-2 rounded-xl text-xs font-bold shadow-lg shadow-blue-100 hover:bg-blue-700 transition-all flex items-center gap-2">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-                        Download PDF
-                    </button>
-                </div>
-            </header>
-
-            <div class="flex flex-1 overflow-hidden">
-                <!-- Painel de Edição -->
-                <aside class="w-[500px] bg-white border-r border-slate-200 flex flex-col no-print">
-                    <div class="flex-1 overflow-y-auto p-10 custom-scroll">
-                        
-                        <!-- Step 1: Dados Pessoais -->
-                        <div x-show="currentStep === 0" class="space-y-8">
-                            <div class="space-y-2">
-                                <h2 class="text-2xl font-extrabold tracking-tight">Vamos começar pelos seus <span class="text-blue-600">dados de contacto</span></h2>
-                                <p class="text-sm text-slate-500">Isto ajuda os recrutadores a saberem quem você é e como o encontrar.</p>
-                            </div>
-
-                            <div class="grid grid-cols-2 gap-4">
-                                <div class="col-span-2">
-                                    <label class="block text-[10px] font-black uppercase text-slate-400 mb-1.5 ml-1">Nome Completo</label>
-                                    <input type="text" x-model="resume.profile.name" placeholder="Ex: Arsénio Muianga" class="w-full p-4 bg-slate-50 border border-slate-200 rounded-2xl text-sm font-semibold outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all">
-                                </div>
-                                <div class="col-span-2">
-                                    <label class="block text-[10px] font-black uppercase text-slate-400 mb-1.5 ml-1">Título Profissional</label>
-                                    <input type="text" x-model="resume.profile.title" placeholder="Ex: Gestor de Projetos Senior" class="w-full p-4 bg-slate-50 border border-slate-200 rounded-2xl text-sm font-semibold outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all">
-                                </div>
-                                <div>
-                                    <label class="block text-[10px] font-black uppercase text-slate-400 mb-1.5 ml-1">Email</label>
-                                    <input type="email" x-model="resume.profile.email" class="w-full p-4 bg-slate-50 border border-slate-200 rounded-2xl text-sm font-semibold outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all">
-                                </div>
-                                <div>
-                                    <label class="block text-[10px] font-black uppercase text-slate-400 mb-1.5 ml-1">Telefone</label>
-                                    <input type="text" x-model="resume.profile.phone" class="w-full p-4 bg-slate-50 border border-slate-200 rounded-2xl text-sm font-semibold outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all">
-                                </div>
-                                <div class="col-span-2">
-                                    <label class="block text-[10px] font-black uppercase text-slate-400 mb-1.5 ml-1">Localização</label>
-                                    <input type="text" x-model="resume.profile.location" class="w-full p-4 bg-slate-50 border border-slate-200 rounded-2xl text-sm font-semibold outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all">
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Step 2: Experiência -->
-                        <div x-show="currentStep === 1" class="space-y-8">
-                            <div class="space-y-2">
-                                <h2 class="text-2xl font-extrabold tracking-tight">A sua <span class="text-blue-600">experiência profissional</span></h2>
-                                <p class="text-sm text-slate-500">Liste os seus cargos mais recentes primeiro. Use verbos de ação.</p>
-                            </div>
-
-                            <div class="space-y-6">
-                                <template x-for="(exp, idx) in resume.experience" :key="exp.id">
-                                    <div class="p-6 bg-slate-50 rounded-3xl border border-slate-100 relative group">
-                                        <button @click="removeExperience(idx)" class="absolute top-4 right-4 text-slate-300 hover:text-red-500 transition-colors">
-                                            <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg>
-                                        </button>
-                                        <div class="grid grid-cols-2 gap-4">
-                                            <div class="col-span-2">
-                                                <label class="block text-[9px] font-black uppercase text-slate-400 mb-1">Cargo</label>
-                                                <input type="text" x-model="exp.title" class="w-full bg-white p-3 rounded-xl border border-slate-200 text-sm font-bold">
-                                            </div>
-                                            <div>
-                                                <label class="block text-[9px] font-black uppercase text-slate-400 mb-1">Empresa</label>
-                                                <input type="text" x-model="exp.company" class="w-full bg-white p-3 rounded-xl border border-slate-200 text-sm">
-                                            </div>
-                                            <div>
-                                                <label class="block text-[9px] font-black uppercase text-slate-400 mb-1">Período</label>
-                                                <input type="text" x-model="exp.period" class="w-full bg-white p-3 rounded-xl border border-slate-200 text-sm">
-                                            </div>
-                                            <div class="col-span-2">
-                                                <label class="block text-[9px] font-black uppercase text-slate-400 mb-1">Descrição</label>
-                                                <textarea x-model="exp.desc" class="w-full bg-white p-3 rounded-xl border border-slate-200 text-xs h-24"></textarea>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </template>
-
-                                <button @click="addExperience()" class="w-full py-4 border-2 border-dashed border-slate-200 rounded-3xl text-slate-400 font-bold text-sm hover:border-blue-400 hover:text-blue-600 transition-all">
-                                    + Adicionar Experiência
-                                </button>
-                            </div>
-                        </div>
-
-                        <!-- Step 3: Resumo (Zety Style) -->
-                        <div x-show="currentStep === 2" class="space-y-8">
-                            <div class="space-y-2">
-                                <h2 class="text-2xl font-extrabold tracking-tight">O seu <span class="text-blue-600">Resumo Profissional</span></h2>
-                                <p class="text-sm text-slate-500">Destaque as suas melhores qualidades. Temos algumas sugestões para si.</p>
-                            </div>
-
-                            <div class="relative">
-                                <textarea x-model="resume.profile.summary" placeholder="Destaque aqui a sua trajetória..." class="w-full p-6 bg-slate-50 border border-slate-200 rounded-3xl text-sm font-medium h-64 outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all leading-relaxed"></textarea>
-                                <div class="absolute bottom-4 right-4 flex gap-2">
-                                    <button @click="generateSummary()" class="bg-blue-600 text-white px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest shadow-lg shadow-blue-200 hover:bg-blue-700 transition-all">
-                                        Gerar com IA ✨
-                                    </button>
-                                </div>
-                            </div>
-
-                            <div class="p-6 bg-blue-50 rounded-2xl border border-blue-100">
-                                <h4 class="text-[10px] font-black uppercase text-blue-600 mb-3 tracking-widest">Dica de Especialista</h4>
-                                <p class="text-xs text-blue-800 leading-relaxed font-medium">Os recrutadores demoram apenas 6 segundos para olhar o seu CV. Foque em resultados quantificáveis.</p>
-                            </div>
-                        </div>
-
-                        <!-- Step 4: Design -->
-                        <div x-show="currentStep === 3" class="space-y-8">
-                            <div class="space-y-2">
-                                <h2 class="text-2xl font-extrabold tracking-tight">Escolha o <span class="text-blue-600">seu estilo</span></h2>
-                                <p class="text-sm text-slate-500">Personalize as cores e o layout para se adequar à sua marca pessoal.</p>
-                            </div>
-
-                            <div class="space-y-6">
-                                <div>
-                                    <label class="block text-[10px] font-black uppercase text-slate-400 mb-4 tracking-widest">Cor de Destaque</label>
-                                    <div class="flex flex-wrap gap-4">
-                                        <template x-for="color in themeColors">
-                                            <button @click="accentColor = color" 
-                                                    :style="{ backgroundColor: color }" 
-                                                    class="w-10 h-10 rounded-full transition-all hover:scale-110 shadow-sm"
-                                                    :class="accentColor === color ? 'ring-4 ring-offset-2 ring-blue-200' : ''">
-                                            </button>
-                                        </template>
-                                    </div>
-                                </div>
-
-                                <div class="grid grid-cols-2 gap-4 pt-6 border-t border-slate-100">
-                                    <template x-for="tpl in templatesList">
-                                        <button @click="activeTemplateId = tpl.id" 
-                                                class="p-4 rounded-2xl border-2 text-left transition-all"
-                                                :class="activeTemplateId === tpl.id ? 'border-blue-600 bg-blue-50/50' : 'border-slate-100 hover:border-slate-300'">
-                                            <span class="text-xs font-bold block" x-text="tpl.name"></span>
-                                            <span class="text-[10px] text-slate-400" x-text="tpl.style"></span>
-                                        </button>
-                                    </template>
-                                </div>
-                            </div>
-                        </div>
-
-                    </div>
-
-                    <!-- Footer do Editor (Navegação de Passos) -->
-                    <div class="h-20 bg-white border-t border-slate-100 px-10 flex items-center justify-between no-print">
-                        <button @click="prevStep()" 
-                                x-show="currentStep > 0"
-                                class="text-slate-400 font-bold text-sm hover:text-slate-900 transition-all flex items-center gap-2">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
-                            Anterior
-                        </button>
-                        <div x-show="currentStep === 0"></div>
-
-                        <button @click="nextStep()" 
-                                class="bg-slate-900 text-white px-8 py-3 rounded-2xl font-bold text-sm hover:bg-blue-600 transition-all shadow-xl shadow-slate-200">
-                            <span x-text="currentStep === steps.length - 1 ? 'Finalizar' : 'Seguinte'"></span>
-                        </button>
-                    </div>
-                </aside>
-
-                <!-- Pré-visualização Dinâmica -->
-                <main class="flex-1 bg-slate-100 p-12 overflow-y-auto no-scrollbar flex flex-col items-center">
-                    
-                    <div id="printable-area" class="preview-page" :class="activeTemplateId">
-                        
-                        <!-- Template: Moderno (Default) -->
-                        <template x-if="activeTemplateId === 'tpl_modern'">
-                            <div class="flex flex-col h-full">
-                                <!-- Top Accent Bar -->
-                                <div class="h-4 w-full" :style="{ backgroundColor: accentColor }"></div>
-                                
-                                <div class="p-14 pt-16">
-                                    <!-- Header -->
-                                    <div class="flex justify-between items-start mb-12">
-                                        <div class="max-w-[65%]">
-                                            <h1 class="text-4xl font-extrabold tracking-tight text-slate-900 uppercase leading-none mb-3" x-text="resume.profile.name || 'Nome Completo'"></h1>
-                                            <p class="text-lg font-bold tracking-widest uppercase" :style="{ color: accentColor }" x-text="resume.profile.title || 'Seu Título Profissional'"></p>
-                                        </div>
-                                        <div class="text-right text-[10px] font-bold text-slate-400 space-y-1 tracking-widest uppercase">
-                                            <p x-text="resume.profile.email"></p>
-                                            <p x-text="resume.profile.phone"></p>
-                                            <p x-text="resume.profile.location"></p>
-                                        </div>
-                                    </div>
-
-                                    <div class="grid grid-cols-12 gap-12">
-                                        <!-- Left Column -->
-                                        <div class="col-span-8 space-y-12">
-                                            <!-- Summary -->
-                                            <section class="space-y-4">
-                                                <h3 class="text-xs font-black uppercase tracking-[0.3em] pb-2 border-b-2" :style="{ borderColor: accentColor + '20' }">Resumo Profissional</h3>
-                                                <p class="text-xs text-slate-600 leading-relaxed text-justify whitespace-pre-line" x-text="resume.profile.summary"></p>
-                                            </section>
-
-                                            <!-- Experience -->
-                                            <section class="space-y-6">
-                                                <h3 class="text-xs font-black uppercase tracking-[0.3em] pb-2 border-b-2" :style="{ borderColor: accentColor + '20' }">Histórico Profissional</h3>
-                                                <div class="space-y-8">
-                                                    <template x-for="exp in resume.experience" :key="exp.id">
-                                                        <div class="relative pl-4">
-                                                            <div class="absolute left-0 top-1 w-1.5 h-1.5 rounded-full" :style="{ backgroundColor: accentColor }"></div>
-                                                            <div class="flex justify-between items-baseline mb-1">
-                                                                <h4 class="text-sm font-black uppercase text-slate-800" x-text="exp.title"></h4>
-                                                                <span class="text-[10px] font-bold text-slate-400" x-text="exp.period"></span>
-                                                            </div>
-                                                            <p class="text-[11px] font-bold uppercase mb-3 opacity-70" x-text="exp.company"></p>
-                                                            <p class="text-xs text-slate-500 leading-relaxed whitespace-pre-line" x-text="exp.desc"></p>
-                                                        </div>
-                                                    </template>
-                                                </div>
-                                            </section>
-                                        </div>
-
-                                        <!-- Right Column (Sidebar) -->
-                                        <div class="col-span-4 space-y-12">
-                                            <!-- Skills Mock -->
-                                            <section class="space-y-6">
-                                                <h3 class="text-xs font-black uppercase tracking-[0.3em] pb-2 border-b-2" :style="{ borderColor: accentColor + '20' }">Habilidades</h3>
-                                                <div class="flex flex-wrap gap-2">
-                                                    <span class="bg-slate-50 border border-slate-100 px-3 py-1.5 rounded-lg text-[9px] font-bold uppercase text-slate-600">Liderança</span>
-                                                    <span class="bg-slate-50 border border-slate-100 px-3 py-1.5 rounded-lg text-[9px] font-bold uppercase text-slate-600">Data Analysis</span>
-                                                    <span class="bg-slate-50 border border-slate-100 px-3 py-1.5 rounded-lg text-[9px] font-bold uppercase text-slate-600">Estratégia</span>
-                                                </div>
-                                            </section>
-
-                                            <!-- Languages -->
-                                            <section class="space-y-4">
-                                                <h3 class="text-xs font-black uppercase tracking-[0.3em] pb-2 border-b-2" :style="{ borderColor: accentColor + '20' }">Idiomas</h3>
-                                                <div class="space-y-2 text-[11px] font-bold uppercase text-slate-600">
-                                                    <p>Português • Nativo</p>
-                                                    <p>Inglês • Fluente</p>
-                                                </div>
-                                            </section>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </template>
-
-                        <!-- Template: Minimalista -->
-                        <template x-if="activeTemplateId === 'tpl_minimal'">
-                            <div class="p-16 space-y-10">
-                                <div class="text-center space-y-2 pb-10 border-b border-slate-100">
-                                    <h1 class="text-3xl font-light tracking-[0.2em] uppercase" x-text="resume.profile.name"></h1>
-                                    <p class="text-xs font-bold uppercase tracking-widest text-slate-400" x-text="resume.profile.title"></p>
-                                    <div class="flex justify-center gap-6 text-[9px] font-bold uppercase tracking-tighter text-slate-400 pt-4">
-                                        <span x-text="resume.profile.email"></span>
-                                        <span>•</span>
-                                        <span x-text="resume.profile.phone"></span>
-                                        <span>•</span>
-                                        <span x-text="resume.profile.location"></span>
-                                    </div>
-                                </div>
-                                <div class="space-y-8 max-w-2xl mx-auto">
-                                    <p class="text-xs text-slate-500 leading-relaxed text-center italic" x-text="resume.profile.summary"></p>
-                                    <div class="space-y-10">
-                                        <template x-for="exp in resume.experience">
-                                            <div class="space-y-2">
-                                                <div class="flex justify-between items-baseline">
-                                                    <h4 class="text-xs font-black uppercase" x-text="exp.title"></h4>
-                                                    <span class="text-[9px] font-medium text-slate-400" x-text="exp.period"></span>
-                                                </div>
-                                                <p class="text-[10px] font-bold uppercase text-blue-600" x-text="exp.company"></p>
-                                                <p class="text-xs text-slate-500 leading-relaxed" x-text="exp.desc"></p>
-                                            </div>
-                                        </template>
-                                    </div>
-                                </div>
-                            </div>
-                        </template>
-
-                    </div>
-                </main>
             </div>
         </div>
-    </template>
+    </section>
 
-    <script>
-        window.hanzDocs = function() {
-            return {
-                view: 'landing', // 'landing' ou 'editor'
-                docType: 'cv',
-                currentStep: 0,
-                steps: ['Contacto', 'Experiência', 'Resumo', 'Design'],
-                accentColor: '#2563EB',
-                activeTemplateId: 'tpl_modern',
-                themeColors: ['#0F172A', '#2563EB', '#10B981', '#F59E0B', '#EF4444', '#7C3AED', '#EC4899'],
-                
-                templatesList: [
-                    { id: 'tpl_modern', name: 'Moderno & ATS', style: 'Profissional e Limpo' },
-                    { id: 'tpl_minimal', name: 'Minimalista', style: 'Elegante e Direto' }
-                ],
+    <!-- Como Funciona (4 passos) -->
+    <section class="section">
+        <div class="container">
+            <h2 class="section-title">Como funciona</h2>
+            <div class="grid-4">
+                <div class="step-card">
+                    <div class="step-icon"><i class="fas fa-file-alt"></i></div>
+                    <h3>Escolha um modelo</h3>
+                    <p>Mais de 10 templates profissionais.</p>
+                </div>
+                <div class="step-card">
+                    <div class="step-icon"><i class="fas fa-pen"></i></div>
+                    <h3>Preencha os dados</h3>
+                    <p>Com sugestões inteligentes.</p>
+                </div>
+                <div class="step-card">
+                    <div class="step-icon"><i class="fas fa-palette"></i></div>
+                    <h3>Personalize</h3>
+                    <p>Cores, fontes, layout ao seu gosto.</p>
+                </div>
+                <div class="step-card">
+                    <div class="step-icon"><i class="fas fa-download"></i></div>
+                    <h3>Exporte em PDF</h3>
+                    <p>Descarregue imediatamente.</p>
+                </div>
+            </div>
+        </div>
+    </section>
 
-                resume: {
-                    profile: {
-                        name: '',
-                        title: '',
-                        email: 'seu@email.com',
-                        phone: '+258 00 000 0000',
-                        location: 'Maputo, Moçambique',
-                        summary: 'Escreva um pequeno resumo das suas competências e objetivos aqui...'
-                    },
-                    experience: [
-                        { id: 1, title: 'Cargo Atual', company: 'Empresa Exemplo', period: '2021 - Presente', desc: 'Descreva as suas principais responsabilidades e conquistas.' }
-                    ],
-                    education: [],
-                    skills: []
-                },
+    <!-- Templates em Destaque -->
+    <section class="section" style="background:#F9FAFB;">
+        <div class="container">
+            <h2 class="section-title">Templates profissionais</h2>
+            <div class="grid-3">
+                <div class="template-card">
+                    <div class="template-img"><i class="fas fa-image"></i> Pré-visualização</div>
+                    <div class="template-info">
+                        <h4>Executivo</h4>
+                        <div class="template-tags">
+                            <span class="tag">Corporativo</span>
+                            <span class="tag">ATS-friendly</span>
+                        </div>
+                        <a href="#" class="btn btn-secondary" style="width:100%; text-align:center;">Usar template</a>
+                    </div>
+                </div>
+                <div class="template-card">
+                    <div class="template-img"><i class="fas fa-image"></i> Pré-visualização</div>
+                    <div class="template-info">
+                        <h4>Moderno</h4>
+                        <div class="template-tags">
+                            <span class="tag">Criativo</span>
+                            <span class="tag">Internacional</span>
+                        </div>
+                        <a href="#" class="btn btn-secondary" style="width:100%; text-align:center;">Usar template</a>
+                    </div>
+                </div>
+                <div class="template-card">
+                    <div class="template-img"><i class="fas fa-image"></i> Pré-visualização</div>
+                    <div class="template-info">
+                        <h4>Minimalista</h4>
+                        <div class="template-tags">
+                            <span class="tag">Elegante</span>
+                            <span class="tag">Limpo</span>
+                        </div>
+                        <a href="#" class="btn btn-secondary" style="width:100%; text-align:center;">Usar template</a>
+                    </div>
+                </div>
+                <div class="template-card">
+                    <div class="template-img"><i class="fas fa-image"></i> Pré-visualização</div>
+                    <div class="template-info">
+                        <h4>Técnico</h4>
+                        <div class="template-tags">
+                            <span class="tag">Engenharia</span>
+                            <span class="tag">IT</span>
+                        </div>
+                        <a href="#" class="btn btn-secondary" style="width:100%; text-align:center;">Usar template</a>
+                    </div>
+                </div>
+                <div class="template-card">
+                    <div class="template-img"><i class="fas fa-image"></i> Pré-visualização</div>
+                    <div class="template-info">
+                        <h4>Criativo</h4>
+                        <div class="template-tags">
+                            <span class="tag">Design</span>
+                            <span class="tag">Inovador</span>
+                        </div>
+                        <a href="#" class="btn btn-secondary" style="width:100%; text-align:center;">Usar template</a>
+                    </div>
+                </div>
+                <div class="template-card">
+                    <div class="template-img"><i class="fas fa-image"></i> Pré-visualização</div>
+                    <div class="template-info">
+                        <h4>Académico</h4>
+                        <div class="template-tags">
+                            <span class="tag">Bolsas</span>
+                            <span class="tag">Currículo</span>
+                        </div>
+                        <a href="#" class="btn btn-secondary" style="width:100%; text-align:center;">Usar template</a>
+                    </div>
+                </div>
+            </div>
+            <div style="text-align:center; margin-top:40px;">
+                <a href="#" class="btn btn-primary">Ver todos os templates</a>
+            </div>
+        </div>
+    </section>
 
-                startEditing() {
-                    this.view = 'editor';
-                    this.currentStep = 0;
-                },
+    <!-- Benefícios -->
+    <section class="section">
+        <div class="container">
+            <h2 class="section-title">Porquê a Hanz Docs?</h2>
+            <div class="grid-2">
+                <div class="benefit-item">
+                    <div class="benefit-icon"><i class="fas fa-check-circle"></i></div>
+                    <div>
+                        <h3>ATS Friendly</h3>
+                        <p>Seu CV é lido por sistemas e recrutadores sem problemas.</p>
+                    </div>
+                </div>
+                <div class="benefit-item">
+                    <div class="benefit-icon"><i class="fas fa-lightbulb"></i></div>
+                    <div>
+                        <h3>Sugestões inteligentes</h3>
+                        <p>Receba dicas de conteúdo enquanto preenche.</p>
+                    </div>
+                </div>
+                <div class="benefit-item">
+                    <div class="benefit-icon"><i class="fas fa-envelope"></i></div>
+                    <div>
+                        <h3>Cartas de apresentação</h3>
+                        <p>Geradas automaticamente com base nos seus dados.</p>
+                    </div>
+                </div>
+                <div class="benefit-item">
+                    <div class="benefit-icon"><i class="fas fa-heart"></i></div>
+                    <div>
+                        <h3>Cartas de motivação</h3>
+                        <p>Perfeitas para bolsas, universidades e ONGs.</p>
+                    </div>
+                </div>
+                <div class="benefit-item">
+                    <div class="benefit-icon"><i class="fas fa-paint-brush"></i></div>
+                    <div>
+                        <h3>Personalização total</h3>
+                        <p>Cores, fontes e layout ajustáveis.</p>
+                    </div>
+                </div>
+                <div class="benefit-item">
+                    <div class="benefit-icon"><i class="fas fa-mobile-alt"></i></div>
+                    <div>
+                        <h3>Mobile friendly</h3>
+                        <p>Crie e edite directamente do seu telemóvel.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
 
-                nextStep() {
-                    if (this.currentStep < this.steps.length - 1) {
-                        this.currentStep++;
-                    }
-                },
+    <!-- Depoimentos -->
+    <section class="section" style="background:#F9FAFB;">
+        <div class="container">
+            <h2 class="section-title">O que dizem os utilizadores</h2>
+            <div class="grid-3">
+                <div class="testimonial-card">
+                    <p>"Consegui o meu primeiro emprego graças ao CV que fiz na Hanz Docs. Design impecável!"</p>
+                    <div class="testimonial-author">
+                        <div class="author-avatar">MC</div>
+                        <div>
+                            <strong>Maria C.</strong><br>
+                            <span style="color:#6B7280;">Recém-graduada, Maputo</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="testimonial-card">
+                    <p>"A funcionalidade de carta de motivação ajudou-me a candidatar-me a uma bolsa em Portugal."</p>
+                    <div class="testimonial-author">
+                        <div class="author-avatar">JF</div>
+                        <div>
+                            <strong>João F.</strong><br>
+                            <span style="color:#6B7280;">Engenheiro, Beira</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="testimonial-card">
+                    <p>"Muito intuitivo e com templates modernos. Recomendo a todos os profissionais."</p>
+                    <div class="testimonial-author">
+                        <div class="author-avatar">AL</div>
+                        <div>
+                            <strong>Ana L.</strong><br>
+                            <span style="color:#6B7280;">Gestora de RH, Nampula</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
 
-                prevStep() {
-                    if (this.currentStep > 0) {
-                        this.currentStep--;
-                    }
-                },
+    <!-- Sobre o Fundador (Hanz Domingos) -->
+    <section class="section">
+        <div class="container">
+            <div class="founder-card">
+                <div style="flex:1;">
+                    <h3>Hanz Domingos</h3>
+                    <p style="color:#9CA3AF;">Fundador & Especialista em M&A e Transformação Digital</p>
+                    <div class="founder-contact">
+                        <span><i class="fas fa-map-marker-alt"></i> Maputo, Moçambique</span>
+                        <span><i class="fas fa-phone-alt"></i> +258 847875963</span>
+                        <span><i class="fas fa-envelope"></i> Hanzdomingos@gmail.com</span>
+                        <span><i class="fas fa-briefcase"></i> hdomingoa@hdconsultingservice.com</span>
+                    </div>
+                </div>
+                <div style="flex:2;" class="founder-motivation">
+                    <p><strong>“Acredito que o talento moçambicano precisa de ferramentas profissionais à altura do mercado internacional.”</strong></p>
+                    <p style="margin-top:16px;">Hanz é especialista em Monitoria e Avaliação, Gestão de Dados e Automação de Processos. Através da Hanz Docs, quer capacitar profissionais a apresentarem-se com excelência, aumentando suas oportunidades dentro e fora de Moçambique.</p>
+                </div>
+            </div>
+        </div>
+    </section>
 
-                selectTemplate(id) {
-                    this.activeTemplateId = id;
-                    this.startEditing();
-                },
+    <!-- Call-to-Action Final -->
+    <section class="section" style="background:#2563EB; color:white; text-align:center;">
+        <div class="container">
+            <h2 style="font-size:2.5rem; margin-bottom:24px;">Pronto para criar o seu CV profissional?</h2>
+            <p style="font-size:1.2rem; margin-bottom:32px;">Mais de 10 templates, editor intuitivo e exportação imediata.</p>
+            <a href="#" class="btn btn-accent" style="font-size:1.2rem; padding:16px 48px;">Começar Agora</a>
+        </div>
+    </section>
 
-                addExperience() {
-                    this.resume.experience.push({
-                        id: Date.now(),
-                        title: 'Novo Cargo',
-                        company: 'Empresa',
-                        period: '2023 - 2024',
-                        desc: 'Descreva a sua experiência...'
-                    });
-                },
-
-                removeExperience(index) {
-                    this.resume.experience.splice(index, 1);
-                },
-
-                generateSummary() {
-                    const summaries = [
-                        `Profissional de ${this.resume.profile.title || 'TI'} altamente motivado com foco em resultados e eficiência operacional. Experiência comprovada na entrega de projetos complexos.`,
-                        `Especialista em ${this.resume.profile.title || 'Tecnologia'} com mais de 5 anos de experiência no mercado moçambicano, focado em inovação e liderança técnica.`,
-                        `Focado em crescimento e aprendizagem contínua, possuo um sólido background em ${this.resume.profile.title || 'gestão'} com excelente capacidade analítica.`
-                    ];
-                    this.resume.profile.summary = summaries[Math.floor(Math.random() * summaries.length)];
-                }
-            }
-        }
-    </script>
-    <script src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <div class="footer-grid">
+                <div>
+                    <div class="footer-logo">Hanz <span style="color:#2563EB;">Docs</span></div>
+                    <p style="color:#4B5563;">Documentos que abrem portas. Transforme seu perfil em oportunidade.</p>
+                    <div class="social-icons">
+                        <a href="#"><i class="fab fa-facebook"></i></a>
+                        <a href="#"><i class="fab fa-linkedin"></i></a>
+                        <a href="#"><i class="fab fa-instagram"></i></a>
+                    </div>
+                </div>
+                <div class="footer-links">
+                    <h4>Produto</h4>
+                    <a href="#">Templates</a>
+                    <a href="#">Preços</a>
+                    <a href="#">Editor de CV</a>
+                    <a href="#">Cartas</a>
+                </div>
+                <div class="footer-links">
+                    <h4>Recursos</h4>
+                    <a href="#">Blog</a>
+                    <a href="#">Dicas de carreira</a>
+                    <a href="#">Ajuda</a>
+                </div>
+                <div class="footer-links">
+                    <h4>Legal</h4>
+                    <a href="#">Termos de uso</a>
+                    <a href="#">Privacidade</a>
+                    <a href="#">Contacto</a>
+                </div>
+            </div>
+            <div class="copyright">
+                &copy; 2026 Hanz Docs. Todos os direitos reservados. Moçambique.
+            </div>
+        </div>
+    </footer>
 </body>
 </html>
