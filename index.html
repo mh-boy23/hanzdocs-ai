@@ -7,175 +7,796 @@
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&family=Poppins:wght@600;700&family=Roboto:wght@400;500&family=Open+Sans:wght@400;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    <!-- SortableJS para drag and drop -->
+    <!-- SortableJS -->
     <script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
     <!-- html2canvas e jsPDF -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <style>
-        /* ========== ESTILOS GLOBAIS ========== */
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: 'Inter', sans-serif; color: #0F172A; background: #fff; line-height: 1.5; }
-        h1, h2, h3, h4 { font-family: 'Poppins', sans-serif; font-weight: 700; }
-        .container { max-width: 1280px; margin: 0 auto; padding: 0 24px; }
-        .btn {
-            display: inline-block; padding: 12px 28px; border-radius: 8px; font-weight: 600;
-            text-decoration: none; transition: 0.2s; border: none; cursor: pointer; font-size: 16px;
+        /* ========== RESET E VARIÁVEIS ========== */
+        :root {
+            --primary: #2563EB;
+            --primary-dark: #1E4BB3;
+            --accent: #10B981;
+            --dark: #0F172A;
+            --gray-light: #F3F4F6;
+            --gray: #E5E7EB;
+            --text: #374151;
         }
-        .btn-primary { background-color: #2563EB; color: white; }
-        .btn-primary:hover { background-color: #1E4BB3; }
-        .btn-secondary { background-color: transparent; color: #2563EB; border: 2px solid #2563EB; }
-        .btn-secondary:hover { background-color: #2563EB; color: white; }
-        .btn-accent { background-color: #10B981; color: white; }
-        .btn-accent:hover { background-color: #0E9F6E; }
-        .section { padding: 80px 0; }
-        .section-title { font-size: 2.2rem; margin-bottom: 48px; text-align: center; }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Inter', sans-serif;
+            color: var(--dark);
+            background: #FFFFFF;
+            line-height: 1.5;
+        }
+        h1, h2, h3, h4 {
+            font-family: 'Poppins', sans-serif;
+            font-weight: 600;
+        }
+        .container {
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 0 24px;
+        }
+        .btn {
+            display: inline-block;
+            padding: 12px 28px;
+            border-radius: 8px;
+            font-weight: 600;
+            text-decoration: none;
+            transition: 0.2s;
+            border: none;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        .btn-primary {
+            background-color: var(--primary);
+            color: white;
+        }
+        .btn-primary:hover {
+            background-color: var(--primary-dark);
+        }
+        .btn-secondary {
+            background-color: transparent;
+            color: var(--primary);
+            border: 2px solid var(--primary);
+        }
+        .btn-secondary:hover {
+            background-color: var(--primary);
+            color: white;
+        }
+        .btn-accent {
+            background-color: var(--accent);
+            color: white;
+        }
+        .btn-accent:hover {
+            background-color: #0E9F6E;
+        }
+        .section {
+            padding: 80px 0;
+        }
+        .section-title {
+            font-size: 2.2rem;
+            margin-bottom: 48px;
+            text-align: center;
+        }
         .grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 30px; }
         .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 30px; }
         .grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 40px; align-items: center; }
 
-        /* Header e footer (reutilizados) */
-        header { padding: 20px 0; border-bottom: 1px solid #F3F4F6; }
-        .header-inner { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; }
-        .logo { font-family: 'Poppins', sans-serif; font-size: 28px; font-weight: 700; color: #0F172A; }
-        .logo span { color: #2563EB; }
-        .nav-links { display: flex; gap: 32px; align-items: center; flex-wrap: wrap; }
-        .nav-links a { text-decoration: none; color: #374151; font-weight: 500; }
-        .nav-links a:hover { color: #2563EB; }
+        /* ========== HEADER ========== */
+        header {
+            padding: 20px 0;
+            border-bottom: 1px solid var(--gray);
+        }
+        .header-inner {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        .logo {
+            font-family: 'Poppins', sans-serif;
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--dark);
+        }
+        .logo span { color: var(--primary); }
+        .nav-links {
+            display: flex;
+            gap: 32px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        .nav-links a {
+            text-decoration: none;
+            color: var(--text);
+            font-weight: 500;
+            cursor: pointer;
+        }
+        .nav-links a:hover { color: var(--primary); }
 
-        /* Landing page */
+        /* ========== LANDING PAGE ========== */
         #landing-page { display: block; }
+
         .hero { padding: 60px 0; }
         .hero h1 { font-size: 3.2rem; line-height: 1.2; margin-bottom: 24px; }
-        .hero p { font-size: 1.2rem; color: #374151; margin-bottom: 32px; }
+        .hero p { font-size: 1.2rem; color: var(--text); margin-bottom: 32px; }
         .hero-buttons { display: flex; gap: 16px; flex-wrap: wrap; }
-        .hero-image { background-color: #F3F4F6; border-radius: 20px; padding: 20px; box-shadow: 0 20px 40px rgba(0,0,0,0.1); }
-        .mock-editor { display: flex; gap: 16px; background: white; border-radius: 12px; padding: 20px; }
+        .hero-image {
+            background-color: var(--gray-light);
+            border-radius: 20px;
+            padding: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+        }
+        .mock-editor {
+            display: flex;
+            gap: 16px;
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+        }
         .mock-form { flex: 1; }
-        .mock-form .field { height: 20px; background: #E5E7EB; border-radius: 4px; margin-bottom: 12px; }
+        .mock-form .field {
+            height: 20px;
+            background: var(--gray);
+            border-radius: 4px;
+            margin-bottom: 12px;
+        }
         .mock-form .field.w-50 { width: 60%; }
         .mock-form .field.w-80 { width: 80%; }
-        .mock-preview { flex: 1; background: #0F172A; border-radius: 8px; padding: 16px; color: white; }
-        .mock-preview .line { height: 8px; background: rgba(255,255,255,0.2); margin-bottom: 10px; border-radius: 4px; }
+        .mock-preview {
+            flex: 1;
+            background: var(--dark);
+            border-radius: 8px;
+            padding: 16px;
+            color: white;
+        }
+        .mock-preview .line {
+            height: 8px;
+            background: rgba(255,255,255,0.2);
+            margin-bottom: 10px;
+            border-radius: 4px;
+        }
 
-        .step-card { text-align: center; padding: 24px; background: #F9FAFB; border-radius: 16px; }
-        .step-icon { font-size: 40px; color: #2563EB; margin-bottom: 16px; }
+        .step-card {
+            text-align: center;
+            padding: 24px;
+            background: var(--gray-light);
+            border-radius: 16px;
+        }
+        .step-icon { font-size: 40px; color: var(--primary); margin-bottom: 16px; }
 
-        /* Template Cards com miniaturas visuais */
+        /* Template Cards (miniaturas) */
         .template-card {
-            background: white; border-radius: 16px; overflow: hidden; box-shadow: 0 4px 8px rgba(0,0,0,0.05);
-            border: 1px solid #F3F4F6; transition: 0.2s; display: flex; flex-direction: column;
+            background: white;
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+            border: 1px solid var(--gray);
+            transition: 0.2s;
+            display: flex;
+            flex-direction: column;
         }
-        .template-card:hover { box-shadow: 0 12px 24px rgba(0,0,0,0.1); }
+        .template-card:hover {
+            box-shadow: 0 12px 24px rgba(0,0,0,0.1);
+        }
         .template-img {
-            height: 180px; background: #F9FAFB; padding: 16px;
-            display: flex; flex-direction: column; gap: 6px; border-bottom: 1px solid #E5E7EB;
+            height: 200px;
+            background: var(--gray-light);
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            border-bottom: 1px solid var(--gray);
         }
-        /* Miniaturas estilizadas para cada template */
-        .mini-executivo { background: white; height: 100%; display: flex; gap: 8px; }
-        .mini-executivo .sidebar { width: 25%; background: #1E3A8A; opacity: 0.8; border-radius: 4px; }
-        .mini-executivo .main { flex: 1; display: flex; flex-direction: column; gap: 4px; }
-        .mini-executivo .main .bar { height: 10px; background: #2563EB; width: 80%; border-radius: 2px; }
-        .mini-executivo .main .line { height: 6px; background: #E5E7EB; width: 100%; border-radius: 2px; }
-        .mini-executivo .main .line.short { width: 60%; }
-
-        .mini-moderno { background: white; display: flex; flex-direction: column; gap: 8px; }
-        .mini-moderno .header { height: 20px; background: #10B981; width: 100%; border-radius: 4px; }
-        .mini-moderno .block { display: flex; gap: 8px; }
-        .mini-moderno .block .card { flex: 1; height: 40px; background: #F3F4F6; border-radius: 6px; border-left: 4px solid #10B981; }
-
-        .mini-minimal { background: white; display: flex; flex-direction: column; gap: 6px; padding: 4px; }
-        .mini-minimal .title { height: 16px; background: #0F172A; width: 70%; border-radius: 2px; }
-        .mini-minimal .subtitle { height: 10px; background: #9CA3AF; width: 50%; border-radius: 2px; }
-        .mini-minimal .divider { height: 1px; background: #D1D5DB; width: 100%; margin: 4px 0; }
-        .mini-minimal .line { height: 6px; background: #F3F4F6; width: 100%; border-radius: 2px; }
-
-        .mini-criativo { background: linear-gradient(145deg, #FEF9C3, #FDE68A); display: flex; flex-wrap: wrap; gap: 4px; padding: 8px; }
-        .mini-criativo .shape { width: 45%; height: 25px; background: #F59E0B; border-radius: 12px 0 12px 0; }
-        .mini-criativo .shape2 { width: 45%; height: 25px; background: #FBBF24; border-radius: 0 12px 0 12px; }
-
-        .mini-jovem { background: #E0F2FE; display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 8px; }
-        .mini-jovem .photo { width: 30px; height: 30px; background: #38BDF8; border-radius: 50%; }
-        .mini-jovem .tag { height: 12px; background: #7DD3FC; width: 80%; border-radius: 20px; }
-
-        .mini-internacional { background: white; display: flex; flex-direction: column; gap: 4px; border-left: 4px solid #2563EB; padding-left: 8px; }
-        .mini-internacional .line { height: 6px; background: #E5E7EB; width: 100%; margin: 2px 0; }
-        .mini-internacional .line.thick { height: 10px; background: #2563EB; width: 60%; }
-
+        /* Miniaturas estilizadas */
+        .mini-thumb {
+            width: 100%;
+            height: 100%;
+            background: white;
+            border-radius: 8px;
+            padding: 8px;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+        .mini-thumb .bar {
+            height: 12px;
+            background: var(--primary);
+            width: 70%;
+            border-radius: 4px;
+        }
+        .mini-thumb .line {
+            height: 6px;
+            background: var(--gray);
+            width: 100%;
+            border-radius: 2px;
+        }
+        .mini-thumb .line.short { width: 60%; }
+        .mini-thumb .line.long { width: 90%; }
+        .mini-thumb .double {
+            display: flex;
+            gap: 8px;
+        }
+        .mini-thumb .double .side {
+            width: 30%;
+            background: var(--primary-dark);
+            opacity: 0.7;
+            border-radius: 4px;
+        }
+        .mini-thumb .photo {
+            width: 30px;
+            height: 30px;
+            background: var(--accent);
+            border-radius: 50%;
+        }
         .template-info { padding: 16px; }
-        .template-tags { display: flex; gap: 8px; margin: 8px 0; flex-wrap: wrap; }
-        .tag { background: #F3F4F6; padding: 4px 10px; border-radius: 20px; font-size: 12px; }
+        .template-tags {
+            display: flex;
+            gap: 8px;
+            margin: 8px 0;
+            flex-wrap: wrap;
+        }
+        .tag {
+            background: var(--gray-light);
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+        }
 
-        .benefit-item { display: flex; gap: 16px; align-items: flex-start; }
-        .benefit-icon { font-size: 28px; color: #10B981; min-width: 40px; }
+        /* Preços */
+        .pricing-card {
+            background: white;
+            border-radius: 16px;
+            padding: 32px;
+            text-align: center;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+            border: 1px solid var(--gray);
+        }
+        .price {
+            font-size: 3rem;
+            font-weight: 700;
+            color: var(--primary);
+            margin: 20px 0;
+        }
+        .price small { font-size: 1rem; color: #6B7280; }
 
-        .testimonial-card { background: #F9FAFB; padding: 24px; border-radius: 16px; }
-        .testimonial-author { display: flex; align-items: center; gap: 16px; margin-top: 16px; }
-        .author-avatar { width: 48px; height: 48px; background: #2563EB; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; }
+        /* Blog */
+        .blog-card {
+            background: white;
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+        }
+        .blog-img {
+            height: 180px;
+            background: var(--gray);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #6B7280;
+        }
+        .blog-content { padding: 20px; }
 
-        .founder-card { background: #0F172A; color: white; padding: 48px; border-radius: 24px; display: flex; flex-wrap: wrap; gap: 40px; align-items: center; }
-        .founder-info h3 { font-size: 2rem; margin-bottom: 8px; }
-        .founder-contact { margin: 16px 0; display: flex; flex-direction: column; gap: 8px; }
-        .founder-contact i { width: 24px; color: #10B981; }
-        .founder-motivation { font-size: 1.1rem; border-left: 4px solid #10B981; padding-left: 24px; }
+        /* Benefícios */
+        .benefit-item {
+            display: flex;
+            gap: 16px;
+            align-items: flex-start;
+        }
+        .benefit-icon { font-size: 28px; color: var(--accent); min-width: 40px; }
 
-        footer { background: #F3F4F6; padding: 48px 0 24px; }
-        .footer-grid { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 40px; margin-bottom: 40px; }
-        .footer-logo { font-family: 'Poppins', sans-serif; font-size: 24px; font-weight: 700; margin-bottom: 16px; }
-        .footer-links a { display: block; color: #374151; text-decoration: none; margin-bottom: 8px; }
-        .social-icons { display: flex; gap: 16px; font-size: 24px; }
-        .social-icons a { color: #374151; }
-        .copyright { text-align: center; color: #6B7280; border-top: 1px solid #D1D5DB; padding-top: 24px; }
+        /* Depoimentos */
+        .testimonial-card {
+            background: var(--gray-light);
+            padding: 24px;
+            border-radius: 16px;
+        }
+        .testimonial-author {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-top: 16px;
+        }
+        .author-avatar {
+            width: 48px;
+            height: 48px;
+            background: var(--primary);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+        }
 
-        /* Editor (mesmo da versão anterior, mantido) */
-        #editor-page { display: none; padding: 40px 0; background: #fff; }
-        .editor-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; flex-wrap: wrap; }
-        .editor-tabs { display: flex; gap: 10px; margin: 20px 0; }
-        .tab-btn { padding: 10px 24px; background: #F3F4F6; border: none; border-radius: 30px; font-weight: 600; cursor: pointer; }
-        .tab-btn.active { background: #2563EB; color: white; }
-        .editor-container { display: grid; grid-template-columns: 1fr 1.2fr; gap: 30px; }
-        .form-section { background: #F9FAFB; padding: 24px; border-radius: 16px; max-height: 80vh; overflow-y: auto; }
-        .form-group { margin-bottom: 20px; }
-        .form-group label { font-weight: 600; display: block; margin-bottom: 6px; }
-        .form-group input, .form-group textarea, .form-group select {
-            width: 100%; padding: 10px 12px; border: 1px solid #D1D5DB; border-radius: 8px; font-family: inherit;
+        /* Fundador */
+        .founder-card {
+            background: var(--dark);
+            color: white;
+            padding: 48px;
+            border-radius: 24px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 40px;
+            align-items: center;
+        }
+        .founder-contact {
+            margin: 16px 0;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        .founder-contact i { width: 24px; color: var(--accent); }
+        .founder-motivation {
+            font-size: 1.1rem;
+            border-left: 4px solid var(--accent);
+            padding-left: 24px;
+        }
+
+        /* Footer */
+        footer {
+            background: var(--gray-light);
+            padding: 48px 0 24px;
+        }
+        .footer-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr 1fr;
+            gap: 40px;
+            margin-bottom: 40px;
+        }
+        .footer-logo {
+            font-family: 'Poppins', sans-serif;
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 16px;
+        }
+        .footer-links a {
+            display: block;
+            color: var(--text);
+            text-decoration: none;
+            margin-bottom: 8px;
+            cursor: pointer;
+        }
+        .social-icons {
+            display: flex;
+            gap: 16px;
+            font-size: 24px;
+        }
+        .social-icons a { color: var(--text); }
+        .copyright {
+            text-align: center;
+            color: #6B7280;
+            border-top: 1px solid #D1D5DB;
+            padding-top: 24px;
+        }
+
+        /* ========== EDITOR ========== */
+        #editor-page {
+            display: none;
+            padding: 40px 0;
+            background: #fff;
+        }
+        .editor-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+        .editor-tabs {
+            display: flex;
+            gap: 10px;
+            margin: 20px 0;
+        }
+        .tab-btn {
+            padding: 10px 24px;
+            background: var(--gray-light);
+            border: none;
+            border-radius: 30px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+        .tab-btn.active {
+            background: var(--primary);
+            color: white;
+        }
+        .editor-container {
+            display: grid;
+            grid-template-columns: 1fr 1.2fr;
+            gap: 30px;
+        }
+        .form-section {
+            background: var(--gray-light);
+            padding: 24px;
+            border-radius: 16px;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        .form-group label {
+            font-weight: 600;
+            display: block;
+            margin-bottom: 6px;
+        }
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid #D1D5DB;
+            border-radius: 8px;
+            font-family: inherit;
         }
         .form-group textarea { min-height: 80px; resize: vertical; }
         .dynamic-list { margin-top: 15px; }
         .dynamic-item {
-            background: white; padding: 15px; border-radius: 8px; margin-bottom: 15px;
-            border: 1px solid #E5E7EB; position: relative;
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            border: 1px solid var(--gray);
+            position: relative;
         }
         .dynamic-item .btn-remove {
-            position: absolute; top: 10px; right: 10px; background: #EF4444; color: white;
-            border: none; border-radius: 6px; padding: 4px 8px; font-size: 12px; cursor: pointer;
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: #EF4444;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            padding: 4px 8px;
+            font-size: 12px;
+            cursor: pointer;
         }
-        .btn-add { background: #2563EB; color: white; border: none; padding: 8px 16px; border-radius: 6px; cursor: pointer; font-size: 14px; margin-top: 10px; }
-        .section-header { display: flex; align-items: center; gap: 10px; margin-top: 20px; margin-bottom: 10px; }
+        .btn-add {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            margin-top: 10px;
+        }
+        .section-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-top: 20px;
+            margin-bottom: 10px;
+        }
         .section-header h3 { margin: 0; }
-        .move-btn { background: #E5E7EB; border: none; border-radius: 4px; padding: 4px 8px; cursor: pointer; font-size: 12px; }
-        .preview-container { background: #F3F4F6; padding: 30px; border-radius: 16px; position: sticky; top: 20px; }
-        #cv-preview, #cover-preview, #motivation-preview {
-            background: white; padding: 30px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-            transition: all 0.2s; min-height: 500px;
+        .move-btn {
+            background: var(--gray);
+            border: none;
+            border-radius: 4px;
+            padding: 4px 8px;
+            cursor: pointer;
+            font-size: 12px;
         }
-        .style-controls { display: flex; gap: 15px; margin-bottom: 20px; flex-wrap: wrap; }
-        .color-picker, .font-picker { display: flex; align-items: center; gap: 10px; }
-        .template-classic h1 { color: #0F172A; border-bottom: 2px solid #2563EB; }
-        .template-modern { background: #f8fafc; border-left: 6px solid #10B981; }
-        .template-modern h1 { color: #10B981; }
-        .template-minimal { background: white; border: 1px solid #E2E8F0; box-shadow: none; }
-        .template-minimal h1 { font-weight: 400; text-transform: uppercase; letter-spacing: 2px; }
+        .preview-container {
+            background: var(--gray-light);
+            padding: 30px;
+            border-radius: 16px;
+            position: sticky;
+            top: 20px;
+        }
+        #cv-preview,
+        #cover-preview,
+        #motivation-preview {
+            background: white;
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            transition: all 0.2s;
+            min-height: 600px;
+        }
+        .style-controls {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+        .template-picker select {
+            padding: 8px;
+            border-radius: 6px;
+            border: 1px solid #D1D5DB;
+        }
 
+        /* ========== 15 TEMPLATES DE CV ========== */
+        /* 1. Minimalista Elegante */
+        .template-minimal-1 {
+            font-family: 'Inter', sans-serif;
+            max-width: 700px;
+            margin: 0 auto;
+        }
+        .template-minimal-1 h1 {
+            font-size: 2.8rem;
+            font-weight: 300;
+            margin-bottom: 5px;
+            letter-spacing: -0.5px;
+        }
+        .template-minimal-1 .subhead {
+            font-size: 1.2rem;
+            color: #4B5563;
+            margin-bottom: 20px;
+        }
+        .template-minimal-1 .contact-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            margin-bottom: 30px;
+            font-size: 0.95rem;
+            color: #4B5563;
+            border-top: 1px solid var(--gray);
+            border-bottom: 1px solid var(--gray);
+            padding: 15px 0;
+        }
+        .template-minimal-1 .contact-row i { width: 18px; color: var(--primary); }
+        .template-minimal-1 .section-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+            margin: 25px 0 15px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: #1F2937;
+        }
+        .template-minimal-1 .job, .template-minimal-1 .education { margin-bottom: 20px; }
+        .template-minimal-1 .job-header, .template-minimal-1 .edu-header {
+            display: flex;
+            justify-content: space-between;
+            font-weight: 600;
+        }
+        .template-minimal-1 .company, .template-minimal-1 .institution { color: var(--primary); }
+        .template-minimal-1 .date { color: #6B7280; font-weight: 400; }
+        .template-minimal-1 .description { margin-top: 8px; color: var(--text); }
+        .template-minimal-1 .skills {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 10px;
+        }
+        .template-minimal-1 .skill-tag {
+            background: var(--gray-light);
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+        }
+
+        /* 2. Executivo Premium (duas colunas) */
+        .template-executivo-1 {
+            font-family: 'Inter', sans-serif;
+            display: flex;
+            gap: 30px;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+        .template-executivo-1 .sidebar {
+            width: 30%;
+            background: #F0F4FC;
+            padding: 25px;
+            border-radius: 8px;
+        }
+        .template-executivo-1 .main { flex: 1; }
+        .template-executivo-1 h1 {
+            font-size: 2.2rem;
+            color: var(--primary-dark);
+            margin-bottom: 5px;
+        }
+        .template-executivo-1 .title {
+            font-size: 1.1rem;
+            color: #4B5563;
+            margin-bottom: 20px;
+        }
+        .template-executivo-1 .sidebar h3 {
+            font-size: 1.1rem;
+            color: var(--primary-dark);
+            margin: 20px 0 10px;
+            border-bottom: 1px solid #A5B4FC;
+            padding-bottom: 5px;
+        }
+        .template-executivo-1 .contact-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 10px;
+            font-size: 0.9rem;
+        }
+        .template-executivo-1 .contact-item i { width: 18px; color: var(--primary-dark); }
+        .template-executivo-1 .main .section { margin-bottom: 25px; }
+        .template-executivo-1 .main .section h3 {
+            font-size: 1.2rem;
+            color: var(--primary-dark);
+            border-bottom: 1px solid var(--gray);
+            padding-bottom: 5px;
+            margin-bottom: 15px;
+        }
+        .template-executivo-1 .job, .template-executivo-1 .edu { margin-bottom: 15px; }
+        .template-executivo-1 .job-header, .template-executivo-1 .edu-header {
+            display: flex;
+            justify-content: space-between;
+            font-weight: 600;
+        }
+        .template-executivo-1 .date { color: #6B7280; font-weight: 400; }
+
+        /* 3. Moderno Criativo (cards) */
+        .template-moderno-1 {
+            font-family: 'Inter', sans-serif;
+            background: #F9F9F9;
+            padding: 30px;
+            border-radius: 12px;
+        }
+        .template-moderno-1 h1 {
+            font-size: 2.5rem;
+            color: var(--accent);
+            margin-bottom: 5px;
+        }
+        .template-moderno-1 .subhead {
+            font-size: 1.1rem;
+            color: var(--text);
+            margin-bottom: 20px;
+        }
+        .template-moderno-1 .cards { display: flex; flex-direction: column; gap: 15px; }
+        .template-moderno-1 .card {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            border-left: 4px solid var(--accent);
+        }
+        .template-moderno-1 .card h3 {
+            font-size: 1.2rem;
+            margin-bottom: 10px;
+            color: var(--accent);
+        }
+        .template-moderno-1 .skill-pills {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        .template-moderno-1 .pill {
+            background: var(--accent);
+            color: white;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+        }
+
+        /* 4. Jovem Profissional (com foto) */
+        .template-jovem-1 {
+            font-family: 'Inter', sans-serif;
+            max-width: 700px;
+            margin: 0 auto;
+        }
+        .template-jovem-1 .header {
+            display: flex;
+            align-items: center;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+        .template-jovem-1 .photo {
+            width: 100px;
+            height: 100px;
+            background: var(--accent);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 2rem;
+        }
+        .template-jovem-1 .name-title h1 { font-size: 2rem; margin-bottom: 5px; }
+        .template-jovem-1 .name-title p { color: var(--primary); font-weight: 500; }
+        .template-jovem-1 .section { margin-bottom: 25px; }
+        .template-jovem-1 .section h2 {
+            font-size: 1.3rem;
+            border-bottom: 2px solid var(--accent);
+            padding-bottom: 5px;
+            margin-bottom: 15px;
+        }
+        .template-jovem-1 .skills {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+        .template-jovem-1 .skill {
+            background: #E0F2FE;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+        }
+
+        /* 5. Internacional ATS (coluna única, limpo) */
+        .template-internacional-1 {
+            font-family: 'Inter', sans-serif;
+            max-width: 700px;
+            margin: 0 auto;
+        }
+        .template-internacional-1 h1 { font-size: 2rem; margin-bottom: 5px; }
+        .template-internacional-1 .contact-line {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin: 15px 0 25px;
+            font-size: 0.95rem;
+            color: #4B5563;
+        }
+        .template-internacional-1 .contact-line i { margin-right: 5px; color: var(--primary); }
+        .template-internacional-1 .section { margin-bottom: 25px; }
+        .template-internacional-1 .section h2 {
+            font-size: 1.2rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            border-bottom: 1px solid #D1D5DB;
+            padding-bottom: 5px;
+            margin-bottom: 15px;
+        }
+        .template-internacional-1 .item { margin-bottom: 15px; }
+        .template-internacional-1 .item-header {
+            display: flex;
+            justify-content: space-between;
+            font-weight: 600;
+        }
+        .template-internacional-1 .date { color: #6B7280; font-weight: 400; }
+
+        /* 6. Criativo Assimétrico */
+        .template-criativo-2 {
+            font-family: 'Inter', sans-serif;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+        .template-criativo-2 .left {
+            flex: 1 1 200px;
+            background: #FEF9C3;
+            padding: 20px;
+            border-radius: 8px;
+        }
+        .template-criativo-2 .right { flex: 3 1 400px; }
+        .template-criativo-2 h1 { font-size: 2.2rem; color: #F59E0B; }
+        .template-criativo-2 .left h3 { color: #F59E0B; margin: 20px 0 10px; }
+
+        /* Mais templates (7-15) - versões simplificadas baseadas nos estilos acima */
+        .template-minimal-2 { composes: template-minimal-1; } /* herdará estilos, mas podemos diferenciar com pequenas mudanças */
+        .template-minimal-2 h1 { font-weight: 400; border-bottom: 1px solid #ddd; }
+        .template-minimal-3 { composes: template-minimal-1; }
+        .template-minimal-3 .section-title { border-left: 3px solid var(--primary); padding-left: 10px; }
+        .template-executivo-2 { composes: template-executivo-1; }
+        .template-executivo-2 .sidebar { background: #E8EEF9; }
+        .template-executivo-3 { composes: template-executivo-1; }
+        .template-executivo-3 .sidebar { background: #F9FAFB; border-left: 3px solid var(--primary); }
+        .template-moderno-2 { composes: template-moderno-1; }
+        .template-moderno-2 .card { border-left-color: #F59E0B; }
+        .template-moderno-3 { composes: template-moderno-1; }
+        .template-moderno-3 .card { border-left-color: #EF4444; }
+        .template-jovem-2 { composes: template-jovem-1; }
+        .template-jovem-2 .header { flex-direction: column; text-align: center; }
+        .template-jovem-3 { composes: template-jovem-1; }
+        .template-jovem-3 .photo { background: var(--primary); }
+        .template-internacional-2 { composes: template-internacional-1; }
+        .template-internacional-2 .contact-line { justify-content: center; }
+        .template-internacional-3 { composes: template-internacional-1; }
+        .template-internacional-3 .section h2 { color: var(--primary); }
+
+        /* ========== MEDIA QUERIES ========== */
         @media (max-width: 768px) {
             .grid-4, .grid-3, .grid-2 { grid-template-columns: 1fr; }
             .header-inner { flex-direction: column; gap: 16px; }
             .hero h1 { font-size: 2.5rem; }
             .founder-card { flex-direction: column; text-align: center; }
-            .founder-motivation { border-left: none; border-top: 4px solid #10B981; padding-left: 0; padding-top: 24px; }
+            .founder-motivation { border-left: none; border-top: 4px solid var(--accent); padding-left: 0; padding-top: 24px; }
             .footer-grid { grid-template-columns: 1fr; }
             .editor-container { grid-template-columns: 1fr; }
         }
@@ -188,9 +809,9 @@
             <div class="container header-inner">
                 <div class="logo">Hanz <span>Docs</span></div>
                 <nav class="nav-links">
-                    <a href="#">Templates</a>
-                    <a href="#">Preços</a>
-                    <a href="#">Blog</a>
+                    <a href="#" class="nav-link" data-section="templates">Templates</a>
+                    <a href="#" class="nav-link" data-section="precos">Preços</a>
+                    <a href="#" class="nav-link" data-section="blog">Blog</a>
                     <a href="#">Entrar</a>
                     <a href="#" class="btn btn-primary" id="comecar-agora">Registar</a>
                 </nav>
@@ -215,7 +836,7 @@
                             <div class="field w-80"></div>
                             <div class="field"></div>
                             <div class="field w-60"></div>
-                            <div style="background:#2563EB; height:32px; border-radius:6px; margin-top:16px;"></div>
+                            <div style="background:var(--primary); height:32px; border-radius:6px; margin-top:16px;"></div>
                         </div>
                         <div class="mock-preview">
                             <div class="line" style="width:70%"></div>
@@ -233,7 +854,7 @@
             <div class="container">
                 <h2 class="section-title">Como funciona</h2>
                 <div class="grid-4">
-                    <div class="step-card"><div class="step-icon"><i class="fas fa-file-alt"></i></div><h3>Escolha um modelo</h3><p>Mais de 10 templates profissionais.</p></div>
+                    <div class="step-card"><div class="step-icon"><i class="fas fa-file-alt"></i></div><h3>Escolha um modelo</h3><p>Mais de 15 templates profissionais.</p></div>
                     <div class="step-card"><div class="step-icon"><i class="fas fa-pen"></i></div><h3>Preencha os dados</h3><p>Com sugestões inteligentes.</p></div>
                     <div class="step-card"><div class="step-icon"><i class="fas fa-palette"></i></div><h3>Personalize</h3><p>Cores, fontes, layout ao seu gosto.</p></div>
                     <div class="step-card"><div class="step-icon"><i class="fas fa-download"></i></div><h3>Exporte em PDF</h3><p>Descarregue imediatamente.</p></div>
@@ -241,124 +862,154 @@
             </div>
         </section>
 
-        <!-- Templates com miniaturas visuais -->
-        <section class="section" style="background:#F9FAFB;">
+        <!-- Templates em destaque (15 miniaturas) -->
+        <section class="section" style="background:var(--gray-light);" id="templates-section">
             <div class="container">
                 <h2 class="section-title">Templates profissionais</h2>
                 <div class="grid-3" id="templates-grid">
-                    <!-- Template Executivo (mapeado para classic) -->
+                    <!-- Template 1: Minimalista 1 -->
                     <div class="template-card">
-                        <div class="template-img">
-                            <div class="mini-executivo">
-                                <div class="sidebar"></div>
-                                <div class="main">
-                                    <div class="bar"></div>
-                                    <div class="line"></div>
-                                    <div class="line short"></div>
-                                    <div class="line"></div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="template-info">
-                            <h4>Executivo Premium</h4>
-                            <div class="template-tags"><span class="tag">Corporativo</span><span class="tag">ATS-friendly</span></div>
-                            <a href="#" class="btn btn-secondary template-use" style="width:100%; text-align:center;" data-template="classic">Usar template</a>
-                        </div>
+                        <div class="template-img"><div class="mini-thumb"><div class="bar"></div><div class="line short"></div><div class="line"></div><div class="line"></div></div></div>
+                        <div class="template-info"><h4>Minimalista Elegante 1</h4><div class="template-tags"><span class="tag">Limpo</span><span class="tag">ATS</span></div><a href="#" class="btn btn-secondary template-use" data-template="minimal-1">Usar template</a></div>
                     </div>
-                    <!-- Template Moderno (mapeado para modern) -->
+                    <!-- Template 2: Executivo 1 -->
                     <div class="template-card">
-                        <div class="template-img">
-                            <div class="mini-moderno">
-                                <div class="header"></div>
-                                <div class="block">
-                                    <div class="card"></div>
-                                    <div class="card"></div>
-                                </div>
-                                <div class="block">
-                                    <div class="card"></div>
-                                    <div class="card"></div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="template-info">
-                            <h4>Moderno Criativo</h4>
-                            <div class="template-tags"><span class="tag">Criativo</span><span class="tag">Internacional</span></div>
-                            <a href="#" class="btn btn-secondary template-use" style="width:100%; text-align:center;" data-template="modern">Usar template</a>
-                        </div>
+                        <div class="template-img"><div class="mini-thumb"><div class="double"><div class="side"></div><div style="flex:1"><div class="bar"></div><div class="line"></div></div></div></div></div>
+                        <div class="template-info"><h4>Executivo Premium 1</h4><div class="template-tags"><span class="tag">Corporativo</span></div><a href="#" class="btn btn-secondary template-use" data-template="executivo-1">Usar template</a></div>
                     </div>
-                    <!-- Template Minimalista (mapeado para minimal) -->
+                    <!-- Template 3: Moderno 1 -->
                     <div class="template-card">
-                        <div class="template-img">
-                            <div class="mini-minimal">
-                                <div class="title"></div>
-                                <div class="subtitle"></div>
-                                <div class="divider"></div>
-                                <div class="line"></div>
-                                <div class="line"></div>
-                            </div>
-                        </div>
-                        <div class="template-info">
-                            <h4>Minimalista Elegante</h4>
-                            <div class="template-tags"><span class="tag">Elegante</span><span class="tag">Limpo</span></div>
-                            <a href="#" class="btn btn-secondary template-use" style="width:100%; text-align:center;" data-template="minimal">Usar template</a>
-                        </div>
+                        <div class="template-img"><div class="mini-thumb"><div class="bar" style="background:var(--accent);"></div><div class="line"></div><div class="line"></div></div></div>
+                        <div class="template-info"><h4>Moderno Criativo 1</h4><div class="template-tags"><span class="tag">Criativo</span></div><a href="#" class="btn btn-secondary template-use" data-template="moderno-1">Usar template</a></div>
                     </div>
-                    <!-- Template Criativo (adicional, mapeado para modern) -->
+                    <!-- Template 4: Jovem 1 -->
                     <div class="template-card">
-                        <div class="template-img">
-                            <div class="mini-criativo">
-                                <div class="shape"></div>
-                                <div class="shape2"></div>
-                                <div class="shape"></div>
-                                <div class="shape2"></div>
-                            </div>
-                        </div>
-                        <div class="template-info">
-                            <h4>Criativo & Inovador</h4>
-                            <div class="template-tags"><span class="tag">Design</span><span class="tag">Moderno</span></div>
-                            <a href="#" class="btn btn-secondary template-use" style="width:100%; text-align:center;" data-template="modern">Usar template</a>
-                        </div>
+                        <div class="template-img"><div class="mini-thumb"><div style="display:flex; gap:8px;"><div class="photo"></div><div><div class="bar"></div><div class="line short"></div></div></div></div></div>
+                        <div class="template-info"><h4>Jovem Profissional 1</h4><div class="template-tags"><span class="tag">Estágio</span></div><a href="#" class="btn btn-secondary template-use" data-template="jovem-1">Usar template</a></div>
                     </div>
-                    <!-- Template Jovem Profissional (mapeado para minimal) -->
+                    <!-- Template 5: Internacional 1 -->
                     <div class="template-card">
-                        <div class="template-img">
-                            <div class="mini-jovem">
-                                <div class="photo"></div>
-                                <div class="tag"></div>
-                                <div class="tag" style="width:60%"></div>
-                                <div class="tag" style="width:80%"></div>
-                            </div>
-                        </div>
-                        <div class="template-info">
-                            <h4>Jovem Profissional</h4>
-                            <div class="template-tags"><span class="tag">Primeiro emprego</span><span class="tag">Estágio</span></div>
-                            <a href="#" class="btn btn-secondary template-use" style="width:100%; text-align:center;" data-template="minimal">Usar template</a>
-                        </div>
+                        <div class="template-img"><div class="mini-thumb"><div class="bar"></div><div class="line"></div><div class="line short"></div></div></div>
+                        <div class="template-info"><h4>Internacional ATS 1</h4><div class="template-tags"><span class="tag">Europa</span></div><a href="#" class="btn btn-secondary template-use" data-template="internacional-1">Usar template</a></div>
                     </div>
-                    <!-- Template Internacional (mapeado para classic) -->
+                    <!-- Template 6: Criativo 2 -->
                     <div class="template-card">
-                        <div class="template-img">
-                            <div class="mini-internacional">
-                                <div class="line thick"></div>
-                                <div class="line"></div>
-                                <div class="line"></div>
-                                <div class="line" style="width:80%"></div>
-                                <div class="line" style="width:90%"></div>
-                            </div>
-                        </div>
-                        <div class="template-info">
-                            <h4>Internacional ATS</h4>
-                            <div class="template-tags"><span class="tag">Europa</span><span class="tag">ATS</span></div>
-                            <a href="#" class="btn btn-secondary template-use" style="width:100%; text-align:center;" data-template="classic">Usar template</a>
-                        </div>
+                        <div class="template-img"><div class="mini-thumb"><div style="display:flex; gap:4px;"><div style="width:40%; height:40px; background:#F59E0B;"></div><div style="flex:1;"><div class="line"></div><div class="line"></div></div></div></div></div>
+                        <div class="template-info"><h4>Criativo Assimétrico</h4><div class="template-tags"><span class="tag">Design</span></div><a href="#" class="btn btn-secondary template-use" data-template="criativo-2">Usar template</a></div>
+                    </div>
+                    <!-- Template 7: Minimalista 2 -->
+                    <div class="template-card">
+                        <div class="template-img"><div class="mini-thumb"><div class="bar" style="width:60%;"></div><div class="line"></div><div class="line"></div><div class="line"></div></div></div>
+                        <div class="template-info"><h4>Minimalista Elegante 2</h4><div class="template-tags"><span class="tag">Limpo</span></div><a href="#" class="btn btn-secondary template-use" data-template="minimal-2">Usar template</a></div>
+                    </div>
+                    <!-- Template 8: Executivo 2 -->
+                    <div class="template-card">
+                        <div class="template-img"><div class="mini-thumb"><div class="double"><div class="side" style="background:#2563EB;"></div><div style="flex:1"><div class="bar"></div><div class="line"></div></div></div></div></div>
+                        <div class="template-info"><h4>Executivo Premium 2</h4><div class="template-tags"><span class="tag">Corporativo</span></div><a href="#" class="btn btn-secondary template-use" data-template="executivo-2">Usar template</a></div>
+                    </div>
+                    <!-- Template 9: Moderno 2 -->
+                    <div class="template-card">
+                        <div class="template-img"><div class="mini-thumb"><div class="bar" style="background:#F59E0B;"></div><div class="line"></div><div class="line"></div></div></div>
+                        <div class="template-info"><h4>Moderno Criativo 2</h4><div class="template-tags"><span class="tag">Criativo</span></div><a href="#" class="btn btn-secondary template-use" data-template="moderno-2">Usar template</a></div>
+                    </div>
+                    <!-- Template 10: Jovem 2 -->
+                    <div class="template-card">
+                        <div class="template-img"><div class="mini-thumb"><div style="display:flex; flex-direction:column; align-items:center;"><div class="photo"></div><div class="line"></div><div class="line"></div></div></div></div>
+                        <div class="template-info"><h4>Jovem Profissional 2</h4><div class="template-tags"><span class="tag">Estágio</span></div><a href="#" class="btn btn-secondary template-use" data-template="jovem-2">Usar template</a></div>
+                    </div>
+                    <!-- Template 11: Internacional 2 -->
+                    <div class="template-card">
+                        <div class="template-img"><div class="mini-thumb"><div class="bar"></div><div class="line"></div><div class="line"></div><div class="line"></div></div></div>
+                        <div class="template-info"><h4>Internacional ATS 2</h4><div class="template-tags"><span class="tag">ATS</span></div><a href="#" class="btn btn-secondary template-use" data-template="internacional-2">Usar template</a></div>
+                    </div>
+                    <!-- Template 12: Minimalista 3 -->
+                    <div class="template-card">
+                        <div class="template-img"><div class="mini-thumb"><div class="bar"></div><div class="line"></div><div class="line"></div><div class="line short"></div></div></div>
+                        <div class="template-info"><h4>Minimalista Elegante 3</h4><div class="template-tags"><span class="tag">Limpo</span></div><a href="#" class="btn btn-secondary template-use" data-template="minimal-3">Usar template</a></div>
+                    </div>
+                    <!-- Template 13: Executivo 3 -->
+                    <div class="template-card">
+                        <div class="template-img"><div class="mini-thumb"><div class="double"><div class="side"></div><div style="flex:1"><div class="bar"></div><div class="line"></div></div></div></div></div>
+                        <div class="template-info"><h4>Executivo Premium 3</h4><div class="template-tags"><span class="tag">Corporativo</span></div><a href="#" class="btn btn-secondary template-use" data-template="executivo-3">Usar template</a></div>
+                    </div>
+                    <!-- Template 14: Moderno 3 -->
+                    <div class="template-card">
+                        <div class="template-img"><div class="mini-thumb"><div class="bar" style="background:#EF4444;"></div><div class="line"></div><div class="line"></div></div></div>
+                        <div class="template-info"><h4>Moderno Criativo 3</h4><div class="template-tags"><span class="tag">Criativo</span></div><a href="#" class="btn btn-secondary template-use" data-template="moderno-3">Usar template</a></div>
+                    </div>
+                    <!-- Template 15: Internacional 3 -->
+                    <div class="template-card">
+                        <div class="template-img"><div class="mini-thumb"><div class="bar"></div><div class="line"></div><div class="line"></div><div class="line"></div></div></div>
+                        <div class="template-info"><h4>Internacional ATS 3</h4><div class="template-tags"><span class="tag">Europa</span></div><a href="#" class="btn btn-secondary template-use" data-template="internacional-3">Usar template</a></div>
                     </div>
                 </div>
                 <div style="text-align:center; margin-top:40px;">
-                    <a href="#" class="btn btn-primary" id="ver-todos-templates">Ver todos os templates</a>
+                    <a href="#" class="btn btn-primary" id="ver-todos-templates">Explorar todos os 15 templates</a>
                 </div>
             </div>
         </section>
 
+        <!-- Preços -->
+        <section class="section" id="precos-section">
+            <div class="container">
+                <h2 class="section-title">Preços acessíveis</h2>
+                <div class="grid-3">
+                    <div class="pricing-card">
+                        <h3>Documento avulso</h3>
+                        <div class="price">50 MZN <small>/documento</small></div>
+                        <p>Baixe um CV ou carta em PDF</p>
+                        <a href="#" class="btn btn-primary">Começar</a>
+                    </div>
+                    <div class="pricing-card">
+                        <h3>Pacote 5 documentos</h3>
+                        <div class="price">200 MZN <small>(40 MZN cada)</small></div>
+                        <p>Ideal para várias candidaturas</p>
+                        <a href="#" class="btn btn-secondary">Assinar</a>
+                    </div>
+                    <div class="pricing-card">
+                        <h3>Mensal ilimitado</h3>
+                        <div class="price">500 MZN <small>/mês</small></div>
+                        <p>Crie quantos documentos quiser</p>
+                        <a href="#" class="btn btn-secondary">Assinar</a>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Blog -->
+        <section class="section" style="background:var(--gray-light);" id="blog-section">
+            <div class="container">
+                <h2 class="section-title">Dicas de carreira</h2>
+                <div class="grid-3">
+                    <div class="blog-card">
+                        <div class="blog-img"><i class="fas fa-image"></i> Imagem</div>
+                        <div class="blog-content">
+                            <h3>Como destacar suas competências no CV</h3>
+                            <p>Dicas práticas para chamar a atenção dos recrutadores.</p>
+                            <a href="#">Ler mais</a>
+                        </div>
+                    </div>
+                    <div class="blog-card">
+                        <div class="blog-img"><i class="fas fa-image"></i> Imagem</div>
+                        <div class="blog-content">
+                            <h3>Erros comuns em cartas de motivação</h3>
+                            <p>Evite estes deslizes e aumente suas chances.</p>
+                            <a href="#">Ler mais</a>
+                        </div>
+                    </div>
+                    <div class="blog-card">
+                        <div class="blog-img"><i class="fas fa-image"></i> Imagem</div>
+                        <div class="blog-content">
+                            <h3>Preparando-se para entrevistas</h3>
+                            <p>Guia rápido para o sucesso.</p>
+                            <a href="#">Ler mais</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Benefícios -->
         <section class="section">
             <div class="container">
                 <h2 class="section-title">Porquê a Hanz Docs?</h2>
@@ -373,7 +1024,8 @@
             </div>
         </section>
 
-        <section class="section" style="background:#F9FAFB;">
+        <!-- Depoimentos -->
+        <section class="section" style="background:var(--gray-light);">
             <div class="container">
                 <h2 class="section-title">O que dizem os utilizadores</h2>
                 <div class="grid-3">
@@ -384,6 +1036,7 @@
             </div>
         </section>
 
+        <!-- Fundador -->
         <section class="section">
             <div class="container">
                 <div class="founder-card">
@@ -405,28 +1058,30 @@
             </div>
         </section>
 
-        <section class="section" style="background:#2563EB; color:white; text-align:center;">
+        <!-- CTA final -->
+        <section class="section" style="background:var(--primary); color:white; text-align:center;">
             <div class="container">
                 <h2 style="font-size:2.5rem; margin-bottom:24px;">Pronto para criar o seu CV profissional?</h2>
-                <p style="font-size:1.2rem; margin-bottom:32px;">Mais de 10 templates, editor intuitivo e exportação imediata.</p>
+                <p style="font-size:1.2rem; margin-bottom:32px;">Mais de 15 templates, editor intuitivo e exportação imediata por apenas 50 MZN/documento.</p>
                 <a href="#" class="btn btn-accent" style="font-size:1.2rem; padding:16px 48px;" id="final-cta">Começar Agora</a>
             </div>
         </section>
 
+        <!-- Footer -->
         <footer>
             <div class="container">
                 <div class="footer-grid">
-                    <div><div class="footer-logo">Hanz <span style="color:#2563EB;">Docs</span></div><p style="color:#4B5563;">Documentos que abrem portas. Transforme seu perfil em oportunidade.</p><div class="social-icons"><a href="#"><i class="fab fa-facebook"></i></a><a href="#"><i class="fab fa-linkedin"></i></a><a href="#"><i class="fab fa-instagram"></i></a></div></div>
-                    <div class="footer-links"><h4>Produto</h4><a href="#">Templates</a><a href="#">Preços</a><a href="#">Editor de CV</a><a href="#">Cartas</a></div>
-                    <div class="footer-links"><h4>Recursos</h4><a href="#">Blog</a><a href="#">Dicas de carreira</a><a href="#">Ajuda</a></div>
-                    <div class="footer-links"><h4>Legal</h4><a href="#">Termos de uso</a><a href="#">Privacidade</a><a href="#">Contacto</a></div>
+                    <div><div class="footer-logo">Hanz <span style="color:var(--primary);">Docs</span></div><p style="color:#4B5563;">Documentos que abrem portas.</p><div class="social-icons"><a href="#"><i class="fab fa-facebook"></i></a><a href="#"><i class="fab fa-linkedin"></i></a><a href="#"><i class="fab fa-instagram"></i></a></div></div>
+                    <div class="footer-links"><h4>Produto</h4><a href="#" class="footer-link" data-section="templates">Templates</a><a href="#" class="footer-link" data-section="precos">Preços</a><a href="#" class="footer-link" data-section="blog">Blog</a></div>
+                    <div class="footer-links"><h4>Recursos</h4><a href="#">Ajuda</a><a href="#">Contacto</a></div>
+                    <div class="footer-links"><h4>Legal</h4><a href="#">Termos</a><a href="#">Privacidade</a></div>
                 </div>
-                <div class="copyright">&copy; 2026 Hanz Docs. Todos os direitos reservados. Moçambique.</div>
+                <div class="copyright">&copy; 2026 Hanz Docs. Moçambique.</div>
             </div>
         </footer>
     </div>
 
-    <!-- EDITOR PRINCIPAL (mesmo da versão anterior, mantido) -->
+    <!-- EDITOR -->
     <div id="editor-page">
         <div class="container">
             <div class="editor-header">
@@ -443,103 +1098,121 @@
                 <button class="tab-btn" data-tab="motivation">Carta de Motivação</button>
             </div>
 
+            <!-- Aba CV -->
             <div id="cv-tab" class="tab-content" style="display: block;">
                 <div class="editor-container">
                     <div class="form-section" id="cv-form">
                         <div class="style-controls">
-                            <div class="color-picker"><label>Cor primária:</label><input type="color" id="primary-color" value="#2563EB"></div>
-                            <div class="font-picker"><label>Fonte:</label><select id="font-family"><option value="Inter, sans-serif">Inter</option><option value="Poppins, sans-serif">Poppins</option><option value="Roboto, sans-serif">Roboto</option><option value="Open Sans, sans-serif">Open Sans</option></select></div>
-                            <div class="template-selector" style="display: flex; gap: 10px;"><span>Template:</span><button class="template-option active" data-template="classic">Clássico</button><button class="template-option" data-template="modern">Moderno</button><button class="template-option" data-template="minimal">Minimalista</button></div>
+                            <div class="template-picker">
+                                <label>Template:</label>
+                                <select id="template-select">
+                                    <option value="minimal-1">Minimalista Elegante 1</option>
+                                    <option value="minimal-2">Minimalista Elegante 2</option>
+                                    <option value="minimal-3">Minimalista Elegante 3</option>
+                                    <option value="executivo-1">Executivo Premium 1</option>
+                                    <option value="executivo-2">Executivo Premium 2</option>
+                                    <option value="executivo-3">Executivo Premium 3</option>
+                                    <option value="moderno-1">Moderno Criativo 1</option>
+                                    <option value="moderno-2">Moderno Criativo 2</option>
+                                    <option value="moderno-3">Moderno Criativo 3</option>
+                                    <option value="jovem-1">Jovem Profissional 1</option>
+                                    <option value="jovem-2">Jovem Profissional 2</option>
+                                    <option value="jovem-3">Jovem Profissional 3</option>
+                                    <option value="internacional-1">Internacional ATS 1</option>
+                                    <option value="internacional-2">Internacional ATS 2</option>
+                                    <option value="internacional-3">Internacional ATS 3</option>
+                                    <option value="criativo-2">Criativo Assimétrico</option>
+                                </select>
+                            </div>
                         </div>
 
                         <div id="sections-container">
-                            <!-- Seção Info Pessoal -->
-                            <div class="section-item" data-section="personal"><div class="section-header"><h3>Informação Pessoal</h3><button class="move-btn"><i class="fas fa-grip-vertical"></i></button></div>
+                            <!-- Informação Pessoal -->
+                            <div class="section-item" data-section="personal">
+                                <div class="section-header"><h3>Informação Pessoal</h3><button class="move-btn"><i class="fas fa-grip-vertical"></i></button></div>
                                 <div class="form-group"><label>Nome completo</label><input type="text" id="nome" value="Hanz Domingos"></div>
-                                <div class="form-group"><label>Título profissional</label><input type="text" id="titulo" value="Especialista em Monitoria e Avaliação"></div>
-                                <div class="form-group"><label>Resumo profissional</label><textarea id="resumo">Profissional com experiência em análise de dados, BI e automação. Foco em transformação digital e impacto social.</textarea></div>
+                                <div class="form-group"><label>Título profissional</label><input type="text" id="titulo" value="Especialista em M&A"></div>
+                                <div class="form-group"><label>Resumo</label><textarea id="resumo">Profissional com experiência em análise de dados, BI e automação.</textarea></div>
                                 <div class="form-group"><label>Telefone</label><input type="text" id="telefone" value="+258 847875963"></div>
                                 <div class="form-group"><label>Email</label><input type="email" id="email" value="hanzdomingos@gmail.com"></div>
                                 <div class="form-group"><label>LinkedIn</label><input type="text" id="linkedin" value="linkedin.com/in/hanz"></div>
                                 <div class="form-group"><label>Website</label><input type="text" id="website" value="hanzdocs.com"></div>
                                 <div class="form-group"><label>Endereço</label><input type="text" id="endereco" value="Maputo, Moçambique"></div>
                             </div>
+
                             <!-- Experiência -->
-                            <div class="section-item" data-section="experiencia"><div class="section-header"><h3>Experiência Profissional</h3><button class="move-btn"><i class="fas fa-grip-vertical"></i></button><button class="btn-remove-section" style="background: none; border: none; color: #EF4444; margin-left: auto;" title="Remover seção"><i class="fas fa-trash"></i></button></div>
-                                <div id="experiencia-list" class="dynamic-list"></div><button class="btn-add" id="add-exp"><i class="fas fa-plus"></i> Adicionar experiência</button>
+                            <div class="section-item" data-section="experiencia">
+                                <div class="section-header"><h3>Experiência Profissional</h3><button class="move-btn"><i class="fas fa-grip-vertical"></i></button><button class="btn-remove-section" style="background: none; border: none; color: #EF4444; margin-left: auto;"><i class="fas fa-trash"></i></button></div>
+                                <div id="experiencia-list" class="dynamic-list"></div>
+                                <button class="btn-add" id="add-exp"><i class="fas fa-plus"></i> Adicionar experiência</button>
                             </div>
+
                             <!-- Formação -->
-                            <div class="section-item" data-section="formacao"><div class="section-header"><h3>Formação Académica</h3><button class="move-btn"><i class="fas fa-grip-vertical"></i></button><button class="btn-remove-section" style="background: none; border: none; color: #EF4444; margin-left: auto;" title="Remover seção"><i class="fas fa-trash"></i></button></div>
-                                <div id="formacao-list" class="dynamic-list"></div><button class="btn-add" id="add-form"><i class="fas fa-plus"></i> Adicionar formação</button>
+                            <div class="section-item" data-section="formacao">
+                                <div class="section-header"><h3>Formação</h3><button class="move-btn"><i class="fas fa-grip-vertical"></i></button><button class="btn-remove-section" style="background: none; border: none; color: #EF4444; margin-left: auto;"><i class="fas fa-trash"></i></button></div>
+                                <div id="formacao-list" class="dynamic-list"></div>
+                                <button class="btn-add" id="add-form"><i class="fas fa-plus"></i> Adicionar formação</button>
                             </div>
-                            <!-- Certificações -->
-                            <div class="section-item" data-section="certificacoes"><div class="section-header"><h3>Certificações</h3><button class="move-btn"><i class="fas fa-grip-vertical"></i></button><button class="btn-remove-section" style="background: none; border: none; color: #EF4444; margin-left: auto;" title="Remover seção"><i class="fas fa-trash"></i></button></div>
-                                <div id="certificacoes-list" class="dynamic-list"></div><button class="btn-add" id="add-cert"><i class="fas fa-plus"></i> Adicionar certificação</button>
-                            </div>
+
                             <!-- Competências Técnicas -->
-                            <div class="section-item" data-section="competencias_tecnicas"><div class="section-header"><h3>Competências Técnicas</h3><button class="move-btn"><i class="fas fa-grip-vertical"></i></button><button class="btn-remove-section" style="background: none; border: none; color: #EF4444; margin-left: auto;" title="Remover seção"><i class="fas fa-trash"></i></button></div>
+                            <div class="section-item" data-section="competencias_tecnicas">
+                                <div class="section-header"><h3>Competências Técnicas</h3><button class="move-btn"><i class="fas fa-grip-vertical"></i></button><button class="btn-remove-section" style="background: none; border: none; color: #EF4444; margin-left: auto;"><i class="fas fa-trash"></i></button></div>
                                 <div class="form-group"><input type="text" id="competencias_tecnicas" placeholder="Separadas por vírgula" value="Excel Avançado, Power BI, SQL, Python"></div>
                             </div>
-                            <!-- Competências Comportamentais -->
-                            <div class="section-item" data-section="competencias_comportamentais"><div class="section-header"><h3>Competências Comportamentais</h3><button class="move-btn"><i class="fas fa-grip-vertical"></i></button><button class="btn-remove-section" style="background: none; border: none; color: #EF4444; margin-left: auto;" title="Remover seção"><i class="fas fa-trash"></i></button></div>
-                                <div class="form-group"><input type="text" id="competencias_comportamentais" placeholder="Separadas por vírgula" value="Liderança, Trabalho em equipa, Comunicação"></div>
-                            </div>
+
                             <!-- Idiomas -->
-                            <div class="section-item" data-section="idiomas"><div class="section-header"><h3>Idiomas</h3><button class="move-btn"><i class="fas fa-grip-vertical"></i></button><button class="btn-remove-section" style="background: none; border: none; color: #EF4444; margin-left: auto;" title="Remover seção"><i class="fas fa-trash"></i></button></div>
+                            <div class="section-item" data-section="idiomas">
+                                <div class="section-header"><h3>Idiomas</h3><button class="move-btn"><i class="fas fa-grip-vertical"></i></button><button class="btn-remove-section" style="background: none; border: none; color: #EF4444; margin-left: auto;"><i class="fas fa-trash"></i></button></div>
                                 <div class="form-group"><input type="text" id="idiomas" value="Português (nativo), Inglês (avançado)"></div>
-                            </div>
-                            <!-- Projetos -->
-                            <div class="section-item" data-section="projetos"><div class="section-header"><h3>Projetos</h3><button class="move-btn"><i class="fas fa-grip-vertical"></i></button><button class="btn-remove-section" style="background: none; border: none; color: #EF4444; margin-left: auto;" title="Remover seção"><i class="fas fa-trash"></i></button></div>
-                                <div id="projetos-list" class="dynamic-list"></div><button class="btn-add" id="add-projeto"><i class="fas fa-plus"></i> Adicionar projeto</button>
-                            </div>
-                            <!-- Publicações -->
-                            <div class="section-item" data-section="publicacoes"><div class="section-header"><h3>Publicações</h3><button class="move-btn"><i class="fas fa-grip-vertical"></i></button><button class="btn-remove-section" style="background: none; border: none; color: #EF4444; margin-left: auto;" title="Remover seção"><i class="fas fa-trash"></i></button></div>
-                                <div id="publicacoes-list" class="dynamic-list"></div><button class="btn-add" id="add-publicacao"><i class="fas fa-plus"></i> Adicionar publicação</button>
-                            </div>
-                            <!-- Voluntariado -->
-                            <div class="section-item" data-section="voluntariado"><div class="section-header"><h3>Voluntariado</h3><button class="move-btn"><i class="fas fa-grip-vertical"></i></button><button class="btn-remove-section" style="background: none; border: none; color: #EF4444; margin-left: auto;" title="Remover seção"><i class="fas fa-trash"></i></button></div>
-                                <div id="voluntariado-list" class="dynamic-list"></div><button class="btn-add" id="add-voluntariado"><i class="fas fa-plus"></i> Adicionar voluntariado</button>
-                            </div>
-                            <!-- Referências -->
-                            <div class="section-item" data-section="referencias"><div class="section-header"><h3>Referências</h3><button class="move-btn"><i class="fas fa-grip-vertical"></i></button><button class="btn-remove-section" style="background: none; border: none; color: #EF4444; margin-left: auto;" title="Remover seção"><i class="fas fa-trash"></i></button></div>
-                                <div class="form-group"><textarea id="referencias" placeholder="Disponíveis mediante solicitação ou lista"></textarea></div>
                             </div>
                         </div>
 
-                        <div style="margin-top: 30px; border-top: 2px dashed #2563EB; padding-top: 20px;">
+                        <!-- Campos personalizados -->
+                        <div style="margin-top: 30px; border-top: 2px dashed var(--primary); padding-top: 20px;">
                             <h4>Campos Personalizados</h4>
                             <div id="custom-fields-container"></div>
                             <button class="btn-add" id="add-custom-field"><i class="fas fa-plus"></i> Adicionar campo personalizado</button>
                         </div>
                     </div>
 
+                    <!-- Preview -->
                     <div class="preview-container">
                         <h3 style="margin-bottom:15px;">Pré-visualização</h3>
-                        <div id="cv-preview" class="template-classic"></div>
+                        <div id="cv-preview" class="template-minimal-1"></div>
                     </div>
                 </div>
             </div>
 
+            <!-- Aba Carta de Apresentação (simplificada) -->
             <div id="cover-tab" class="tab-content" style="display: none;">
                 <div class="editor-container">
-                    <div class="form-section"><h3>Carta de Apresentação</h3><p>Interface simplificada para demonstração.</p>
-                        <div class="form-group"><label>Remetente</label><input type="text" value="Hanz Domingos"></div>
-                        <div class="form-group"><label>Destinatário</label><input type="text" value="Empresa XYZ"></div>
-                        <div class="form-group"><label>Assunto</label><input type="text" value="Candidatura a vaga"></div>
-                        <div class="form-group"><label>Corpo</label><textarea>Escreva a sua carta...</textarea></div>
+                    <div class="form-section">
+                        <h3>Carta de Apresentação</h3>
+                        <div class="form-group"><label>Remetente</label><input type="text" id="cover-remetente" value="Hanz Domingos"></div>
+                        <div class="form-group"><label>Destinatário</label><input type="text" id="cover-destinatario" value="Empresa XYZ"></div>
+                        <div class="form-group"><label>Assunto</label><input type="text" id="cover-assunto" value="Candidatura a vaga"></div>
+                        <div class="form-group"><label>Corpo</label><textarea id="cover-corpo">Escreva a sua carta...</textarea></div>
                     </div>
-                    <div class="preview-container"><div id="cover-preview">Pré-visualização da carta de apresentação</div></div>
+                    <div class="preview-container">
+                        <h3>Pré-visualização</h3>
+                        <div id="cover-preview">Pré-visualização da carta</div>
+                    </div>
                 </div>
             </div>
 
+            <!-- Aba Carta de Motivação (simplificada) -->
             <div id="motivation-tab" class="tab-content" style="display: none;">
                 <div class="editor-container">
-                    <div class="form-section"><h3>Carta de Motivação</h3><p>Interface simplificada.</p>
-                        <div class="form-group"><label>Instituição</label><input type="text" value="Universidade"></div>
-                        <div class="form-group"><label>Curso/Programa</label><input type="text"></div>
-                        <div class="form-group"><label>Motivação</label><textarea></textarea></div>
+                    <div class="form-section">
+                        <h3>Carta de Motivação</h3>
+                        <div class="form-group"><label>Instituição</label><input type="text" id="motiv-instituicao" value="Universidade"></div>
+                        <div class="form-group"><label>Programa</label><input type="text" id="motiv-programa" value="Mestrado"></div>
+                        <div class="form-group"><label>Motivação</label><textarea id="motiv-texto"></textarea></div>
                     </div>
-                    <div class="preview-container"><div id="motivation-preview">Pré-visualização da carta de motivação</div></div>
+                    <div class="preview-container">
+                        <h3>Pré-visualização</h3>
+                        <div id="motivation-preview">Pré-visualização da carta de motivação</div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -547,7 +1220,7 @@
 
     <script>
         (function() {
-            // ----- Controlo de navegação entre landing e editor -----
+            // Navegação entre landing e editor
             const landing = document.getElementById('landing-page');
             const editor = document.getElementById('editor-page');
 
@@ -569,21 +1242,33 @@
                 btn.addEventListener('click', (e) => { e.preventDefault(); showEditor(); });
             });
 
-            // Botões "Usar template" nos cards
+            // Scroll suave para secções
+            document.querySelectorAll('.nav-link, .footer-link').forEach(link => {
+                link.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    const section = link.getAttribute('data-section');
+                    if (section === 'templates') {
+                        document.getElementById('templates-section').scrollIntoView({ behavior: 'smooth' });
+                    } else if (section === 'precos') {
+                        document.getElementById('precos-section').scrollIntoView({ behavior: 'smooth' });
+                    } else if (section === 'blog') {
+                        document.getElementById('blog-section').scrollIntoView({ behavior: 'smooth' });
+                    }
+                });
+            });
+
+            // Botões "Usar template"
             document.querySelectorAll('.template-use').forEach(btn => {
                 btn.addEventListener('click', (e) => {
                     e.preventDefault();
-                    const template = btn.getAttribute('data-template') || 'classic';
-                    document.querySelectorAll('.template-option').forEach(opt => {
-                        opt.classList.remove('active');
-                        if (opt.getAttribute('data-template') === template) opt.classList.add('active');
-                    });
+                    const template = btn.getAttribute('data-template');
+                    document.getElementById('template-select').value = template;
                     showEditor();
                     aplicarTemplate(template);
                 });
             });
 
-            // ----- Abas do editor -----
+            // Abas do editor
             const tabs = document.querySelectorAll('.tab-btn');
             const contents = { cv: document.getElementById('cv-tab'), cover: document.getElementById('cover-tab'), motivation: document.getElementById('motivation-tab') };
             tabs.forEach(tab => {
@@ -596,29 +1281,150 @@
                 });
             });
 
-            // ----- Dados dinâmicos (simplificado, apenas para exemplo) -----
+            // Dados dinâmicos
             let experiencias = [ { empresa: 'HD Consulting', cargo: 'Analista de Dados', periodo: '2022–presente', descricao: 'Automação de relatórios em Power BI.' } ];
             let formacoes = [ { instituicao: 'Universidade Eduardo Mondlane', curso: 'Licenciatura em Estatística', ano: '2021' } ];
-            let certificacoes = [ { nome: 'Certificação Power BI', entidade: 'Microsoft', ano: '2023' } ];
-            let projetos = [ { nome: 'Sistema de BI', descricao: 'Implementação de dashboard para ONG' } ];
-            let publicacoes = [ { titulo: 'Análise de Dados em Saúde', revista: 'Jornal de Estatística', ano: '2024' } ];
-            let voluntariado = [ { organizacao: 'Cruz Vermelha', papel: 'Voluntário', periodo: '2020-2021' } ];
             let customFields = [];
 
-            function renderExperiencias() { /* ... (código completo omitido por brevidade, mas presente no original) ... */ }
-            function renderFormacoes() { /* ... */ }
-            // Para simplificar, usaremos as funções já existentes no código original.
-            // Como o script é longo, assumimos que as funções completas estão aqui.
-            // (Na prática, o código completo já foi fornecido anteriormente; manteremos a estrutura)
+            function renderExperiencias() {
+                const container = document.getElementById('experiencia-list');
+                if (!container) return;
+                container.innerHTML = '';
+                experiencias.forEach((exp, index) => {
+                    const div = document.createElement('div');
+                    div.className = 'dynamic-item';
+                    div.innerHTML = `
+                        <input type="text" placeholder="Empresa" value="${exp.empresa}" data-exp-index="${index}" data-field="empresa" class="exp-input">
+                        <input type="text" placeholder="Cargo" value="${exp.cargo}" data-exp-index="${index}" data-field="cargo" class="exp-input" style="margin-top:8px;">
+                        <input type="text" placeholder="Período" value="${exp.periodo}" data-exp-index="${index}" data-field="periodo" class="exp-input" style="margin-top:8px;">
+                        <textarea placeholder="Descrição" data-exp-index="${index}" data-field="descricao" class="exp-input" style="margin-top:8px;">${exp.descricao}</textarea>
+                        <button class="btn-remove" data-exp-index="${index}">Remover</button>
+                    `;
+                    container.appendChild(div);
+                });
+                document.querySelectorAll('.exp-input').forEach(input => {
+                    input.addEventListener('input', (e) => {
+                        const index = e.target.getAttribute('data-exp-index');
+                        const field = e.target.getAttribute('data-field');
+                        experiencias[index][field] = e.target.value;
+                        renderPreview();
+                    });
+                });
+                document.querySelectorAll('.btn-remove').forEach(btn => {
+                    btn.addEventListener('click', (e) => {
+                        const index = e.target.getAttribute('data-exp-index');
+                        experiencias.splice(index, 1);
+                        renderExperiencias();
+                        renderPreview();
+                    });
+                });
+            }
 
-            // Por brevidade, incluímos apenas o essencial para o preview funcionar.
-            // O código real teria todas as funções de renderização das listas.
-            // Como o foco agora é a landing com miniaturas, mantemos o restante do script igual ao original.
-            // Abaixo um esboço mínimo para não quebrar:
+            function renderFormacoes() {
+                const container = document.getElementById('formacao-list');
+                if (!container) return;
+                container.innerHTML = '';
+                formacoes.forEach((form, index) => {
+                    const div = document.createElement('div');
+                    div.className = 'dynamic-item';
+                    div.innerHTML = `
+                        <input type="text" placeholder="Instituição" value="${form.instituicao}" data-form-index="${index}" data-field="instituicao" class="form-input">
+                        <input type="text" placeholder="Curso" value="${form.curso}" data-form-index="${index}" data-field="curso" class="form-input" style="margin-top:8px;">
+                        <input type="text" placeholder="Ano" value="${form.ano}" data-form-index="${index}" data-field="ano" class="form-input" style="margin-top:8px;">
+                        <button class="btn-remove" data-form-index="${index}">Remover</button>
+                    `;
+                    container.appendChild(div);
+                });
+                document.querySelectorAll('.form-input').forEach(input => {
+                    input.addEventListener('input', (e) => {
+                        const index = e.target.getAttribute('data-form-index');
+                        const field = e.target.getAttribute('data-field');
+                        formacoes[index][field] = e.target.value;
+                        renderPreview();
+                    });
+                });
+                document.querySelectorAll('.btn-remove').forEach(btn => {
+                    btn.addEventListener('click', (e) => {
+                        const index = e.target.getAttribute('data-form-index');
+                        formacoes.splice(index, 1);
+                        renderFormacoes();
+                        renderPreview();
+                    });
+                });
+            }
 
+            document.getElementById('add-exp')?.addEventListener('click', () => {
+                experiencias.push({ empresa: '', cargo: '', periodo: '', descricao: '' });
+                renderExperiencias();
+                renderPreview();
+            });
+            document.getElementById('add-form')?.addEventListener('click', () => {
+                formacoes.push({ instituicao: '', curso: '', ano: '' });
+                renderFormacoes();
+                renderPreview();
+            });
+
+            // Campos personalizados
+            const customContainer = document.getElementById('custom-fields-container');
+            function renderCustomFields() {
+                customContainer.innerHTML = '';
+                customFields.forEach((field, index) => {
+                    const div = document.createElement('div');
+                    div.className = 'dynamic-item';
+                    div.innerHTML = `
+                        <input type="text" placeholder="Nome do campo" value="${field.label}" data-custom-index="${index}" data-field="label" class="custom-label">
+                        <input type="text" placeholder="Valor" value="${field.value}" data-custom-index="${index}" data-field="value" class="custom-value" style="margin-top:8px;">
+                        <button class="btn-remove" data-custom-index="${index}">Remover</button>
+                    `;
+                    customContainer.appendChild(div);
+                });
+                document.querySelectorAll('.custom-label, .custom-value').forEach(input => {
+                    input.addEventListener('input', (e) => {
+                        const index = e.target.getAttribute('data-custom-index');
+                        const field = e.target.getAttribute('data-field');
+                        customFields[index][field] = e.target.value;
+                        renderPreview();
+                    });
+                });
+                document.querySelectorAll('.btn-remove').forEach(btn => {
+                    btn.addEventListener('click', (e) => {
+                        const index = e.target.getAttribute('data-custom-index');
+                        customFields.splice(index, 1);
+                        renderCustomFields();
+                        renderPreview();
+                    });
+                });
+            }
+            document.getElementById('add-custom-field')?.addEventListener('click', () => {
+                customFields.push({ label: 'Novo Campo', value: '' });
+                renderCustomFields();
+                renderPreview();
+            });
+
+            // Remover seções
+            document.querySelectorAll('.btn-remove-section').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    const section = e.target.closest('.section-item');
+                    if (section) {
+                        section.style.display = 'none';
+                        section.dataset.hidden = 'true';
+                        renderPreview();
+                    }
+                });
+            });
+
+            // Reordenação
+            const sectionsContainer = document.getElementById('sections-container');
+            new Sortable(sectionsContainer, { animation: 150, handle: '.move-btn', onEnd: renderPreview });
+
+            // Função de renderização do preview CV
             function renderPreview() {
                 const preview = document.getElementById('cv-preview');
                 if (!preview) return;
+                const template = document.getElementById('template-select').value;
+                preview.className = ''; // limpar classes
+                preview.classList.add(`template-${template}`);
+
                 const nome = document.getElementById('nome')?.value || 'Nome';
                 const titulo = document.getElementById('titulo')?.value || 'Título';
                 const resumo = document.getElementById('resumo')?.value || '';
@@ -628,65 +1434,280 @@
                 const website = document.getElementById('website')?.value || '';
                 const endereco = document.getElementById('endereco')?.value || '';
                 const competenciasTec = (document.getElementById('competencias_tecnicas')?.value || '').split(',').map(s => s.trim()).filter(s => s);
-                const competenciasComp = (document.getElementById('competencias_comportamentais')?.value || '').split(',').map(s => s.trim()).filter(s => s);
                 const idiomas = document.getElementById('idiomas')?.value || '';
-                const primaryColor = document.getElementById('primary-color')?.value || '#2563EB';
-                const fontFamily = document.getElementById('font-family')?.value || 'Inter, sans-serif';
 
-                let html = `<div style="font-family: ${fontFamily}; color: #0F172A;">`;
-                html += `<h1 style="color: ${primaryColor};">${nome}</h1>`;
-                html += `<h3 style="color: ${primaryColor};">${titulo}</h3>`;
-                html += `<p><strong>Resumo:</strong> ${resumo}</p>`;
-                html += `<p>📞 ${telefone} | ✉️ ${email} | 🔗 ${linkedin} | 🌐 ${website} | 📍 ${endereco}</p>`;
+                // Construção do HTML baseado no template (simplificado para todos; na prática, cada template teria sua própria estrutura)
+                // Vamos usar uma estrutura genérica que funciona com os estilos definidos
+                let html = '';
 
-                if (experiencias.length) {
-                    html += '<h4 style="color: ${primaryColor};">Experiência</h4>';
-                    experiencias.forEach(exp => html += `<div><strong>${exp.cargo}</strong> na ${exp.empresa} (${exp.periodo})<br>${exp.descricao}</div>`);
+                if (template.startsWith('minimal')) {
+                    html = `
+                        <h1>${nome}</h1>
+                        <div class="subhead">${titulo}</div>
+                        <div class="contact-row">
+                            <span><i class="fas fa-phone"></i> ${telefone}</span>
+                            <span><i class="fas fa-envelope"></i> ${email}</span>
+                            <span><i class="fab fa-linkedin"></i> ${linkedin}</span>
+                            <span><i class="fas fa-globe"></i> ${website}</span>
+                            <span><i class="fas fa-map-marker-alt"></i> ${endereco}</span>
+                        </div>
+                        <div class="section-title">Resumo</div>
+                        <p>${resumo}</p>
+                        <div class="section-title">Experiência</div>
+                        ${experiencias.map(exp => `
+                            <div class="job">
+                                <div class="job-header">
+                                    <span class="company">${exp.empresa}</span>
+                                    <span class="date">${exp.periodo}</span>
+                                </div>
+                                <div class="job-title">${exp.cargo}</div>
+                                <div class="description">${exp.descricao}</div>
+                            </div>
+                        `).join('')}
+                        <div class="section-title">Formação</div>
+                        ${formacoes.map(form => `
+                            <div class="education">
+                                <div class="edu-header">
+                                    <span class="institution">${form.instituicao}</span>
+                                    <span class="date">${form.ano}</span>
+                                </div>
+                                <div>${form.curso}</div>
+                            </div>
+                        `).join('')}
+                        <div class="section-title">Competências</div>
+                        <div class="skills">
+                            ${competenciasTec.map(s => `<span class="skill-tag">${s}</span>`).join('')}
+                        </div>
+                        <div class="section-title">Idiomas</div>
+                        <p>${idiomas}</p>
+                        ${customFields.map(f => f.label && f.value ? `<p><strong>${f.label}:</strong> ${f.value}</p>` : '').join('')}
+                    `;
+                } else if (template.startsWith('executivo')) {
+                    html = `
+                        <div class="sidebar">
+                            <h3>Contacto</h3>
+                            <div class="contact-item"><i class="fas fa-phone"></i> ${telefone}</div>
+                            <div class="contact-item"><i class="fas fa-envelope"></i> ${email}</div>
+                            <div class="contact-item"><i class="fab fa-linkedin"></i> ${linkedin}</div>
+                            <div class="contact-item"><i class="fas fa-globe"></i> ${website}</div>
+                            <div class="contact-item"><i class="fas fa-map-marker-alt"></i> ${endereco}</div>
+                            <h3>Competências</h3>
+                            ${competenciasTec.map(s => `<div>${s}</div>`).join('')}
+                            <h3>Idiomas</h3>
+                            <p>${idiomas}</p>
+                        </div>
+                        <div class="main">
+                            <h1>${nome}</h1>
+                            <div class="title">${titulo}</div>
+                            <div class="section">
+                                <h3>Resumo</h3>
+                                <p>${resumo}</p>
+                            </div>
+                            <div class="section">
+                                <h3>Experiência</h3>
+                                ${experiencias.map(exp => `
+                                    <div class="job">
+                                        <div class="job-header">
+                                            <span>${exp.cargo}</span>
+                                            <span class="date">${exp.periodo}</span>
+                                        </div>
+                                        <div>${exp.empresa}</div>
+                                        <p>${exp.descricao}</p>
+                                    </div>
+                                `).join('')}
+                            </div>
+                            <div class="section">
+                                <h3>Formação</h3>
+                                ${formacoes.map(form => `
+                                    <div class="edu">
+                                        <div class="edu-header">
+                                            <span>${form.curso}</span>
+                                            <span class="date">${form.ano}</span>
+                                        </div>
+                                        <div>${form.instituicao}</div>
+                                    </div>
+                                `).join('')}
+                            </div>
+                        </div>
+                    `;
+                } else if (template.startsWith('moderno')) {
+                    html = `
+                        <h1>${nome}</h1>
+                        <div class="subhead">${titulo}</div>
+                        <p>${resumo}</p>
+                        <div class="cards">
+                            <div class="card">
+                                <h3>Experiência</h3>
+                                ${experiencias.map(exp => `<p><strong>${exp.cargo}</strong> na ${exp.empresa} (${exp.periodo})<br>${exp.descricao}</p>`).join('')}
+                            </div>
+                            <div class="card">
+                                <h3>Formação</h3>
+                                ${formacoes.map(form => `<p>${form.curso} - ${form.instituicao} (${form.ano})</p>`).join('')}
+                            </div>
+                            <div class="card">
+                                <h3>Competências</h3>
+                                <div class="skill-pills">
+                                    ${competenciasTec.map(s => `<span class="pill">${s}</span>`).join('')}
+                                </div>
+                                <p><strong>Idiomas:</strong> ${idiomas}</p>
+                            </div>
+                        </div>
+                    `;
+                } else if (template.startsWith('jovem')) {
+                    html = `
+                        <div class="header">
+                            <div class="photo"><i class="fas fa-user"></i></div>
+                            <div class="name-title">
+                                <h1>${nome}</h1>
+                                <p>${titulo}</p>
+                            </div>
+                        </div>
+                        <div class="section">
+                            <h2>Resumo</h2>
+                            <p>${resumo}</p>
+                        </div>
+                        <div class="section">
+                            <h2>Contacto</h2>
+                            <p>${telefone} | ${email} | ${linkedin}</p>
+                        </div>
+                        <div class="section">
+                            <h2>Experiência</h2>
+                            ${experiencias.map(exp => `<p><strong>${exp.cargo}</strong> - ${exp.empresa} (${exp.periodo})<br>${exp.descricao}</p>`).join('')}
+                        </div>
+                        <div class="section">
+                            <h2>Formação</h2>
+                            ${formacoes.map(form => `<p>${form.curso} - ${form.instituicao} (${form.ano})</p>`).join('')}
+                        </div>
+                        <div class="section">
+                            <h2>Competências</h2>
+                            <div class="skills">
+                                ${competenciasTec.map(s => `<span class="skill">${s}</span>`).join('')}
+                            </div>
+                        </div>
+                        <div class="section">
+                            <h2>Idiomas</h2>
+                            <p>${idiomas}</p>
+                        </div>
+                    `;
+                } else if (template.startsWith('internacional')) {
+                    html = `
+                        <h1>${nome}</h1>
+                        <p><strong>${titulo}</strong></p>
+                        <div class="contact-line">
+                            <span><i class="fas fa-phone"></i> ${telefone}</span>
+                            <span><i class="fas fa-envelope"></i> ${email}</span>
+                            <span><i class="fab fa-linkedin"></i> ${linkedin}</span>
+                        </div>
+                        <div class="section">
+                            <h2>Resumo</h2>
+                            <p>${resumo}</p>
+                        </div>
+                        <div class="section">
+                            <h2>Experiência</h2>
+                            ${experiencias.map(exp => `
+                                <div class="item">
+                                    <div class="item-header">
+                                        <span>${exp.cargo} - ${exp.empresa}</span>
+                                        <span class="date">${exp.periodo}</span>
+                                    </div>
+                                    <p>${exp.descricao}</p>
+                                </div>
+                            `).join('')}
+                        </div>
+                        <div class="section">
+                            <h2>Formação</h2>
+                            ${formacoes.map(form => `
+                                <div class="item">
+                                    <div class="item-header">
+                                        <span>${form.curso}</span>
+                                        <span class="date">${form.ano}</span>
+                                    </div>
+                                    <p>${form.instituicao}</p>
+                                </div>
+                            `).join('')}
+                        </div>
+                        <div class="section">
+                            <h2>Competências e Idiomas</h2>
+                            <p>${competenciasTec.join(' • ')}</p>
+                            <p>${idiomas}</p>
+                        </div>
+                    `;
+                } else if (template === 'criativo-2') {
+                    html = `
+                        <div class="left">
+                            <h1>${nome}</h1>
+                            <p>${titulo}</p>
+                            <h3>Contacto</h3>
+                            <p>${telefone}</p><p>${email}</p>
+                            <h3>Competências</h3>
+                            ${competenciasTec.map(s => `<p>${s}</p>`).join('')}
+                        </div>
+                        <div class="right">
+                            <h3>Resumo</h3>
+                            <p>${resumo}</p>
+                            <h3>Experiência</h3>
+                            ${experiencias.map(exp => `<p><strong>${exp.cargo}</strong> - ${exp.empresa} (${exp.periodo})<br>${exp.descricao}</p>`).join('')}
+                            <h3>Formação</h3>
+                            ${formacoes.map(form => `<p>${form.curso} - ${form.instituicao} (${form.ano})</p>`).join('')}
+                            <h3>Idiomas</h3>
+                            <p>${idiomas}</p>
+                        </div>
+                    `;
                 }
-                if (formacoes.length) {
-                    html += '<h4 style="color: ${primaryColor};">Formação</h4>';
-                    formacoes.forEach(form => html += `<div><strong>${form.curso}</strong> – ${form.instituicao} (${form.ano})</div>`);
-                }
-                if (competenciasTec.length) {
-                    html += '<h4 style="color: ${primaryColor};">Competências Técnicas</h4>';
-                    html += '<div>' + competenciasTec.map(c => `<span style="background:#F3F4F6; padding:4px 12px; border-radius:16px; margin-right:5px;">${c}</span>`).join('') + '</div>';
-                }
-                if (competenciasComp.length) {
-                    html += '<h4 style="color: ${primaryColor};">Competências Comportamentais</h4>';
-                    html += '<div>' + competenciasComp.map(c => `<span style="background:#F3F4F6; padding:4px 12px; border-radius:16px; margin-right:5px;">${c}</span>`).join('') + '</div>';
-                }
-                if (idiomas) html += `<h4 style="color: ${primaryColor};">Idiomas</h4><p>${idiomas}</p>`;
-                customFields.forEach(field => { if (field.label && field.value) html += `<p><strong>${field.label}:</strong> ${field.value}</p>`; });
-                html += '</div>';
+
                 preview.innerHTML = html;
-                aplicarTemplateAtual();
             }
 
             function aplicarTemplate(template) {
-                const preview = document.getElementById('cv-preview');
-                preview.classList.remove('template-classic', 'template-modern', 'template-minimal');
-                preview.classList.add(`template-${template}`);
-            }
-            function aplicarTemplateAtual() {
-                const active = document.querySelector('.template-option.active');
-                if (active) aplicarTemplate(active.getAttribute('data-template'));
+                document.getElementById('template-select').value = template;
+                renderPreview();
             }
 
-            document.querySelectorAll('.template-option').forEach(opt => {
-                opt.addEventListener('click', () => {
-                    document.querySelectorAll('.template-option').forEach(o => o.classList.remove('active'));
-                    opt.classList.add('active');
-                    aplicarTemplate(opt.getAttribute('data-template'));
-                });
-            });
+            document.getElementById('template-select')?.addEventListener('change', renderPreview);
+            document.querySelectorAll('#cv-form input, #cv-form textarea').forEach(el => el.addEventListener('input', renderPreview));
 
-            document.querySelectorAll('#cv-form input, #cv-form textarea, #cv-form select').forEach(el => el.addEventListener('input', renderPreview));
-            document.getElementById('primary-color')?.addEventListener('input', renderPreview);
-            document.getElementById('font-family')?.addEventListener('change', renderPreview);
+            // Preview carta de apresentação (simples)
+            function renderCoverPreview() {
+                const preview = document.getElementById('cover-preview');
+                const remetente = document.getElementById('cover-remetente')?.value || 'Remetente';
+                const destinatario = document.getElementById('cover-destinatario')?.value || 'Destinatário';
+                const assunto = document.getElementById('cover-assunto')?.value || 'Assunto';
+                const corpo = document.getElementById('cover-corpo')?.value || '';
+                preview.innerHTML = `
+                    <div style="font-family: 'Inter', sans-serif; max-width: 600px; margin: 0 auto;">
+                        <h2>${remetente}</h2>
+                        <p><strong>Para:</strong> ${destinatario}</p>
+                        <p><strong>Assunto:</strong> ${assunto}</p>
+                        <p>${corpo}</p>
+                        <p>Atenciosamente,<br>${remetente}</p>
+                    </div>
+                `;
+            }
+            document.querySelectorAll('#cover-tab input, #cover-tab textarea').forEach(el => el.addEventListener('input', renderCoverPreview));
 
+            // Preview carta de motivação
+            function renderMotivationPreview() {
+                const preview = document.getElementById('motivation-preview');
+                const instituicao = document.getElementById('motiv-instituicao')?.value || 'Instituição';
+                const programa = document.getElementById('motiv-programa')?.value || 'Programa';
+                const texto = document.getElementById('motiv-texto')?.value || '';
+                preview.innerHTML = `
+                    <div style="font-family: 'Inter', sans-serif;">
+                        <h3>Carta de Motivação</h3>
+                        <p><strong>${instituicao}</strong> - ${programa}</p>
+                        <p>${texto}</p>
+                    </div>
+                `;
+            }
+            document.querySelectorAll('#motivation-tab input, #motivation-tab textarea').forEach(el => el.addEventListener('input', renderMotivationPreview));
+
+            // Download PDF
             document.getElementById('download-pdf')?.addEventListener('click', function() {
                 const activeTab = document.querySelector('.tab-btn.active').getAttribute('data-tab');
-                let element = activeTab === 'cv' ? document.getElementById('cv-preview') : (activeTab === 'cover' ? document.getElementById('cover-preview') : document.getElementById('motivation-preview'));
+                let element;
+                if (activeTab === 'cv') element = document.getElementById('cv-preview');
+                else if (activeTab === 'cover') element = document.getElementById('cover-preview');
+                else element = document.getElementById('motivation-preview');
                 if (!element) return;
                 html2canvas(element, { scale: 2 }).then(canvas => {
                     const imgData = canvas.toDataURL('image/png');
@@ -698,7 +1719,12 @@
             });
 
             // Inicialização
+            renderExperiencias();
+            renderFormacoes();
+            renderCustomFields();
             renderPreview();
+            renderCoverPreview();
+            renderMotivationPreview();
         })();
     </script>
 </body>
