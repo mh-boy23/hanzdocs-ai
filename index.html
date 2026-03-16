@@ -251,6 +251,49 @@
     .interest-tag { background: #e8f0f7; color: #1e4c6e; padding: 0.2rem 1rem; border-radius: 30px; font-size: 0.85rem; }
     .empty-preview-msg { color: #7897b3; font-style: italic; padding: 2rem; text-align: center; }
     @media (max-width: 1000px) { .builder { grid-template-columns: 1fr; } body { padding: 1rem; } }
+
+    /* ========== IMPRESSÃO PERFEITA ========== */
+    @media print {
+      html, body {
+        margin: 0 !important;
+        padding: 0 !important;
+        background: white !important;
+      }
+      body * {
+        visibility: hidden !important;
+      }
+      .preview-panel, .preview-panel * {
+        visibility: visible !important;
+      }
+      .preview-panel {
+        position: absolute !important;
+        top: 0 !important;
+        left: 0 !important;
+        width: 100% !important;
+        min-height: 100% !important;
+        background: white !important;
+        padding: 0.8cm !important;  /* margem suave para impressão */
+        margin: 0 !important;
+        border: none !important;
+        box-shadow: none !important;
+        border-radius: 0 !important;
+        display: block !important;
+      }
+      .resume-card {
+        background: white !important;
+        box-shadow: none !important;
+        border-radius: 0 !important;
+        padding: 0 !important;
+        width: 100% !important;
+      }
+      .builder, .creator-spotlight, .feedback-area, .pdf-btn {
+        display: none !important;
+      }
+      /* Garantir que não há quebras de página no meio do CV */
+      .preview-item, .preview-sub, .skill-tags {
+        page-break-inside: avoid;
+      }
+    }
   </style>
 </head>
 <body>
@@ -415,8 +458,8 @@
     { id: uid(), language: "Português", proficiency: "Excelente" }
   ];
 
-  let awards = [];
-  let memberships = [];
+  let awards = [];       // secção de prémios (inicia vazia, mas pode adicionar)
+  let memberships = [];   // secção de associações (inicia vazia)
 
   // ----- helpers -----
   function uid() { return Date.now() + '-' + Math.random().toString(36).substr(2, 10); }
@@ -524,8 +567,40 @@
   }
   function updateLangField(e, field) { const id = e.target.getAttribute('data-lang-id'); const it = languages.find(x => x.id === id); if(it) it[field] = e.target.value; }
 
-  function renderAwards() { document.getElementById('awardsContainer').innerHTML = ''; }
-  function renderMemberships() { document.getElementById('membershipsContainer').innerHTML = ''; }
+  // ----- NOVAS FUNÇÕES PARA PRÉMIOS E ASSOCIAÇÕES -----
+  function renderAwards() {
+    let html = '';
+    awards.forEach(a => {
+      html += `<div class="dynamic-item" data-id="${a.id}"><div class="item-header"><button class="remove-btn" data-award-remove="${a.id}">✕</button></div>
+        <div class="field-group"><label>prémio / distinção</label><input type="text" class="award-title" data-award-id="${a.id}" value="${escapeHtml(a.title)}"></div>
+        <div class="field-group"><label>entidade / atribuído por</label><input type="text" class="award-issuer" data-award-id="${a.id}" value="${escapeHtml(a.issuer || '')}"></div>
+        <div class="field-group"><label>data</label><input type="text" class="award-date" data-award-id="${a.id}" value="${escapeHtml(a.date || '')}"></div>
+        <div class="field-group"><label>descrição (opcional)</label><textarea class="award-desc" data-award-id="${a.id}" rows="1">${escapeHtml(a.description || '')}</textarea></div></div>`;
+    });
+    document.getElementById('awardsContainer').innerHTML = html;
+    document.querySelectorAll('.award-title').forEach(i => i.addEventListener('input', e => { updateAwardField(e, 'title'); renderPreview(); }));
+    document.querySelectorAll('.award-issuer').forEach(i => i.addEventListener('input', e => { updateAwardField(e, 'issuer'); renderPreview(); }));
+    document.querySelectorAll('.award-date').forEach(i => i.addEventListener('input', e => { updateAwardField(e, 'date'); renderPreview(); }));
+    document.querySelectorAll('.award-desc').forEach(i => i.addEventListener('input', e => { updateAwardField(e, 'description'); renderPreview(); }));
+    attachRemove('award-remove', awards, renderAwards);
+  }
+  function updateAwardField(e, field) { const id = e.target.getAttribute('data-award-id'); const it = awards.find(x => x.id === id); if(it) it[field] = e.target.value; }
+
+  function renderMemberships() {
+    let html = '';
+    memberships.forEach(m => {
+      html += `<div class="dynamic-item" data-id="${m.id}"><div class="item-header"><button class="remove-btn" data-member-remove="${m.id}">✕</button></div>
+        <div class="field-group"><label>associação / organização</label><input type="text" class="member-name" data-member-id="${m.id}" value="${escapeHtml(m.membership || m.name || '')}"></div>
+        <div class="field-group"><label>cargo (opcional)</label><input type="text" class="member-role" data-member-id="${m.id}" value="${escapeHtml(m.role || '')}"></div>
+        <div class="field-group"><label>período</label><input type="text" class="member-period" data-member-id="${m.id}" value="${escapeHtml(m.period || '')}" placeholder="ex: 2020-presente"></div></div>`;
+    });
+    document.getElementById('membershipsContainer').innerHTML = html;
+    document.querySelectorAll('.member-name').forEach(i => i.addEventListener('input', e => { updateMemberField(e, 'membership'); renderPreview(); }));
+    document.querySelectorAll('.member-role').forEach(i => i.addEventListener('input', e => { updateMemberField(e, 'role'); renderPreview(); }));
+    document.querySelectorAll('.member-period').forEach(i => i.addEventListener('input', e => { updateMemberField(e, 'period'); renderPreview(); }));
+    attachRemove('member-remove', memberships, renderMemberships);
+  }
+  function updateMemberField(e, field) { const id = e.target.getAttribute('data-member-id'); const it = memberships.find(x => x.id === id); if(it) it[field] = e.target.value; }
 
   function attachRemove(attr, array, renderFunc) {
     document.querySelectorAll(`[data-${attr}]`).forEach(btn => {
@@ -539,7 +614,7 @@
     });
   }
 
-  // ----- PRÉ-VISUALIZAÇÃO (títulos em português) -----
+  // ----- PRÉ-VISUALIZAÇÃO -----
   function renderPreview() {
     const name = personal.name || '';
     const title = personal.title || '';
@@ -563,6 +638,8 @@
     if (accomplishments.length) html += `<div class="preview-sub">realizações</div>` + accomplishments.map(a => `<div class="preview-item"><div class="preview-item-title">${escapeHtml(a.title)}</div><div class="preview-item-desc">${escapeHtml(a.description)}</div></div>`).join('');
     if (publications.length) html += `<div class="preview-sub">publicações</div>` + publications.map(p => `<div class="preview-item"><div class="preview-item-title">${escapeHtml(p.title)}</div><div class="preview-item-sub">${p.date ? escapeHtml(p.date) : ''}</div></div>`).join('');
     if (languages.length) html += `<div class="preview-sub">idiomas</div>` + languages.map(l => `<div class="preview-item"><div class="preview-item-title">${escapeHtml(l.language)}</div><div class="preview-item-sub">${escapeHtml(l.proficiency)}</div></div>`).join('');
+    if (awards.length) html += `<div class="preview-sub">prémios e distinções</div>` + awards.map(a => `<div class="preview-item"><div class="preview-item-title">${escapeHtml(a.title)}</div><div class="preview-item-sub">${escapeHtml(a.issuer || '')} ${a.date ? '· '+escapeHtml(a.date) : ''}</div>${a.description ? `<div class="preview-item-desc">${escapeHtml(a.description)}</div>` : ''}</div>`).join('');
+    if (memberships.length) html += `<div class="preview-sub">associações</div>` + memberships.map(m => `<div class="preview-item"><div class="preview-item-title">${escapeHtml(m.membership || m.name || '')}</div><div class="preview-item-sub">${escapeHtml(m.role || '')} ${m.period ? '· '+escapeHtml(m.period) : ''}</div></div>`).join('');
     if (interests.length) html += `<div class="preview-sub">interesses</div><div class="skill-tags">${interests.map(i => `<span class="interest-tag">${escapeHtml(i)}</span>`).join('')}</div>`;
     if (ref.trim()) html += `<div class="preview-sub">referências</div><div class="preview-item-desc">${escapeHtml(ref)}</div>`;
 
@@ -601,10 +678,10 @@
   document.getElementById('addAccBtn').addEventListener('click', () => { accomplishments.push({ id: uid(), title: '', description: '' }); renderAccomplishments(); renderPreview(); });
   document.getElementById('addPubBtn').addEventListener('click', () => { publications.push({ id: uid(), title: '', publisher: '', date: '', description: '' }); renderPublications(); renderPreview(); });
   document.getElementById('addLangBtn').addEventListener('click', () => { languages.push({ id: uid(), language: '', proficiency: '' }); renderLanguages(); renderPreview(); });
-  document.getElementById('addAwardBtn').addEventListener('click', () => { awards.push({ id: uid(), title: '', issuer: '', date: '' }); renderAwards(); renderPreview(); });
-  document.getElementById('addMemberBtn').addEventListener('click', () => { memberships.push({ id: uid(), membership: '', organization: '' }); renderMemberships(); renderPreview(); });
+  document.getElementById('addAwardBtn').addEventListener('click', () => { awards.push({ id: uid(), title: '', issuer: '', date: '', description: '' }); renderAwards(); renderPreview(); });
+  document.getElementById('addMemberBtn').addEventListener('click', () => { memberships.push({ id: uid(), membership: '', role: '', period: '' }); renderMemberships(); renderPreview(); });
 
-  // ----- FEEDBACK: abrir cliente de email -----
+  // ----- FEEDBACK: abre o cliente de email com a mensagem -----
   document.getElementById('sendFeedbackBtn').addEventListener('click', () => {
     const feedback = document.getElementById('feedbackMessage').value.trim();
     if (!feedback) {
@@ -618,9 +695,6 @@
 
   // ----- PDF (impressão) -----
   document.getElementById('downloadPdf').addEventListener('click', () => { window.print(); });
-  const style = document.createElement('style');
-  style.innerHTML = `@media print { body * { visibility: hidden; } .preview-panel, .preview-panel * { visibility: visible; } .preview-panel { position: absolute; top: 0; left: 0; width: 100%; background: white; } .builder, .creator-spotlight, .feedback-area, .pdf-btn { display: none; } }`;
-  document.head.appendChild(style);
 
   // ----- RENDER INICIAL -----
   renderExperiences();
