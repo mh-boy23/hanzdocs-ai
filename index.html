@@ -252,44 +252,50 @@
     .empty-preview-msg { color: #7897b3; font-style: italic; padding: 2rem; text-align: center; }
     @media (max-width: 1000px) { .builder { grid-template-columns: 1fr; } body { padding: 1rem; } }
 
-    /* ========== IMPRESSÃO PERFEITA ========== */
+    /* ========== IMPRESSÃO CORRIGIDA ========== */
     @media print {
+      /* esconde tudo inicialmente */
       html, body {
         margin: 0 !important;
         padding: 0 !important;
         background: white !important;
       }
-      body * {
-        visibility: hidden !important;
+      body > * {
+        display: none !important;  /* esconde todos os filhos diretos */
       }
-      .preview-panel, .preview-panel * {
+      /* torna visível apenas o preview e seus pais necessários */
+      .container, .builder, .preview-panel {
+        display: block !important;
         visibility: visible !important;
+        background: white !important;
       }
       .preview-panel {
         position: absolute !important;
         top: 0 !important;
         left: 0 !important;
         width: 100% !important;
-        min-height: 100% !important;
-        background: white !important;
-        padding: 0.8cm !important;  /* margem suave para impressão */
+        padding: 1.5cm !important;
         margin: 0 !important;
         border: none !important;
         box-shadow: none !important;
         border-radius: 0 !important;
-        display: block !important;
       }
       .resume-card {
         background: white !important;
         box-shadow: none !important;
         border-radius: 0 !important;
         padding: 0 !important;
-        width: 100% !important;
       }
-      .builder, .creator-spotlight, .feedback-area, .pdf-btn {
-        display: none !important;
+      .preview-header, .pdf-btn {
+        display: none !important;  /* esconde o cabeçalho com o botão */
       }
-      /* Garantir que não há quebras de página no meio do CV */
+      /* remove qualquer cor de fundo extra */
+      .preview-summary, .skill-tag, .interest-tag {
+        background: #f5f5f5 !important;
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+      }
+      /* evita quebras de página no meio */
       .preview-item, .preview-sub, .skill-tags {
         page-break-inside: avoid;
       }
@@ -458,7 +464,7 @@
     { id: uid(), language: "Português", proficiency: "Excelente" }
   ];
 
-  let awards = [];       // secção de prémios (inicia vazia, mas pode adicionar)
+  let awards = [];       // secção de prémios (inicia vazia)
   let memberships = [];   // secção de associações (inicia vazia)
 
   // ----- helpers -----
